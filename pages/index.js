@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import { applySession } from 'next-session';
+import Layout from '../src/Layout';
 
 export default function Home({user}) {
   return (
@@ -85,3 +86,4 @@ export async function getServerSideProps({ req, res }) {
     }
   }
 }
+Home.Layout = Layout;
