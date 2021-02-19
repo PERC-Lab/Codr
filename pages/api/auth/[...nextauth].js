@@ -7,6 +7,9 @@ export default NextAuth({
     Providers.Google({
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
+      params: {
+        grant_type: "authorization_code",
+      }
     })
     // ...add more providers here
   ],
