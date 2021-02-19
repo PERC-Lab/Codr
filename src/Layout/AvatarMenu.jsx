@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { useUser } from "../../lib/useUser";
+import { signIn, signOut, useSession } from 'next-auth/client';
 
 const Component = styled.div`
   display: grid;
@@ -18,12 +18,20 @@ const Avatar = styled.div`
 `
 
 export default function AvatarMenu() {
-  const [user] = useUser();
+  const [ session ] = useSession()
 
   return (
     <Component>
-      <Avatar picture={user?.picture} />
-      {user?.displayName || "Jon Doe"}
+      {
+        session ? <>
+          <Avatar picture={user?.picture} />
+          {session.user.name} <br/>
+          <button onClick={() => signOut('google')}>Sign out</button>
+        </> : <> 
+          Not signed in <br/>
+          <button onClick={() => signIn('google')}>Sign in</button>
+        </>
+      }
     </Component>
   );
 }

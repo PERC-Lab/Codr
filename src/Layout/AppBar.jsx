@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import { signIn, signOut } from 'next-auth/client';
 import Switch from "../Switch";
 import AvatarMenu from "./AvatarMenu";
 
@@ -29,7 +28,7 @@ const RightSide = styled.div`
   gap: 1em;
 `
 
-export default function AppBar({ darkMode, session }) {
+export default function AppBar({ darkMode }) {
   const [mode, toggleMode] = darkMode;
 
   return (
@@ -37,16 +36,7 @@ export default function AppBar({ darkMode, session }) {
       <Title>Annotator</Title>
       <RightSide>
         <Switch isActive={mode === "dark"} onClick={toggleMode} />
-        <AvatarMenu></AvatarMenu>
-        {
-          session ? <>
-            Signed in as {session.user.email} <br/>
-            <button onClick={() => signOut('google')}>Sign out</button>
-          </> : <> 
-            Not signed in <br/>
-            <button onClick={() => signIn('google')}>Sign in</button>
-          </>
-        }
+        <AvatarMenu />
       </RightSide>
     </Component>
   );
