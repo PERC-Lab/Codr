@@ -4,7 +4,7 @@ import { signIn, signOut, useSession } from 'next-auth/client';
 
 const Component = styled.div`
   display: grid;
-  grid-template-columns: 40px auto;
+  grid-template-columns: auto auto auto;
   column-gap: 0.5em;
   align-items: center;
   margin: 0 1em;
@@ -15,6 +15,7 @@ const Avatar = styled.div`
   height: 40px;
   border-radius: 50%;
   background: ${({picture}) => picture ? `url(${picture})` : "#ccc"};
+  background-size: contain;
 `
 
 export default function AvatarMenu() {
