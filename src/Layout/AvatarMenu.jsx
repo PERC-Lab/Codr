@@ -23,7 +23,7 @@ export default function AvatarMenu() {
   return (
     <Component>
       {
-        session ? <>
+        session?.user ? <>
           <Avatar picture={user?.picture} />
           {session.user.name} <br/>
           <button onClick={() => signOut('google')}>Sign out</button>
