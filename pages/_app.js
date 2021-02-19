@@ -1,3 +1,4 @@
+import { Provider } from "next-auth/client";
 import React from "react";
 import { ThemeProvider } from "styled-components";
 import { useDarkMode } from "../lib/useDarkMode";
@@ -12,9 +13,11 @@ function App({ Component, pageProps }) {
   return (
     <ThemeProvider theme={theme === "light" ? light : dark}>
       <GlobalStyles />
-      <Layout darkMode={[theme, toggleTheme]}>
-        <Component {...pageProps} />
-      </Layout>
+      <Provider session={pageProps.session}>
+        <Layout darkMode={[theme, toggleTheme]}>
+          <Component {...pageProps} />
+        </Layout>
+      </Provider>
     </ThemeProvider>
   );
 }

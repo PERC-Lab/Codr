@@ -3,7 +3,7 @@ import styles from '../styles/Home.module.css';
 import { applySession } from 'next-session';
 import Layout from '../src/Layout';
 
-export default function Home({user}) {
+export default function Home() {
   return (
     <div className={styles.container}>
       <Head>
@@ -66,24 +66,4 @@ export default function Home({user}) {
   )
 }
 
-export async function getServerSideProps({ req, res }) {
-  await applySession(req, res);
-  console.log(req, res)
-  const user = req.session.user || null;
-
-  if (!user) {
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    }
-  }
-
-  return {
-    props: {
-      user
-    }
-  }
-}
 Home.Layout = Layout;
