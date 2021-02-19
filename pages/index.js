@@ -1,5 +1,6 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import Head from 'next/head';
+import styles from '../styles/Home.module.css';
+import Layout from '../src/Layout';
 
 export default function Home() {
   return (
@@ -63,3 +64,5 @@ export default function Home() {
     </div>
   )
 }
+
+Home.Layout = Layout;
