@@ -11,9 +11,7 @@ const GridLayout = styled.div`
 `;
 
 const Content = styled.div`
-  box-shadow: inset 4px 4px 8px -4px ${({ theme }) => theme.boxShadow};
-  overflow: auto;
-  height: calc(100vh - 50px);
+  // box-shadow: inset 4px 4px 8px -4px ${({ theme }) => theme.boxShadow};
 `;
 
 export default function Layout({ children, darkMode }) {

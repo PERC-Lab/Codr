@@ -9,7 +9,7 @@ export const light = {
 export const dark = {
   body: "#121212",
   text: "#FAFAFA",
-  border: "1px solid #ccc",
+  border: "1px solid #363636",
   boxShadow: "transparent",
   background: "#363636",
 };
