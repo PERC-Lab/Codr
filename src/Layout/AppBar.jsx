@@ -9,8 +9,8 @@ const Component = styled.div`
   column-gap: 1em;
   align-items: center;
   padding: 0 1em;
-  background-color: ${({ theme }) => theme.body};
-  opacity: 90%;
+  background-color: ${({ theme }) => theme.body + theme.opacity.hex};
+  // opacity: 90%;
   border-bottom: ${({ theme }) => theme.border};
   position: sticky;
   top: 0;
