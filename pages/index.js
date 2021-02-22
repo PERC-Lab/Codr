@@ -3,7 +3,8 @@ import styles from "../styles/Home.module.css";
 import Layout from "../src/Layout";
 import { getSession } from "next-auth/client";
 
-export default function Home() {
+export default function Home({session}) {
+  console.log(session)
   return (
     <div className={styles.container}>
       <Head>
@@ -68,7 +69,7 @@ export default function Home() {
 
 export async function getServerSideProps({ req }) {
   // Get the user's session based on the request
-  const session = await getSession(req);
+  const session = await getSession({req});
 
   if (!session) {
     // If no user, redirect to login

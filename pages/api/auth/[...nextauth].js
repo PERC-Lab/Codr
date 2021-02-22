@@ -1,8 +1,13 @@
 import NextAuth from "next-auth";
 import Providers from "next-auth/providers";
 import Adapters from "next-auth/adapters";
+import mongoose from "mongoose";
 
-import Models from "../../../models";
+import connect from "../../../lib/database";
+import Models from "../../../models/typeorm";
+import { User } from "../../../models/mongoose";
+
+connect();
 
 export default NextAuth({
   // Configure one or more authentication providers
@@ -26,44 +31,44 @@ export default NextAuth({
     }
   ),
   secret: process.env.SECRET,
-  session: {
-    // Use JSON Web Tokens for session instead of database sessions.
-    // This option can be used with or without a database for users/accounts.
-    // Note: `jwt` is automatically set to `true` if no database is specified.
-    jwt: true,
-  },
-  debug: true,
   callbacks: {
-    // user => database,  account => google info,  profile => google profile.
+    // user => database/prototype,  account => google info,  profile => google profile.
     async signIn(user, account, profile) {
-      console.log(user);
-      console.log(account);
-      console.log(profile);
-
       // is the user apart of a group?
       const isAssignedMember = false;
 
-      // is the user a sys admin, assigned by environment veriables?
-      const isSysAdmin = !!process.env.SYSADMIN_EMAIL;
+      // does the user exist in the db?
+      const isUser = !!(await User.findOne({email: user.email}).exec());
 
-      if (isAssignedMember) {
+      // is the user a sys admin, assigned by environment veriables?
+      const isSysAdmin = process.env.SYSADMIN_EMAIL == user.email;
+
+      if (isUser || isAssignedMember) {
         return true;
       } else if (isSysAdmin) {
-        // if this is called, run first-time setup.
-
-        // create account
-
-        // create user
-        let u = profile;
-        delete profile.id;
-        delete profile.locale;
-        u.role = "admin";
-        User.create(u);
-
+        user.role = "admin";
         return true;
       } else {
-        return false;
+        return "/login";
       }
     },
+    // add full user to session.
+    async session(session, user) {
+
+      // deep copy user and remove sensitive/unwanted properties.
+      let u = {...user};
+      delete u.id
+      delete u.createdAt
+      delete u.updatedAt
+
+      // update user.
+      session.user = u;
+
+      // send it off.
+      return session
+    },
+  },
+  pages: {
+    // error: '/login'
   },
 });
