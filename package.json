@@ -13,7 +13,8 @@
     "next-auth": "^3.4.2",
     "rbac": "^5.0.3",
     "react": "17.0.1",
-    "react-dom": "17.0.1"
+    "react-dom": "17.0.1",
+    "unsplash-js": "^7.0.4"
   },
   "devDependencies": {
     "@types/next-auth": "^3.1.24",

@@ -1,41 +1,23 @@
-const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
+import Adapters from "next-auth/adapters";
 
-/* UserSchema will correspond to a collection in your MongoDB database. */
-const UserSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: [true, "Please provide your name."],
-    },
-    email: {
-      type: String,
-      lowercase: true,
-      required: [true, "can't be blank"],
-      match: [/\S+@\S+\.\S+/, "is invalid"],
-      index: true,
-    },
-    image: {
-      type: String,
+// Extend the built-in models using class inheritance
+export default class User extends Adapters.TypeORM.Models.User.model {
+  // You can extend the options in a model but you should not remove the base
+  // properties or change the order of the built-in options on the constructor
+  constructor(name, email, image, emailVerified) {
+    super(name, email, image, emailVerified);
+  }
+}
+
+export const UserSchema = {
+  name: "User",
+  target: User,
+  columns: {
+    ...Adapters.TypeORM.Models.User.schema.columns,
+    // Adds a phoneNumber to the User schema
+    role: {
+      type: "varchar",
+      nullable: false,
     },
   },
-  { timestamps: true }
-);
-
-UserSchema.methods.generateJWT = function () {
-  let today = new Date();
-  let exp = new Date(today);
-  exp.setDate(today.getDate() + 7); // set expiration 7 days out.
-
-  return jwt.sign(
-    {
-      id: this._id,
-      username: this.username,
-      exp: parseInt(exp.getTime() / 1000),
-    },
-    process.env.SECRET
-  );
 };
-
-// exports User model.
-module.exports = mongoose.models.User || mongoose.model("User", UserSchema);

@@ -1,6 +1,7 @@
-import Head from 'next/head';
-import styles from '../styles/Home.module.css';
-import Layout from '../src/Layout';
+import Head from "next/head";
+import styles from "../styles/Home.module.css";
+import Layout from "../src/Layout";
+import { getSession } from "next-auth/client";
 
 export default function Home() {
   return (
@@ -16,7 +17,7 @@ export default function Home() {
         </h1>
 
         <p className={styles.description}>
-          Get started by editing{' '}
+          Get started by editing{" "}
           <code className={styles.code}>pages/index.js</code>
         </p>
 
@@ -57,12 +58,31 @@ export default function Home() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by{' '}
+          Powered by{" "}
           <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
         </a>
       </footer>
     </div>
-  )
+  );
+}
+
+export async function getServerSideProps({ req }) {
+  // Get the user's session based on the request
+  const session = await getSession(req);
+
+  if (!session) {
+    // If no user, redirect to login
+    return {
+      props: {},
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  // If there is a user, return the current session
+  return { props: { session } };
 }
 
 Home.Layout = Layout;
