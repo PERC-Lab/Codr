@@ -1,6 +1,8 @@
 import { createApi } from "unsplash-js";
 import styled from "styled-components";
 import { getSession, signIn, useSession } from "next-auth/client";
+import { Blurhash } from "react-blurhash";
+import { Img } from "react-image";
 
 const unsplash = createApi({
   accessKey: process.env.UNSPLASH_KEY,
@@ -8,10 +10,8 @@ const unsplash = createApi({
 });
 
 const Page = styled.div`
-  background: url(${({ photo }) => photo.urls.regular});
+  // background: url(${({ photo }) => photo.urls.full});
   height: 100vh;
-  background-size: cover;
-  background-position-y: center;
 `;
 
 const LoginBox = styled.div`
@@ -53,9 +53,37 @@ const GoogleButton = styled.div`
   }
 `;
 
+const Attribute = styled.a`
+  color: #ffffff;
+  text-shadow: 0 0 8px black;
+  position: absolute;
+  bottom: 1em;
+  left: 1em;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const Image = styled(Img)`
+  width: 100%;
+  height: 100vh;
+`
+
 export default function Login({ photo }) {
   return (
     <Page photo={photo}>
+      <Image 
+        src={photo.urls.full} 
+        loader={
+          <Blurhash 
+            hash={photo.blur_hash} 
+            width='100%' 
+            height='100vh' 
+          />
+        }
+      />
       <LoginBox>
         <Content>
           <h1>Annotator</h1>
@@ -64,6 +92,11 @@ export default function Login({ photo }) {
           </GoogleButton>
         </Content>
       </LoginBox>
+      <Attribute href={photo.links.html} target="_BLANK">
+        Photo by {photo.user.name}
+        <br />
+        on Unsplash
+      </Attribute>
     </Page>
   );
 }
