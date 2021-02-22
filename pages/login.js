@@ -69,6 +69,7 @@ const Attribute = styled.a`
 const Image = styled(Img)`
   width: 100%;
   height: 100vh;
+  object-fit: cover;
 `
 
 export default function Login({ photo }) {
