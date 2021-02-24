@@ -1,12 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-import Switch from "../Switch";
+import Switch from "../../Switch";
 import AvatarMenu from "./AvatarMenu";
 
 const Component = styled.div`
   display: flex;
-  grid-column: span 2;
-  column-gap: 1em;
   align-items: center;
   padding: 0 1em;
   background-color: ${({ theme }) => theme.body + theme.opacity.hex};

@@ -1,69 +1,67 @@
 import Head from "next/head";
-import styles from "../styles/Home.module.css";
-import Layout from "../src/Layout";
+import { BlankLayout } from "../src/Layouts";
 import { getSession } from "next-auth/client";
+import styled from "styled-components";
+
+const Container = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  padding: 1em 2em;
+  gap: 1em;
+
+  @media (max-width: 1080px) {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+`;
+
+const Title = styled.h2`
+  grid-column: span 4;
+`;
+
+const Card = styled.div`
+  height: 150px;
+  border: 2px dashed ${({theme}) => theme.text};
+  border-radius: 8px;
+  font-size: 2em;
+  opacity: 50%;
+  transition: 200ms;
+  position: relative;
+  font-weight: 200;
+
+  &:hover {
+    opacity: 100%;
+    box-shadow: 2px 2px 4px rgba(0 0 0 / 10%);
+  }
+`
+
+const Middle = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+
+  & > div {
+    font-size: 16px;
+  }
+`
 
 export default function Home({session}) {
   console.log(session)
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{" "}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{" "}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
+    <Container>
+      <Title>Organizations:</Title>
+      <Card>
+        <Middle>
+          +
+          <div>Add</div>
+        </Middle>
+      </Card>
+    </Container>
   );
 }
 
@@ -86,4 +84,4 @@ export async function getServerSideProps({ req }) {
   return { props: { session } };
 }
 
-Home.Layout = Layout;
+Home.Layout = BlankLayout;

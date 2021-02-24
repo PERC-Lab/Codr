@@ -12,7 +12,6 @@ export class User {
     if (emailVerified) {
       this.emailVerified = emailVerified;
     }
-    this.role = "user"
   }
 }
 
@@ -51,10 +50,6 @@ export const UserSchema = {
       // initial sign in, if one is specified in that profile.
       type: "varchar",
       nullable: true,
-    },
-    role: {
-      type: "varchar",
-      nullable: false,
     },
     createdAt: {
       type: "timestamp",

@@ -14,7 +14,7 @@ const Content = styled.div`
   // box-shadow: inset 4px 4px 8px -4px ${({ theme }) => theme.boxShadow};
 `;
 
-export default function Layout({ children, darkMode }) {
+export default function OrgLayout({ children, darkMode }) {
   return (
     <GridLayout>
       <AppBar darkMode={darkMode} />

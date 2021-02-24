@@ -1,25 +1,31 @@
 export const light = {
-  body: "#FFFFFF",
-  text: "#121212",
-  border: "1px solid #ccc",
+  body: "hsl(200, 0%, 98%)",
+  text: "hsl(200, 0%, 7%)",
+  border: "1px solid hsl(200, 0%, 80%)",
+  borderColor: "hsl(200, 0%, 80%)",
   boxShadow: "rgb(0 0 0 / 10%)",
   opacity: {
     hex: 'F2',
     percent: 90
   },
-  background: "#FFF",
+  background: "hsl(200, 0%, 100%)",
 };
 
 export const dark = {
-  body: "#121212",
-  text: "#FAFAFA",
-  border: "1px solid #363636",
+  body: "hsl(200, 0%, 7%)",
+  text: "hsl(200, 0%, 98%)",
+  border: "1px solid hsl(200, 0%, 21%)",
+  borderColor: "hsl(200, 0%, 21%)",
   boxShadow: "transparent",
   opacity: {
     hex: 'F2',
     percent: 90
   },
-  background: "#363636",
+  background: "hsl(200, 0%, 21%)",
 };
+
+const colors = {
+
+}
 
 export { GlobalStyles } from "./GlobalStyle";

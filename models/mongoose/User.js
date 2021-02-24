@@ -18,10 +18,6 @@ const UserSchema = new mongoose.Schema(
     image: {
       type: String,
     },
-    role: {
-      type: String,
-      required: [true, "Please the user's role."],
-    }
   },
   { timestamps: true }
 );

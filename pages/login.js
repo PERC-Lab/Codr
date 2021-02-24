@@ -1,6 +1,6 @@
 import { createApi } from "unsplash-js";
 import styled from "styled-components";
-import { getSession, signIn, useSession } from "next-auth/client";
+import { getSession, signIn } from "next-auth/client";
 import { Blurhash } from "react-blurhash";
 import { Img } from "react-image";
 
@@ -70,20 +70,14 @@ const Image = styled(Img)`
   width: 100%;
   height: 100vh;
   object-fit: cover;
-`
+`;
 
 export default function Login({ photo }) {
   return (
     <Page photo={photo}>
-      <Image 
-        src={photo.urls.full} 
-        loader={
-          <Blurhash 
-            hash={photo.blur_hash} 
-            width='100%' 
-            height='100vh' 
-          />
-        }
+      <Image
+        src={photo.urls.full}
+        loader={<Blurhash hash={photo.blur_hash} width="100%" height="100vh" />}
       />
       <LoginBox>
         <Content>
