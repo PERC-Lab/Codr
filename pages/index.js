@@ -1,7 +1,13 @@
-import Head from "next/head";
 import { BlankLayout } from "../src/Layouts";
 import { getSession } from "next-auth/client";
 import styled from "styled-components";
+import {
+  Card,
+  CardActionArea,
+  makeStyles,
+  Typography,
+} from "@material-ui/core";
+import { Add } from "@material-ui/icons";
 
 const Container = styled.div`
   display: grid;
@@ -22,52 +28,58 @@ const Title = styled.h2`
   grid-column: span 4;
 `;
 
-const Card = styled.div`
-  height: 150px;
-  border: 2px dashed ${({theme}) => theme.text};
-  border-radius: 8px;
+const AddCard = styled(Card)`
+  border: 2px dashed ${({ theme }) => theme.text};
   font-size: 2em;
-  opacity: 50%;
-  transition: 200ms;
+  opacity: 75%;
   position: relative;
   font-weight: 200;
 
   &:hover {
-    opacity: 100%;
     box-shadow: 2px 2px 4px rgba(0 0 0 / 10%);
   }
-`
+`;
 
-const Middle = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
+const useStyles = makeStyles({
+  card: {
+    alignItems: "center",
+    display: "flex",
+    justifyContent: "center",
+    height: "100%",
+  },
+  center: {
+    textAlign: "center",
+    marginTop: 16,
+    marginBottom: 16,
+  },
+});
+export default function Home({ session }) {
+  const classes = useStyles();
 
-  & > div {
-    font-size: 16px;
-  }
-`
-
-export default function Home({session}) {
-  console.log(session)
   return (
     <Container>
       <Title>Organizations:</Title>
       <Card>
-        <Middle>
-          +
-          <div>Add</div>
-        </Middle>
+        <CardActionArea className={classes.card}>
+          <Typography variant="h5">PERC_Lab</Typography>
+        </CardActionArea>
       </Card>
+      <AddCard>
+        <CardActionArea className={classes.card}>
+          <span className={classes.center}>
+            <Add />
+            <br />
+            <Typography variant="h6">Add</Typography>
+          </span>
+        </CardActionArea>
+      </AddCard>
     </Container>
   );
 }
 
 export async function getServerSideProps({ req }) {
   // Get the user's session based on the request
-  const session = await getSession({req});
+  const session = await getSession({ req });
 
   if (!session) {
     // If no user, redirect to login

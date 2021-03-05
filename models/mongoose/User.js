@@ -1,8 +1,8 @@
-const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
+import { Schema, models, model } from "mongoose";
+import { sign } from "jsonwebtoken";
 
 /* UserSchema will correspond to a collection in your MongoDB database. */
-const UserSchema = new mongoose.Schema(
+const UserSchema = new Schema(
   {
     name: {
       type: String,
@@ -27,7 +27,7 @@ UserSchema.methods.generateJWT = function () {
   let exp = new Date(today);
   exp.setDate(today.getDate() + 7); // set expiration 7 days out.
 
-  return jwt.sign(
+  return sign(
     {
       id: this._id,
       username: this.username,
@@ -38,4 +38,4 @@ UserSchema.methods.generateJWT = function () {
 };
 
 // exports User model.
-module.exports = mongoose.models.User || mongoose.model("User", UserSchema);
+export default models.User || model("User", UserSchema);

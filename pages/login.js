@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { getSession, signIn } from "next-auth/client";
 import { Blurhash } from "react-blurhash";
 import { Img } from "react-image";
+import { Button, Paper } from "@material-ui/core";
 
 const unsplash = createApi({
   accessKey: process.env.UNSPLASH_KEY,
@@ -14,7 +15,7 @@ const Page = styled.div`
   height: 100vh;
 `;
 
-const LoginBox = styled.div`
+const LoginBox = styled(Paper)`
   width: 33%;
   min-width: 300px;
   height: 100vh;
@@ -23,9 +24,6 @@ const LoginBox = styled.div`
   flex-direction: column;
   right: 0;
   top: 0;
-  background-color: #fefefe;
-  box-shadow: 4px 0 16px rgb(0 0 0 / 50%);
-  color: #121212;
   text-align: center;
   justify-content: center;
   align-items: center;
@@ -34,23 +32,11 @@ const LoginBox = styled.div`
 const Content = styled.div`
   width: 80%;
   min-width: 250px;
+  max-width: 300px;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   gap: 3em;
-`;
-
-const GoogleButton = styled.div`
-  box-shadow: 2px 2px 4px rgb(0, 0, 0, 0.1);
-  border-radius: 8px;
-  padding: 1em;
-  cursor: pointer;
-  transition-duration: 200ms;
-  background-color: #fff;
-
-  &:hover {
-    box-shadow: 2px 2px 4px rgb(0, 0, 0, 0.2);
-  }
 `;
 
 const Attribute = styled.a`
@@ -79,12 +65,12 @@ export default function Login({ photo }) {
         src={photo.urls.full}
         loader={<Blurhash hash={photo.blur_hash} width="100%" height="100vh" />}
       />
-      <LoginBox>
+      <LoginBox square>
         <Content>
           <h1>Annotator</h1>
-          <GoogleButton onClick={() => signIn("google")}>
+          <Button variant="contained" onClick={() => signIn("google")}>
             Signin with Google
-          </GoogleButton>
+          </Button>
         </Content>
       </LoginBox>
       <Attribute href={photo.links.html} target="_BLANK">

@@ -1,19 +1,44 @@
 import React from "react";
-import styled from "styled-components";
-import AppBar from "./AppBar";
-import { appBarHeight } from "./constants";
+import { makeStyles } from "@material-ui/core/styles";
+import { AppBar, Toolbar, Typography } from "@material-ui/core";
+import AvatarMenu from "./AvatarMenu";
+import Drawer from "./Drawer";
 
-const GridLayout = styled.div`
-  display: grid;
-  grid-template-rows: ${appBarHeight} auto;
-  grid-template-columns: auto;
-`;
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+  },
+  appBar: {
+    zIndex: theme.zIndex.drawer + 1,
+    background: "#333",
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+  },
+  title: {
+    flexGrow: 1,
+  },
+}));
 
-export default function BlankLayout({ children, darkMode }) {
+export default function ClippedDrawer({ children }) {
+  const classes = useStyles();
+
   return (
-    <GridLayout>
-      <AppBar darkMode={darkMode} />
-      <div>{children}</div>
-    </GridLayout>
+    <div className={classes.root}>
+      <AppBar position="fixed" className={classes.appBar}>
+        <Toolbar>
+          <Typography variant="h6" className={classes.title}>
+            Annotator
+          </Typography>
+          <AvatarMenu />
+        </Toolbar>
+      </AppBar>
+      <Drawer />
+      <main className={classes.content}>
+        <Toolbar />
+        {children}
+      </main>
+    </div>
   );
 }
