@@ -119,7 +119,7 @@ export default function Home({ session }) {
 }
 
 const postOrganization = (name, setOpen) => {
-  fetch(`${process.env.DOMAIN}/api/v1/organizations`, {
+  fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organizations`, {
     method: "POST",
     credentials: "same-origin",
     headers: {
@@ -134,7 +134,7 @@ const postOrganization = (name, setOpen) => {
 };
 
 const getOrganizations = () => {
-  return fetch(`/api/v1/organizations`, {
+  return fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organizations`, {
     method: "GET",
     credentials: "same-origin",
   })

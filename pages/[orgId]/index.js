@@ -36,7 +36,7 @@ export default function Organization({ session }) {
 }
 
 const getOrganization = (oid) => {
-  return fetch(`${process.env.DOMAIN}/api/v1/organization/${oid}`, {
+  return fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}`, {
     method: "GET",
   })
     .then((res) => res.json())
