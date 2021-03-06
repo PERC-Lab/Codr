@@ -31,6 +31,9 @@ export default NextAuth({
     }
   ),
   secret: process.env.SECRET,
+  session: {
+    jwt: true,
+  },
   callbacks: {
     // user => database/prototype,  account => google info,  profile => google profile.
     async signIn(user, account, profile) {
@@ -46,7 +49,6 @@ export default NextAuth({
       if (isUser || isAssignedMember) {
         return true;
       } else if (isSysAdmin) {
-        user.role = "admin";
         return true;
       } else {
         return "/login";
@@ -54,12 +56,13 @@ export default NextAuth({
     },
     // add full user to session.
     async session(session, user) {
+      // console.log(session);
 
       // deep copy user and remove sensitive/unwanted properties.
       let u = {...user};
-      delete u.id
-      delete u.createdAt
-      delete u.updatedAt
+      // delete u.id
+      // delete u.createdAt
+      // delete u.updatedAt
 
       // update user.
       session.user = u;

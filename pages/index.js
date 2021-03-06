@@ -7,7 +7,11 @@ import {
   makeStyles,
   Typography,
 } from "@material-ui/core";
+import Skeleton from "@material-ui/lab/Skeleton";
 import { Add } from "@material-ui/icons";
+import CreateOrgModal from "../components/modals/CreateOrgModal";
+import { useState } from "react";
+import { useRouter } from "next/router";
 
 const Container = styled.div`
   display: grid;
@@ -55,17 +59,42 @@ const useStyles = makeStyles({
 });
 export default function Home({ session }) {
   const classes = useStyles();
+  const [open, setOpen] = useState(false);
+  const [status, setStatus] = useState({
+    sent: false,
+    recieved: false,
+  });
+  const [orgs, setOrgs] = useState([]);
+  const router = useRouter();
+
+  if (!status.sent) {
+    getOrganizations().then((orgs) => {
+      setOrgs(orgs);
+      setStatus(({ sent }) => {
+        return { sent, recieved: true };
+      });
+    });
+    setStatus(({ recieved }) => {
+      return { sent: true, recieved };
+    });
+  }
 
   return (
     <Container>
       <Title>Organizations:</Title>
-      <Card>
-        <CardActionArea className={classes.card}>
-          <Typography variant="h5">PERC_Lab</Typography>
-        </CardActionArea>
-      </Card>
+      {status.recieved
+        ? orgs.map((org) => (
+            <Card>
+              <CardActionArea className={classes.card} onClick={() => {router.push(`/${org._id}`)}}>
+                <Typography variant="h5">{org.name}</Typography>
+              </CardActionArea>
+            </Card>
+          ))
+        : new Array(3).map(() => {
+            <Skeleton variant="rect" width="100%" height="100%" />;
+          })}
       <AddCard>
-        <CardActionArea className={classes.card}>
+        <CardActionArea className={classes.card} onClick={() => setOpen(true)}>
           <span className={classes.center}>
             <Add />
             <br />
@@ -73,9 +102,40 @@ export default function Home({ session }) {
           </span>
         </CardActionArea>
       </AddCard>
+      <CreateOrgModal
+        open={open}
+        onCancel={() => {
+          setOpen(false);
+        }}
+        onCreate={(name) => postOrganization(name, setOpen)}
+      />
     </Container>
   );
 }
+
+const postOrganization = (name, setOpen) => {
+  fetch("/api/v1/organizations", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ name }),
+  })
+    .then((res) => res.json())
+    .then((doc) => {
+      setOpen(false);
+    });
+};
+
+const getOrganizations = () => {
+  return fetch("/api/v1/organizations", {
+    method: "GET",
+    credentials: "same-origin",
+  })
+    .then((res) => res.json())
+    .then((res) => res.result);
+};
 
 export async function getServerSideProps({ req }) {
   // Get the user's session based on the request

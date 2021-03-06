@@ -10,7 +10,7 @@ import {
   ListItemText,
 } from "@material-ui/core";
 import { InboxOutlined, MailOutlined } from "@material-ui/icons";
-import { useSessionStorage } from "../../../lib/useSessionStorage";
+import { useOrganization } from "../../OrganizationContext";
 
 const drawerWidth = 240;
 
@@ -30,15 +30,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ÍDrawer() {
-  const [org] = useSessionStorage("organization");
+export default function AppDrawer() {
+  const [org] = useOrganization();
   const classes = useStyles();
+
+  console.log(org)
 
   return (
     <Drawer
       className={classes.drawer}
-      variant={!!org ? "permanent" : "temporary"}
-      open={!!org}
+      variant="permanent"
+      open={true}
       classes={{
         paper: classes.drawerPaper,
       }}

@@ -2,6 +2,8 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppBar, Toolbar, Typography } from "@material-ui/core";
 import AvatarMenu from "./AvatarMenu";
+import Drawer from "./Drawer";
+import { useOrganization } from "../../OrganizationContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,7 +22,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ClippedDrawer({ children }) {
+export default function OrgLayout({ children }) {
+  const [org] = useOrganization();
   const classes = useStyles();
 
   return (
@@ -28,11 +31,12 @@ export default function ClippedDrawer({ children }) {
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            Annotator
+            {org?.name ? `${org.name}: ` : ''}Annotator
           </Typography>
           <AvatarMenu />
         </Toolbar>
       </AppBar>
+      <Drawer />
       <main className={classes.content}>
         <Toolbar />
         {children}
