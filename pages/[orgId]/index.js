@@ -2,11 +2,14 @@ import { OrgLayout } from "../../src/Layouts";
 import { getSession } from "next-auth/client";
 import { Typography } from "@material-ui/core";
 import { useRouter } from "next/router";
-import { OrganizationProvider, useOrganization } from "../../src/OrganizationContext";
+import {
+  OrganizationProvider,
+  useOrganization,
+} from "../../src/OrganizationContext";
 import { useState } from "react";
 
 export default function Organization({ session }) {
-  const [org, dispatch] = useOrganization()
+  const [org, dispatch] = useOrganization();
   const [status, setStatus] = useState({
     sent: false,
     recieved: false,
@@ -15,13 +18,13 @@ export default function Organization({ session }) {
 
   if (!status.sent) {
     getOrganization(router.query.orgId)
-      .then(org => {
-        dispatch({type: 'set', payload: org});
+      .then((org) => {
+        dispatch({ type: "set", payload: org });
         setStatus(({ sent }) => {
           return { sent, recieved: true };
         });
       })
-      .catch(e => console.error(e));
+      .catch((e) => console.error(e));
     setStatus(({ recieved }) => {
       return { sent: true, recieved };
     });
@@ -33,7 +36,7 @@ export default function Organization({ session }) {
 }
 
 const getOrganization = (oid) => {
-  return fetch(`/api/v1/organization/${oid}`, {
+  return fetch(`${process.env.DOMAIN}/api/v1/organization/${oid}`, {
     method: "GET",
   })
     .then((res) => res.json())
