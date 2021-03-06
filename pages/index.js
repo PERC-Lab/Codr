@@ -112,13 +112,18 @@ export default function Home({ session }) {
         onCancel={() => {
           setOpen(false);
         }}
-        onCreate={(name) => postOrganization(name, setOpen)}
+        onCreate={(name) => postOrganization(name, (org) => {
+          setOrgs(o => {
+            return [org, ...o];
+          })
+          setOpen(false);
+        })}
       />
     </Container>
   );
 }
 
-const postOrganization = (name, setOpen) => {
+const postOrganization = (name, callback) => {
   fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organizations`, {
     method: "POST",
     credentials: "same-origin",
@@ -128,9 +133,7 @@ const postOrganization = (name, setOpen) => {
     body: JSON.stringify({ name }),
   })
     .then((res) => res.json())
-    .then((doc) => {
-      setOpen(false);
-    });
+    .then((res) => callback(res.result))
 };
 
 const getOrganizations = () => {

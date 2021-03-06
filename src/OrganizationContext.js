@@ -14,7 +14,7 @@ function OrganizationReducer(state, action) {
 }
 
 function OrganizationProvider({children}) {
-  const [state, dispatch] = React.useReducer(OrganizationReducer, {Organization: null})
+  const [state, dispatch] = React.useReducer(OrganizationReducer, null)
   return (
     <OrganizationContext.Provider value={[state, dispatch]}>
         {children}

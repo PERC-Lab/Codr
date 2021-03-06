@@ -16,7 +16,8 @@ export default function Organization({ session }) {
   });
   const router = useRouter();
 
-  if (!status.sent) {
+  // simple statement to check if org is already initialized.
+  if (!status.sent && !org) {
     getOrganization(router.query.orgId)
       .then((org) => {
         dispatch({ type: "set", payload: org });
@@ -30,9 +31,7 @@ export default function Organization({ session }) {
     });
   }
 
-  console.log(org);
-
-  return <Typography>Hello Organization!</Typography>;
+  return <Typography>Welcome{org?.name ? `, ${org.name}` : ''}!</Typography>;
 }
 
 const getOrganization = (oid) => {

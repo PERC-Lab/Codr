@@ -9,8 +9,9 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@material-ui/core";
-import { InboxOutlined, MailOutlined } from "@material-ui/icons";
+import { FolderOutlined, GroupOutlined } from "@material-ui/icons";
 import { useOrganization } from "../../OrganizationContext";
+import { useRouter } from "next/router";
 
 const drawerWidth = 240;
 
@@ -33,8 +34,7 @@ const useStyles = makeStyles((theme) => ({
 export default function AppDrawer() {
   const [org] = useOrganization();
   const classes = useStyles();
-
-  console.log(org)
+  const router = useRouter();
 
   return (
     <Drawer
@@ -48,25 +48,21 @@ export default function AppDrawer() {
       <Toolbar />
       <div className={classes.drawerContainer}>
         <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxOutlined /> : <MailOutlined />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          <ListItem button key="Projects" onClick={() => router.push(`/${org?._id}`)}>
+            <ListItemIcon>
+              <FolderOutlined />
+            </ListItemIcon>
+            <ListItemText primary="Projects" />
+          </ListItem>
         </List>
         <Divider />
         <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxOutlined /> : <MailOutlined />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          <ListItem button key="Members" onClick={() => router.push(`/${org?._id}/members`)}>
+            <ListItemIcon>
+              <GroupOutlined />
+            </ListItemIcon>
+            <ListItemText primary="Members" />
+          </ListItem>
         </List>
       </div>
     </Drawer>

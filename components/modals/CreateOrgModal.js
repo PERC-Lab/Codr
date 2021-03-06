@@ -35,7 +35,13 @@ export default function CreateOrgModal({ open, onCancel, onCreate }) {
           id="org-name"
           label="Organization Name"
           type="text"
-          onBlur={(e) => setName(e.target.value)}
+          onKeyUp={(e) => {
+            if (e.key === "Enter") {
+              handleCreate()
+            } else {
+              setName(e.target.value)
+            }
+          }}
           fullWidth
         />
       </DialogContent>
@@ -44,7 +50,7 @@ export default function CreateOrgModal({ open, onCancel, onCreate }) {
           Cancel
         </Button>
         <Button onClick={handleCreate} color="primary" disabled={!!!name}>
-          Subscribe
+          Create
         </Button>
       </DialogActions>
     </Dialog>
