@@ -134,7 +134,7 @@ const postOrganization = (name, setOpen) => {
 };
 
 const getOrganizations = () => {
-  return fetch(`${process.env.DOMAIN}/api/v1/organizations`, {
+  return fetch(`/api/v1/organizations`, {
     method: "GET",
     credentials: "same-origin",
   })
