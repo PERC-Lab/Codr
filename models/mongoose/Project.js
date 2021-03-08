@@ -8,17 +8,21 @@ const ProjectSchema = new Schema(
       required: [true, "Please provide your organization's name."],
     },
     organization: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "Organizaion",
+      reqired: [true, "Organization Id is required."],
     },
     organizer: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      reqired: [true, "Are you signed in?"],
+    },
+    guidelines: {
       type: String,
     },
-    paricipants: {
+    datasets: {
       type: Array,
     },
-    annotations: {
-      type: Array,
-    }
   },
   { timestamps: true }
 );

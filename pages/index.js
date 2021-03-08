@@ -57,6 +57,7 @@ const useStyles = makeStyles({
     marginBottom: 16,
   },
 });
+
 export default function Home({ session }) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
@@ -124,7 +125,7 @@ export default function Home({ session }) {
 }
 
 const postOrganization = (name, callback) => {
-  fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organizations`, {
+  fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization`, {
     method: "POST",
     credentials: "same-origin",
     headers: {
@@ -137,7 +138,7 @@ const postOrganization = (name, callback) => {
 };
 
 const getOrganizations = () => {
-  return fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organizations`, {
+  return fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization`, {
     method: "GET",
     credentials: "same-origin",
   })

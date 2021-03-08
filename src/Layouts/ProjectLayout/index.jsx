@@ -3,8 +3,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import { AppBar, Button, Toolbar, Typography } from "@material-ui/core";
 import AvatarMenu from "./AvatarMenu";
 import Drawer from "./Drawer";
-import { useOrganization } from "../../OrganizationContext";
 import { useRouter } from "next/router";
+import { useOrganization } from "../../OrganizationContext";
+import { useProject } from "../../ProjectContext";
 import { Skeleton } from "@material-ui/lab";
 
 const useStyles = makeStyles((theme) => ({
@@ -24,9 +25,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function OrgLayout({ children }) {
+export default function ProjectLayout({ children }) {
   const router = useRouter();
   const [org] = useOrganization(router.query.orgId);
+  const [project] = useProject(router.query.orgId, router.query.pid);
   const classes = useStyles();
 
   return (
@@ -40,6 +42,10 @@ export default function OrgLayout({ children }) {
             &nbsp;/&nbsp;
             <Button variant="text" onClick={() => router.push(`/${org?._id}`)} disabled={!org}>
               { org?.name ?  org.name : <Skeleton width={100} /> }
+            </Button>
+            &nbsp;/&nbsp;
+            <Button variant="text" onClick={() => router.push(`/${project?._id}`)} disabled={!project}>
+              { project?.name ?  project.name : <Skeleton width={100} /> }
             </Button>
           </Typography>
           <AvatarMenu />

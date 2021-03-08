@@ -1,4 +1,4 @@
-import { OrgLayout } from "../../src/Layouts";
+import { ProjectLayout } from "../../../src/Layouts";
 import { getSession } from "next-auth/client";
 import {
   Button,
@@ -16,9 +16,10 @@ import {
 import {
   OrganizationProvider,
   useOrganization,
-} from "../../src/OrganizationContext";
-import AddMemberModal from "../../components/modals/AddMemberModal";
+} from "../../../src/OrganizationContext";
+import AddMemberModal from "../../../components/modals/AddMemberModal";
 import { useState } from "react";
+import { ProjectProvider, useProject } from "../../../src/ProjectContext";
 
 const useToolbarStyles = makeStyles((theme) => ({
   root: {
@@ -30,8 +31,9 @@ const useToolbarStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function OrgMembers({ session }) {
-  const [org, dispatch] = useOrganization();
+export default function OrgProject({ session }) {
+  const [org] = useOrganization();
+  const [project] = useProject();
   const classes = useToolbarStyles();
   const [open, setOpen] = useState(false);
 
@@ -41,8 +43,11 @@ export default function OrgMembers({ session }) {
         onCreate={(member) => {
           postMember(org._id, member, (nMember) => {
             dispatch({
-              members: [nMember, ...org.members],
-              ...org,
+              type: "set",
+              payload: {
+                members: [nMember, ...org.members],
+                ...org,
+              },
             });
             setOpen(false);
           });
@@ -118,5 +123,5 @@ export async function getServerSideProps({ req }) {
   return { props: { session } };
 }
 
-OrgMembers.Layout = OrgLayout;
-OrgMembers.Provider = OrganizationProvider;
+OrgProject.Layout = ProjectLayout;
+OrgProject.Provider = [OrganizationProvider, ProjectProvider];

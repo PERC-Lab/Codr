@@ -3,13 +3,24 @@ import React from "react";
 // import { ThemeProvider } from "styled-components";
 import theme from "../src/theme";
 import { responsiveFontSizes, ThemeProvider } from "@material-ui/core/styles";
-import { CssBaseline, useMediaQuery } from "@material-ui/core";
-import { Organization } from "../src/OrganizationContext";
+import { CssBaseline } from "@material-ui/core";
 
 function App({ Component, pageProps }) {
-  const CustomProvider = Component.Provider ? Component.Provider : React.Fragment;
+  let CustomProvider = Component.Provider ? Component.Provider : React.Fragment;
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
-  // const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+
+  if (CustomProvider instanceof Array) {
+    // https://stackoverflow.com/a/62406732
+    CustomProvider = CustomProvider.reverse().reduce(
+      (GlobalProvider, NewProvider) => ({ children }) => {
+        return (
+          <GlobalProvider>
+            <NewProvider>{children}</NewProvider>
+          </GlobalProvider>
+        );
+      }
+    );
+  }
 
   const muiTheme = responsiveFontSizes(theme);
 
