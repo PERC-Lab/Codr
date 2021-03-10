@@ -1,15 +1,16 @@
 import { ProjectLayout } from "../../../src/Layouts";
 import { getSession } from "next-auth/client";
 import {
-  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Grid,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
   makeStyles,
   Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Toolbar,
   Typography,
 } from "@material-ui/core";
@@ -17,92 +18,87 @@ import {
   OrganizationProvider,
   useOrganization,
 } from "../../../src/OrganizationContext";
-import AddMemberModal from "../../../components/modals/AddMemberModal";
-import { useState } from "react";
 import { ProjectProvider, useProject } from "../../../src/ProjectContext";
+import { MoreVert } from "@material-ui/icons";
 
-const useToolbarStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(1),
+    flexGrow: 1,
   },
-  title: {
-    flex: "1 1 100%",
+  paper: {
+    padding: theme.spacing(2),
+    color: theme.palette.text.secondary,
+  },
+  card: {
+    maxWidth: 345,
   },
 }));
 
 export default function OrgProject({ session }) {
   const [org] = useOrganization();
   const [project] = useProject();
-  const classes = useToolbarStyles();
-  const [open, setOpen] = useState(false);
+  const classes = useStyles();
 
   return (
-    <>
-      <AddMemberModal
-        onCreate={(member) => {
-          postMember(org._id, member, (nMember) => {
-            dispatch({
-              type: "set",
-              payload: {
-                members: [nMember, ...org.members],
-                ...org,
-              },
-            });
-            setOpen(false);
-          });
-        }}
-        onCancel={() => setOpen(false)}
-        open={open}
-      />
-      <Paper>
-        <Toolbar className={classes.root}>
-          <Typography variant="h6" className={classes.title}>
-            Members
-          </Typography>
-          <Button onClick={() => setOpen(true)} color="primary">
-            Add
-          </Button>
-        </Toolbar>
-        <TableContainer>
-          <Table aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Email</TableCell>
-                <TableCell align="right">Role</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {org?.members
-                ? org.members.map((row) => (
-                    <TableRow key={row.email}>
-                      <TableCell component="th" scope="row">
-                        {row.email}
-                      </TableCell>
-                      <TableCell align="right">{row.role}</TableCell>
-                    </TableRow>
-                  ))
-                : null}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
-    </>
+    <div className={classes.root}>
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <Toolbar component={Paper}>
+            <Typography variant="h6">{project?.name}</Typography>
+          </Toolbar>
+        </Grid>
+        <Grid item xs={6}>
+          <Card>
+            <CardHeader
+              action={
+                <IconButton aria-label="settings">
+                  <MoreVert />
+                </IconButton>
+              }
+              title="Datasets"
+            />
+            <CardContent>
+              <List>
+                <ListItem button disabled>
+                  <ListItemText>Dataset One</ListItemText>
+                </ListItem>
+                <ListItem button>
+                  <ListItemText>Dataset Two</ListItemText>
+                </ListItem>
+                <ListItem button>
+                  <ListItemText>Dataset Three</ListItemText>
+                </ListItem>
+                <ListItem button>
+                  <ListItemText>Dataset Four</ListItemText>
+                </ListItem>
+                <ListItem button>
+                  <ListItemText>Dataset Five</ListItemText>
+                </ListItem>
+              </List>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={6}>
+          <Card>
+            <CardHeader
+              action={
+                <IconButton aria-label="settings">
+                  <MoreVert />
+                </IconButton>
+              }
+              title="Guidelines"
+            />
+            <CardContent>
+              <Typography variant="body2" color="textSecondary" component="p">
+                Guidelines will appear in this card component.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    </div>
   );
 }
-
-const postMember = (oid, member, callback) => {
-  fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}/member`, {
-    method: "POST",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(member),
-  })
-    .then((res) => res.json())
-    .then((res) => callback(res.result));
-};
 
 export async function getServerSideProps({ req }) {
   // Get the user's session based on the request
@@ -124,4 +120,5 @@ export async function getServerSideProps({ req }) {
 }
 
 OrgProject.Layout = ProjectLayout;
-OrgProject.Provider = [OrganizationProvider, ProjectProvider];
+OrgProject.OrganizationProvider = OrganizationProvider;
+OrgProject.ProjectProvider = ProjectProvider;

@@ -50,7 +50,7 @@ const getProjects = async (res, session, oid) => {
  * @param {NextApiRequest} req Request
  * @param {Session} session Session
  */
-const createProject = (res, req, session) => {
+const createProject = async (res, req, session) => {
   const d = {
     name: req.body.name,
     guidelines: req.body.guidelines || "",
@@ -59,7 +59,7 @@ const createProject = (res, req, session) => {
     datasets: [],
   };
 
-  Project.create(d)
+  await Project.create(d)
     .then((doc) => {
       res.status(201).json({
         status: true,

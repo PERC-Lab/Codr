@@ -119,4 +119,4 @@ export async function getServerSideProps({ req }) {
 }
 
 OrgMembers.Layout = OrgLayout;
-OrgMembers.Provider = OrganizationProvider;
+OrgMembers.OrganizationProvider = OrganizationProvider;

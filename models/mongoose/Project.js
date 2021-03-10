@@ -4,7 +4,7 @@ import { Schema, models, model } from "mongoose";
 const ProjectSchema = new Schema(
   {
     name: {
-      type: String,
+      type: Schema.Types.String,
       required: [true, "Please provide your organization's name."],
     },
     organization: {
@@ -18,10 +18,20 @@ const ProjectSchema = new Schema(
       reqired: [true, "Are you signed in?"],
     },
     guidelines: {
-      type: String,
+      type: Schema.Types.String,
     },
     datasets: {
-      type: Array,
+      type: [{
+        name: Schema.Types.String,
+        user: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+        },
+        annotations: [{
+          type: Schema.Types.ObjectId,
+          ref: "Annotation",
+        }]
+      }],
     },
   },
   { timestamps: true }
