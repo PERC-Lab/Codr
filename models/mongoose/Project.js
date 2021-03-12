@@ -23,10 +23,8 @@ const ProjectSchema = new Schema(
     datasets: {
       type: [{
         name: Schema.Types.String,
-        user: {
-          type: Schema.Types.ObjectId,
-          ref: "User",
-        },
+        user: Schema.Types.String,
+        label: Schema.Types.String,
         annotations: [{
           type: Schema.Types.ObjectId,
           ref: "Annotation",

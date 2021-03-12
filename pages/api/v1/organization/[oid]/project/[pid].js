@@ -95,12 +95,13 @@ const updateProject = async (req, res, session) => {
  * @param {Session} session Session
  */
 const insertDataset = async (req, res, session) => {
+  console.log(req.body);
   if (session?.user) {
     const project = await Project.updateOne(
       // find document where id and oranization match
       { _id: req.query.pid, organization: req.query.oid },
       // push the new dataset into project
-      { $push: { datasets: { ...req.body } } }
+      { $push: { datasets: req.body } }
     ).exec();
 
     if (project?.nModified === 1) {

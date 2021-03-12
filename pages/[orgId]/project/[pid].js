@@ -6,7 +6,6 @@ import {
   CardContent,
   CardHeader,
   Grid,
-  IconButton,
   Input,
   List,
   ListItem,
@@ -23,7 +22,8 @@ import {
 } from "../../../src/OrganizationContext";
 import { ProjectProvider, useProject } from "../../../src/ProjectContext";
 import MarkdownEditor from "../../../src/MarkdownEditor";
-import { MoreVert } from "@material-ui/icons";
+import AddDatasetModal from "../../../components/modals/AddDatasetModal";
+import { useState } from "react";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,73 +55,101 @@ export default function OrgProject({ session }) {
   const [org] = useOrganization();
   const [project, setProject] = useProject();
   const classes = useStyles();
+  const [open, setOpen] = useState(false);
 
   return (
-    <div className={classes.root}>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <Toolbar component={Paper}>
-            {project?.name ? (
-              <Input
-                className={classes.title}
-                disableUnderline={true}
-                defaultValue={name || project.name}
-                fullWidth
-                onBlur={(e) => {
-                  setProject({ name: e.target.value });
-                }}
+    <>
+      <AddDatasetModal
+        onCreate={(dataset) => {
+          console.log(dataset);
+          insertDataset(org._id, project._id, dataset, () => {
+            setProject({
+              datasets: [ ...project.datasets, dataset ],
+              disableSave: true,
+            })
+            setOpen(false);
+          })
+        }}
+        onCancel={() => setOpen(false)}
+        open={open}
+      />
+      <div className={classes.root}>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Toolbar component={Paper}>
+              {project?.name ? (
+                <Input
+                  className={classes.title}
+                  disableUnderline={true}
+                  defaultValue={name || project.name}
+                  fullWidth
+                  onBlur={(e) => {
+                    setProject({ name: e.target.value });
+                  }}
+                />
+              ) : (
+                <Skeleton className={classes.title} width="100%" />
+              )}
+            </Toolbar>
+          </Grid>
+          <Grid item xs={6}>
+            <Card>
+              <CardHeader
+                action={
+                  <Button
+                    onClick={() => setOpen(true)}
+                    variant="contained"
+                    color="primary"
+                  >
+                    Add
+                  </Button>
+                }
+                title="Datasets"
               />
-            ) : (
-              <Skeleton className={classes.title} width="100%" />
-            )}
-          </Toolbar>
+              <CardContent>
+                <List>
+                  {
+                    project?.datasets.map((dataset) => (
+                      <ListItem button key={dataset.label}>
+                        <ListItemText>{dataset.name}</ListItemText>
+                      </ListItem>
+                    ))
+                  }
+                </List>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={6}>
+            <Card>
+              <CardHeader title="Guidelines" />
+              <CardContent>
+                <MarkdownEditor
+                  value={project?.guidelines}
+                  onUpdate={(e) => {
+                    setProject({ guidelines: e.target.value });
+                  }}
+                />
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
-        <Grid item xs={6}>
-          <Card>
-            <CardHeader
-              action={
-                <Button variant="contained" color="primary">Add</Button>
-              }
-              title="Datasets"
-            />
-            <CardContent>
-              <List>
-                <ListItem button disabled>
-                  <ListItemText>Dataset One</ListItemText>
-                </ListItem>
-                <ListItem button>
-                  <ListItemText>Dataset Two</ListItemText>
-                </ListItem>
-                <ListItem button>
-                  <ListItemText>Dataset Three</ListItemText>
-                </ListItem>
-                <ListItem button>
-                  <ListItemText>Dataset Four</ListItemText>
-                </ListItem>
-                <ListItem button>
-                  <ListItemText>Dataset Five</ListItemText>
-                </ListItem>
-              </List>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={6}>
-          <Card>
-            <CardHeader title="Guidelines" />
-            <CardContent>
-              <MarkdownEditor
-                value={project?.guidelines}
-                onUpdate={(e) => {
-                  setProject({ guidelines: e.target.value });
-                }}
-              />
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-    </div>
+      </div>
+    </>
   );
 }
+
+const insertDataset = (oid, pid, dataset, callback) => {
+  fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}/project/${pid}`, {
+    method: "PUT",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(dataset),
+  })
+    .then((res) => res.json())
+    .then((res) => callback(res.result));
+};
 
 export async function getServerSideProps({ req }) {
   // Get the user's session based on the request

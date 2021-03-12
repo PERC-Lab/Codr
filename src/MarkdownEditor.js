@@ -1,10 +1,9 @@
 import { Input, makeStyles, Typography } from "@material-ui/core";
 import { Skeleton } from "@material-ui/lab";
-import { compiler } from "markdown-to-jsx";
 import { useState } from "react";
 import { HighlightedMarkdown } from "./HighlightedMarkdown";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   input: {
     width: "calc(100% + 16px)",
     background: "rgba(0,0,0,0.2)",
@@ -45,8 +44,5 @@ export default function MarkdownEditor({ value, onUpdate }) {
     <HighlightedMarkdown className={classes.text} onClick={() => setEditor(true)} >
       {value}
     </HighlightedMarkdown>
-    // <div >
-    //   {compiler(value)}
-    // </div>
   ) : <Skeleton />;
 }

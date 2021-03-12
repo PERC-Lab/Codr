@@ -62,36 +62,16 @@ export default function AppDrawer() {
           <ListSubheader>
             <ListItemText primary="Datasets" />
           </ListSubheader>
-          <ListItem button key="Dataset One">
-            <ListItemIcon>
-              <Storage />
-            </ListItemIcon>
-            <ListItemText primary="Dataset One" />
-          </ListItem>
-          <ListItem button key="Dataset Two">
-            <ListItemIcon>
-              <Storage />
-            </ListItemIcon>
-            <ListItemText primary="Dataset Two" />
-          </ListItem>
-          <ListItem button key="Dataset Three">
-            <ListItemIcon>
-              <Storage />
-            </ListItemIcon>
-            <ListItemText primary="Dataset Three" />
-          </ListItem>
-          <ListItem button key="Dataset Four">
-            <ListItemIcon>
-              <Storage />
-            </ListItemIcon>
-            <ListItemText primary="Dataset Four" />
-          </ListItem>
-          <ListItem button key="Dataset Five">
-            <ListItemIcon>
-              <Storage />
-            </ListItemIcon>
-            <ListItemText primary="Dataset Five" />
-          </ListItem>
+          {
+            project?.datasets.map((dataset) => (
+              <ListItem button key={dataset.label}>
+                <ListItemIcon>
+                  <Storage />
+                </ListItemIcon>
+                <ListItemText primary={dataset.name} />
+              </ListItem>
+            ))
+          }
         </List>
       </div>
     </Drawer>

@@ -55,7 +55,7 @@ export default function OrgMembers({ session }) {
           <Typography variant="h6" className={classes.title}>
             Members
           </Typography>
-          <Button onClick={() => setOpen(true)} color="primary">
+          <Button onClick={() => setOpen(true)} color="primary" variant="contained">
             Add
           </Button>
         </Toolbar>
