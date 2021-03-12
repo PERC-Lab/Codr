@@ -11,7 +11,13 @@ function OrganizationReducer(state, payload) {
   //     throw new Error(`Unhandled action type: ${payload.type}`)
   //   }
   // }
-  return payload;
+  const s = {...state}
+
+  for (const key in payload) {
+    s[key] = payload[key]
+  }
+
+  return s;
 }
 
 function OrganizationProvider({ children }) {

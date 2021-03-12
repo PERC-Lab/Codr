@@ -6,6 +6,7 @@ import {
   CardHeader,
   Grid,
   IconButton,
+  Input,
   List,
   ListItem,
   ListItemText,
@@ -14,11 +15,13 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
+import { Skeleton } from "@material-ui/lab";
 import {
   OrganizationProvider,
   useOrganization,
 } from "../../../src/OrganizationContext";
 import { ProjectProvider, useProject } from "../../../src/ProjectContext";
+import MarkdownEditor from "../../../src/MarkdownEditor";
 import { MoreVert } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
@@ -32,11 +35,24 @@ const useStyles = makeStyles((theme) => ({
   card: {
     maxWidth: 345,
   },
+  title: {
+    width: "calc(100% + 32px)",
+    fontSize: "1.5em",
+    borderRadius: 4,
+    padding: "4px 8px",
+    margin: "0 -16px",
+    "&:hover": {
+      backgroundColor: "rgba(0,0,0,0.2)",
+    },
+    "&:active": {
+      backgroundColor: "rgba(0,0,0,0.2)",
+    },
+  },
 }));
 
 export default function OrgProject({ session }) {
   const [org] = useOrganization();
-  const [project] = useProject();
+  const [project, setProject] = useProject();
   const classes = useStyles();
 
   return (
@@ -44,7 +60,19 @@ export default function OrgProject({ session }) {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Toolbar component={Paper}>
-            <Typography variant="h6">{project?.name}</Typography>
+            {project?.name ? (
+              <Input
+                className={classes.title}
+                disableUnderline={true}
+                defaultValue={name || project.name}
+                fullWidth
+                onBlur={(e) => {
+                  setProject({ name: e.target.value });
+                }}
+              />
+            ) : (
+              <Skeleton className={classes.title} width="100%" />
+            )}
           </Toolbar>
         </Grid>
         <Grid item xs={6}>
@@ -80,18 +108,14 @@ export default function OrgProject({ session }) {
         </Grid>
         <Grid item xs={6}>
           <Card>
-            <CardHeader
-              action={
-                <IconButton aria-label="settings">
-                  <MoreVert />
-                </IconButton>
-              }
-              title="Guidelines"
-            />
+            <CardHeader title="Guidelines" />
             <CardContent>
-              <Typography variant="body2" color="textSecondary" component="p">
-                Guidelines will appear in this card component.
-              </Typography>
+              <MarkdownEditor
+                value={project?.guidelines}
+                onUpdate={(e) => {
+                  setProject({ guidelines: e.target.value });
+                }}
+              />
             </CardContent>
           </Card>
         </Grid>
