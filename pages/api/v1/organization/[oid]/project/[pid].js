@@ -18,6 +18,9 @@ async function ProjectHandler(req, res) {
     case "PATCH":
       updateProject(req, res, session);
       break;
+    case "PUT":
+      insertDataset(req, res, session);
+      break;
     case "DELETE":
       deleteProject(req, res, session);
       break;
@@ -69,12 +72,46 @@ const updateProject = async (req, res, session) => {
     if (project?.nModified === 1) {
       res.status(200).json({
         status: true,
-        result: `Project '${req.query.pid}' was successfully modified!`
+        result: `Project '${req.query.pid}' was successfully modified!`,
       });
     } else {
       res.status(400).json({
         status: false,
-        result: `Project '${req.query.pid}' was not able to be modified!`
+        result: `Project '${req.query.pid}' was not able to be modified!`,
+      });
+    }
+  } else {
+    res.status(401).json({
+      status: false,
+      result: "Unauthorized Access.",
+    });
+  }
+};
+
+/**
+ *
+ * @param {NextApiRequest} req Response
+ * @param {NextApiResponse} res Response
+ * @param {Session} session Session
+ */
+const insertDataset = async (req, res, session) => {
+  if (session?.user) {
+    const project = await Project.updateOne(
+      // find document where id and oranization match
+      { _id: req.query.pid, organization: req.query.oid },
+      // push the new dataset into project
+      { $push: { datasets: { ...req.body } } }
+    ).exec();
+
+    if (project?.nModified === 1) {
+      res.status(200).json({
+        status: true,
+        result: `Project '${req.query.pid}' was successfully modified!`,
+      });
+    } else {
+      res.status(400).json({
+        status: false,
+        result: `Project '${req.query.pid}' was not able to be modified!`,
       });
     }
   } else {
@@ -101,12 +138,12 @@ const deleteProject = async (req, res, session) => {
     if (project?.deletedCount === 1) {
       res.status(200).json({
         status: true,
-        result: `Project '${req.query.pid}' was successfully deleted!`
+        result: `Project '${req.query.pid}' was successfully deleted!`,
       });
     } else {
       res.status(400).json({
         status: false,
-        result: `Project '${req.query.pid}' was not able to be deleted!`
+        result: `Project '${req.query.pid}' was not able to be deleted!`,
       });
     }
   } else {

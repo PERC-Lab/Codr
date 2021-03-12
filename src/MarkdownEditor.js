@@ -2,6 +2,7 @@ import { Input, makeStyles, Typography } from "@material-ui/core";
 import { Skeleton } from "@material-ui/lab";
 import { compiler } from "markdown-to-jsx";
 import { useState } from "react";
+import { HighlightedMarkdown } from "./HighlightedMarkdown";
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -23,15 +24,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function MarkdownWrapper({children, ...props}) {
-  const classes = useStyles();
-  return (
-    <div className={classes.text} {...props}>
-      {children}
-    </div>
-  )
-}
-
 export default function MarkdownEditor({ value, onUpdate }) {
   const [isEditor, setEditor] = useState(false);
   const classes = useStyles();
@@ -50,19 +42,11 @@ export default function MarkdownEditor({ value, onUpdate }) {
       autoFocus
     />
   ) : value ? (
-    <div className={classes.text} onClick={() => setEditor(true)}>
-      {compiler(value)}
-    </div>
+    <HighlightedMarkdown className={classes.text} onClick={() => setEditor(true)} >
+      {value}
+    </HighlightedMarkdown>
+    // <div >
+    //   {compiler(value)}
+    // </div>
   ) : <Skeleton />;
-  // (
-  //   <Typography
-  //     variant="body1"
-  //     onClick={() => {
-  //       setEditor(true);
-  //     }}
-  //     className={classes.text}
-  //   >
-  //     {value}
-  //   </Typography>
-  // );
 }

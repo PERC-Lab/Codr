@@ -1,6 +1,7 @@
 import { ProjectLayout } from "../../../src/Layouts";
 import { getSession } from "next-auth/client";
 import {
+  Button,
   Card,
   CardContent,
   CardHeader,
@@ -79,9 +80,7 @@ export default function OrgProject({ session }) {
           <Card>
             <CardHeader
               action={
-                <IconButton aria-label="settings">
-                  <MoreVert />
-                </IconButton>
+                <Button variant="contained" color="primary">Add</Button>
               }
               title="Datasets"
             />

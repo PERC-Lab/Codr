@@ -59,6 +59,7 @@ export default function Organization({ session }) {
             <ListItem
               button
               onClick={() => router.push(`/${org._id}/project/${project._id}`)}
+              key={project.name}
             >
               <ListItemIcon>
                 <Folder />

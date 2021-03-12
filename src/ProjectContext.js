@@ -1,3 +1,4 @@
+import { isEqual } from "lodash";
 import React from "react";
 
 const ProjectContext = React.createContext();
@@ -9,35 +10,24 @@ const ProjectContext = React.createContext();
 
 function ProjectReducer(state, payload) {
   const s = { ...state };
-  let sendUpdate = false;
+  const disableSave = false || payload?.disableSave;
 
+  if (disableSave)
+    delete payload.disableSave;
+
+  // set new state item to payload item
   for (const key in payload) {
-    if (s[key] !== payload[key]) {
-      if (Array.isArray(payload[key])) {
-        if (payload[key].length > 0) {
-          for (const item in payload[key]) {
-            console.log(s[key][item], payload[key][item])
-            if (s[key][item] !== payload[key][item]) {
-              console.log("HIT", key)
-              sendUpdate = true
-            };
-          }
-        }
-      } else {
-        console.log("HIT", key)
-        sendUpdate = true;
-      }
-    }
-
     s[key] = payload[key];
   }
 
-  console.log(state, sendUpdate, !state);
-
-  // clear 5 second timeout on an edit
-  if (!state) {
+  // if state does not exist, save state without sending an update.
+  if (!state || disableSave) {
+    // save state.
     return s;
-  } else if (sendUpdate && state != s) {
+  } 
+  // else if state exists, state != new state, and sendUpdate is true 
+  else if (!isEqual(state, s)) {
+
     // Time out only should be used for onKeyUp updates.
     // if (saveTimeout) {
     //   clearTimeout(saveTimeout);
@@ -47,7 +37,8 @@ function ProjectReducer(state, payload) {
     // saveTimeout = setTimeout(() => {
     //   saveProject(s);
     // }, 5000);
-    console.log("saving project", state != s, state !== s, state, s);
+    
+    console.log("saving project");
 
     // immediately save for onBlur events
     saveProject(s);
