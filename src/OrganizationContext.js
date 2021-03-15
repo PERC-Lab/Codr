@@ -1,33 +1,60 @@
-import React from 'react'
+import React from "react";
 
-const OrganizationContext = React.createContext()
+const OrganizationContext = React.createContext();
 
-function OrganizationReducer(state, action) {
-  switch (action.type) {
-    case 'set': {
-      return {...action.payload}
-    }
-    default: {
-      throw new Error(`Unhandled action type: ${action.type}`)
-    }
+function OrganizationReducer(state, payload) {
+  // switch (payload.type) {
+  //   case 'set': {
+  //     return {Organization: payload.data}
+  //   }
+  //   default: {
+  //     throw new Error(`Unhandled action type: ${payload.type}`)
+  //   }
+  // }
+  const s = { ...state };
+
+  for (const key in payload) {
+    s[key] = payload[key];
   }
+
+  return s;
 }
 
-function OrganizationProvider({children}) {
-  const [state, dispatch] = React.useReducer(OrganizationReducer, null)
+function OrganizationProvider({ children }) {
+  const [state, dispatch] = React.useReducer(OrganizationReducer, null);
   return (
     <OrganizationContext.Provider value={[state, dispatch]}>
-        {children}
+      {children}
     </OrganizationContext.Provider>
-  )
+  );
 }
 
-function useOrganization() {
-  const [state, setState] = React.useContext(OrganizationContext)
+/**
+ *
+ * @param {String} [oid] Organization Id
+ */
+function useOrganization(oid) {
+  const [state, setState] = React.useContext(OrganizationContext);
   if (state === undefined) {
-    throw new Error('useOrganizationState must be used within a OrganizationProvider')
+    throw new Error(
+      "useOrganization must be used within a OrganizationProvider"
+    );
   }
-  return [state, setState]
+
+  // simple check to ensure Organization data is available (if oid is given).
+  if (oid && (state === null || state?._id !== oid)) {
+    getOrganization(oid).then((org) => setState(org));
+  }
+
+  return [state, setState];
 }
 
-export {OrganizationProvider, useOrganization}
+const getOrganization = (oid) => {
+  return fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}`, {
+    method: "GET",
+  })
+    .then((res) => res.json())
+    .then((res) => res.result);
+};
+
+export { OrganizationProvider, useOrganization };

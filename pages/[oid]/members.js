@@ -13,7 +13,6 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
-import { useRouter } from "next/router";
 import {
   OrganizationProvider,
   useOrganization,
@@ -26,45 +25,15 @@ const useToolbarStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(1),
   },
-  highlight:
-    theme.palette.type === "light"
-      ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-        }
-      : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark,
-        },
   title: {
     flex: "1 1 100%",
   },
 }));
 
 export default function OrgMembers({ session }) {
-  const classes = useToolbarStyles();
   const [org, dispatch] = useOrganization();
+  const classes = useToolbarStyles();
   const [open, setOpen] = useState(false);
-  const [status, setStatus] = useState({
-    sent: false,
-    recieved: false,
-  });
-  const router = useRouter();
-
-  // simple statement to check if org is already initialized.
-  if (!status.sent && !org) {
-    getOrganization(router.query.orgId)
-      .then((org) => {
-        dispatch({ type: "set", payload: org });
-        setStatus(({ sent }) => {
-          return { sent, recieved: true };
-        });
-      })
-      .catch((e) => console.error(e));
-    setStatus(({ recieved }) => {
-      return { sent: true, recieved };
-    });
-  }
 
   return (
     <>
@@ -72,11 +41,8 @@ export default function OrgMembers({ session }) {
         onCreate={(member) => {
           postMember(org._id, member, (nMember) => {
             dispatch({
-              type: "set",
-              payload: {
-                members: [nMember, ...org.members],
-                ...org,
-              },
+              members: [nMember, ...org.members],
+              ...org,
             });
             setOpen(false);
           });
@@ -89,7 +55,7 @@ export default function OrgMembers({ session }) {
           <Typography variant="h6" className={classes.title}>
             Members
           </Typography>
-          <Button onClick={() => setOpen(true)} color="primary">
+          <Button onClick={() => setOpen(true)} color="primary" variant="contained">
             Add
           </Button>
         </Toolbar>
@@ -119,14 +85,6 @@ export default function OrgMembers({ session }) {
     </>
   );
 }
-
-const getOrganization = (oid) => {
-  return fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}`, {
-    method: "GET",
-  })
-    .then((res) => res.json())
-    .then((res) => res.result);
-};
 
 const postMember = (oid, member, callback) => {
   fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}/member`, {
@@ -161,4 +119,4 @@ export async function getServerSideProps({ req }) {
 }
 
 OrgMembers.Layout = OrgLayout;
-OrgMembers.Provider = OrganizationProvider;
+OrgMembers.OrganizationProvider = OrganizationProvider;

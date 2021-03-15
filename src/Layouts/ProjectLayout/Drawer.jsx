@@ -4,13 +4,14 @@ import {
   Drawer,
   Toolbar,
   List,
-  Divider,
   ListItem,
   ListItemIcon,
   ListItemText,
+  ListSubheader,
 } from "@material-ui/core";
-import { FolderOutlined, GroupOutlined } from "@material-ui/icons";
+import { Dashboard, Storage } from "@material-ui/icons";
 import { useOrganization } from "../../OrganizationContext";
+import { useProject } from "../../ProjectContext";
 import { useRouter } from "next/router";
 
 const drawerWidth = 240;
@@ -33,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AppDrawer() {
   const [org] = useOrganization();
+  const [project] = useProject();
   const classes = useStyles();
   const router = useRouter();
 
@@ -48,29 +50,30 @@ export default function AppDrawer() {
       <Toolbar />
       <div className={classes.drawerContainer}>
         <List>
+          <ListSubheader>
+            <ListItemText primary={project?.name} />
+          </ListSubheader>
           <ListItem
             button
-            key="Projects"
-            onClick={() => router.push(`/${org?._id}`)}
+            key="Dashboard"
+            onClick={() => router.push(`/${org?._id}/project/${project._id}`)}
           >
             <ListItemIcon>
-              <FolderOutlined />
+              <Dashboard />
             </ListItemIcon>
-            <ListItemText primary="Projects" />
+            <ListItemText primary="Dashboard" />
           </ListItem>
-        </List>
-        <Divider />
-        <List>
-          <ListItem
-            button
-            key="Members"
-            onClick={() => router.push(`/${org?._id}/members`)}
-          >
-            <ListItemIcon>
-              <GroupOutlined />
-            </ListItemIcon>
-            <ListItemText primary="Members" />
-          </ListItem>
+          <ListSubheader>
+            <ListItemText primary="Datasets" />
+          </ListSubheader>
+          {project?.datasets.map((dataset) => (
+            <ListItem button key={dataset.label}>
+              <ListItemIcon>
+                <Storage />
+              </ListItemIcon>
+              <ListItemText primary={dataset.name} />
+            </ListItem>
+          ))}
         </List>
       </div>
     </Drawer>
