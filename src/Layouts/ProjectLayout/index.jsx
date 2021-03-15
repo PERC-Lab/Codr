@@ -27,8 +27,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ProjectLayout({ children }) {
   const router = useRouter();
-  const [org] = useOrganization(router.query.orgId);
-  const [project] = useProject(router.query.orgId, router.query.pid);
+  const [org] = useOrganization(router.query.oid);
+  const [project] = useProject(router.query.oid, router.query.pid);
   const classes = useStyles();
 
   return (

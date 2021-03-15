@@ -53,7 +53,11 @@ export default function AppDrawer() {
           <ListSubheader>
             <ListItemText primary={project?.name} />
           </ListSubheader>
-          <ListItem button key="Dashboard" onClick={() => router.push(`/${org?._id}/project/${project._id}`)}>
+          <ListItem
+            button
+            key="Dashboard"
+            onClick={() => router.push(`/${org?._id}/project/${project._id}`)}
+          >
             <ListItemIcon>
               <Dashboard />
             </ListItemIcon>
@@ -62,16 +66,14 @@ export default function AppDrawer() {
           <ListSubheader>
             <ListItemText primary="Datasets" />
           </ListSubheader>
-          {
-            project?.datasets.map((dataset) => (
-              <ListItem button key={dataset.label}>
-                <ListItemIcon>
-                  <Storage />
-                </ListItemIcon>
-                <ListItemText primary={dataset.name} />
-              </ListItem>
-            ))
-          }
+          {project?.datasets.map((dataset) => (
+            <ListItem button key={dataset.label}>
+              <ListItemIcon>
+                <Storage />
+              </ListItemIcon>
+              <ListItemText primary={dataset.name} />
+            </ListItem>
+          ))}
         </List>
       </div>
     </Drawer>

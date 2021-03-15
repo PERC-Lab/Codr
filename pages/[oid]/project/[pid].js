@@ -64,11 +64,11 @@ export default function OrgProject({ session }) {
           console.log(dataset);
           insertDataset(org._id, project._id, dataset, () => {
             setProject({
-              datasets: [ ...project.datasets, dataset ],
+              datasets: [...project.datasets, dataset],
               disableSave: true,
-            })
+            });
             setOpen(false);
-          })
+          });
         }}
         onCancel={() => setOpen(false)}
         open={open}
@@ -108,13 +108,11 @@ export default function OrgProject({ session }) {
               />
               <CardContent>
                 <List>
-                  {
-                    project?.datasets.map((dataset) => (
-                      <ListItem button key={dataset.label}>
-                        <ListItemText>{dataset.name}</ListItemText>
-                      </ListItem>
-                    ))
-                  }
+                  {project?.datasets.map((dataset) => (
+                    <ListItem button key={dataset.label}>
+                      <ListItemText>{dataset.name}</ListItemText>
+                    </ListItem>
+                  ))}
                 </List>
               </CardContent>
             </Card>
@@ -139,14 +137,17 @@ export default function OrgProject({ session }) {
 }
 
 const insertDataset = (oid, pid, dataset, callback) => {
-  fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}/project/${pid}`, {
-    method: "PUT",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(dataset),
-  })
+  fetch(
+    `${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}/project/${pid}`,
+    {
+      method: "PUT",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dataset),
+    }
+  )
     .then((res) => res.json())
     .then((res) => callback(res.result));
 };

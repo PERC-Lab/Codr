@@ -48,7 +48,11 @@ export default function AppDrawer() {
       <Toolbar />
       <div className={classes.drawerContainer}>
         <List>
-          <ListItem button key="Projects" onClick={() => router.push(`/${org?._id}`)}>
+          <ListItem
+            button
+            key="Projects"
+            onClick={() => router.push(`/${org?._id}`)}
+          >
             <ListItemIcon>
               <FolderOutlined />
             </ListItemIcon>
@@ -57,7 +61,11 @@ export default function AppDrawer() {
         </List>
         <Divider />
         <List>
-          <ListItem button key="Members" onClick={() => router.push(`/${org?._id}/members`)}>
+          <ListItem
+            button
+            key="Members"
+            onClick={() => router.push(`/${org?._id}/members`)}
+          >
             <ListItemIcon>
               <GroupOutlined />
             </ListItemIcon>

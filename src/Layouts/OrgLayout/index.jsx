@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function OrgLayout({ children }) {
   const router = useRouter();
-  const [org] = useOrganization(router.query.orgId);
+  const [org] = useOrganization(router.query.oid);
   const classes = useStyles();
 
   return (

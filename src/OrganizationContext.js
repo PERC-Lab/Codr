@@ -11,10 +11,10 @@ function OrganizationReducer(state, payload) {
   //     throw new Error(`Unhandled action type: ${payload.type}`)
   //   }
   // }
-  const s = {...state}
+  const s = { ...state };
 
   for (const key in payload) {
-    s[key] = payload[key]
+    s[key] = payload[key];
   }
 
   return s;
@@ -30,7 +30,7 @@ function OrganizationProvider({ children }) {
 }
 
 /**
- * 
+ *
  * @param {String} [oid] Organization Id
  */
 function useOrganization(oid) {
@@ -40,10 +40,10 @@ function useOrganization(oid) {
       "useOrganization must be used within a OrganizationProvider"
     );
   }
-  
+
   // simple check to ensure Organization data is available (if oid is given).
   if (oid && (state === null || state?._id !== oid)) {
-    getOrganization(oid).then(org => setState(org));
+    getOrganization(oid).then((org) => setState(org));
   }
 
   return [state, setState];
