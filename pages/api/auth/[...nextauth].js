@@ -34,44 +34,6 @@ export default NextAuth({
   session: {
     jwt: true,
   },
-  callbacks: {
-    // user => database/prototype,  account => google info,  profile => google profile.
-    async signIn(user, account, profile) {
-      // is the user apart of a group?
-      // const isAssignedMember = false;
-
-      // does the user exist in the db?
-      // const isUser = !!(await User.findOne({email: user.email}).exec());
-
-      // is the user a sys admin, assigned by environment veriables?
-      // const isSysAdmin = process.env.SYSADMIN_EMAIL == user.email;
-
-      // if (isUser || isAssignedMember) {
-      //   return true;
-      // } else if (isSysAdmin) {
-      //   return true;
-      // } else {
-      //   return "/login";
-      // }
-      return true;
-    },
-    // add full user to session.
-    async session(session, user) {
-      // console.log(session);
-
-      // deep copy user and remove sensitive/unwanted properties.
-      let u = { ...user };
-      // delete u.id
-      // delete u.createdAt
-      // delete u.updatedAt
-
-      // update user.
-      session.user = u;
-
-      // send it off.
-      return session;
-    },
-  },
   pages: {
     // error: '/login'
   },
