@@ -9,7 +9,7 @@ const ProjectSchema = new Schema(
     },
     organization: {
       type: Schema.Types.ObjectId,
-      ref: "Organizaion",
+      ref: "Organization",
       reqired: [true, "Organization Id is required."],
     },
     organizer: {
