@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 import { Session } from "next-auth";
-import { Project } from "../../../../../../models/mongoose";
+import { Project } from "../../../../../../../models/mongoose";
 
 /**
  * Api endpoint to get user's organizations.
@@ -95,7 +95,6 @@ const updateProject = async (req, res, session) => {
  * @param {Session} session Session
  */
 const insertDataset = async (req, res, session) => {
-  console.log(req.body);
   if (session?.user) {
     const project = await Project.updateOne(
       // find document where id and oranization match
