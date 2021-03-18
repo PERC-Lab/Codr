@@ -1,4 +1,4 @@
-import { ProjectLayout } from "../../../src/Layouts";
+import { ProjectLayout } from "../../../../src/Layouts";
 import { getSession } from "next-auth/client";
 import {
   Button,
@@ -13,16 +13,15 @@ import {
   makeStyles,
   Paper,
   Toolbar,
-  Typography,
 } from "@material-ui/core";
 import { Skeleton } from "@material-ui/lab";
 import {
   OrganizationProvider,
   useOrganization,
-} from "../../../src/OrganizationContext";
-import { ProjectProvider, useProject } from "../../../src/ProjectContext";
-import MarkdownEditor from "../../../src/MarkdownEditor";
-import AddDatasetModal from "../../../components/modals/AddDatasetModal";
+} from "../../../../src/OrganizationContext";
+import { ProjectProvider, useProject } from "../../../../src/ProjectContext";
+import MarkdownEditor from "../../../../src/MarkdownEditor";
+import AddDatasetModal from "../../../../components/modals/AddDatasetModal";
 import { useState } from "react";
 
 const useStyles = makeStyles((theme) => ({
@@ -56,6 +55,8 @@ export default function OrgProject({ session }) {
   const [project, setProject] = useProject();
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+
+  console.log(project);
 
   return (
     <>
@@ -108,11 +109,13 @@ export default function OrgProject({ session }) {
               />
               <CardContent>
                 <List>
-                  {project?.datasets.map((dataset) => (
-                    <ListItem button key={dataset.label}>
-                      <ListItemText>{dataset.name}</ListItemText>
-                    </ListItem>
-                  ))}
+                  {project?.datasets.map((dataset) =>
+                    dataset.user == session.user.email ? (
+                      <ListItem button key={dataset.label}>
+                        <ListItemText>{dataset.name}</ListItemText>
+                      </ListItem>
+                    ) : null
+                  )}
                 </List>
               </CardContent>
             </Card>

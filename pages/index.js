@@ -85,7 +85,7 @@ export default function Home({ session }) {
       <Title>Organizations:</Title>
       {status.recieved
         ? orgs.map((org) => (
-            <Card>
+            <Card key={org._id}>
               <CardActionArea
                 className={classes.card}
                 onClick={() => {

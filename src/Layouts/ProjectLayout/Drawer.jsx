@@ -13,6 +13,7 @@ import { Dashboard, Storage } from "@material-ui/icons";
 import { useOrganization } from "../../OrganizationContext";
 import { useProject } from "../../ProjectContext";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/client";
 
 const drawerWidth = 240;
 
@@ -37,7 +38,10 @@ export default function AppDrawer() {
   const [project] = useProject();
   const classes = useStyles();
   const router = useRouter();
+  const [session] = useSession();
 
+  console.log(session)
+  
   return (
     <Drawer
       className={classes.drawer}
@@ -66,14 +70,14 @@ export default function AppDrawer() {
           <ListSubheader>
             <ListItemText primary="Datasets" />
           </ListSubheader>
-          {project?.datasets.map((dataset) => (
+          {project?.datasets.map((dataset) => (dataset.user == session?.user?.email) ? (
             <ListItem button key={dataset.label}>
               <ListItemIcon>
                 <Storage />
               </ListItemIcon>
               <ListItemText primary={dataset.name} />
             </ListItem>
-          ))}
+          ) : null )}
         </List>
       </div>
     </Drawer>
