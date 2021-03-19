@@ -35,16 +35,14 @@ async function DatasetHandler(req, res) {
  */
 const getDataset = async (req, res, session) => {
   if (session?.user) {
-    Project.findOne(
-      { _id: req.query.pid },
-      { datasets: { $elemMatch: { _id: req.query.did } } }
-    )
-      .populate({ path: "datasets.annotations" })
+    Annotation.find({ datasetId: req.query.did })
+      .limit(10)
+      .skip(10 * req.query.page)
       .exec()
-      .then(project => {
+      .then(annoations => {
         res.status(200).json({
           status: true,
-          result: project.datasets[0],
+          result: annoations,
         });
       })
       .catch(e => {
@@ -68,34 +66,25 @@ const getDataset = async (req, res, session) => {
  * @param {Session} session Session
  */
 const insertAnnotation = async (req, res, session) => {
-  console.log(req.body);
   if (session?.user) {
     // create the annotation
-    const annotation = await Annotation.create(req.body);
+    const body = { ...req.body };
+    body.datasetId = req.query.did;
+    console.log(body);
 
-    // update the dataset
-    const dataset = await Project.updateOne(
-      // find subdocument where id, oranization, and dataset label match
-      {
-        _id: req.query.pid,
-        organization: req.query.oid,
-        "datasets.label": req.query["dataset-label"],
-      },
-      // push annotation into dataset
-      { $push: { "datasets.$.annotations": annotation._id } }
-    ).exec();
-
-    if (dataset?.nModified === 1) {
-      res.status(200).json({
-        status: true,
-        result: `Dataset '${req.query["dataset-label"]}' was successfully modified!`,
+    Annotation.create(body)
+      .then(annotation => {
+        res.status(200).json({
+          status: true,
+          result: `Annotation '${annotation._id}' was successfully created!`,
+        });
+      })
+      .catch(e => {
+        res.status(500).json({
+          status: false,
+          result: e,
+        });
       });
-    } else {
-      res.status(400).json({
-        status: false,
-        result: `Dataset '${req.query["dataset-label"]}' was not able to be modified!`,
-      });
-    }
   } else {
     res.status(401).json({
       status: false,
@@ -144,4 +133,4 @@ export const config = {
   api: {
     externalResolver: true,
   },
-}
+};
