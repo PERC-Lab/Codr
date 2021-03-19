@@ -21,15 +21,13 @@ const ProjectSchema = new Schema(
       type: Schema.Types.String,
     },
     datasets: {
-      type: [{
-        name: Schema.Types.String,
-        user: Schema.Types.String,
-        label: Schema.Types.String,
-        annotations: [{
-          type: Schema.Types.ObjectId,
-          ref: "Annotation",
-        }]
-      }],
+      type: [
+        {
+          name: Schema.Types.String,
+          user: Schema.Types.String,
+          label: Schema.Types.String,
+        },
+      ],
     },
   },
   { timestamps: true }
