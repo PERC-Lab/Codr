@@ -1,15 +1,13 @@
-import { ProjectLayout } from "../../../../src/Layouts";
+import { ProjectLayout } from "../../../../../src/Layouts";
 import { getSession } from "next-auth/client";
-import { makeStyles, Typography } from "@material-ui/core";
-import { DataGrid } from "@material-ui/data-grid";
 import {
   OrganizationProvider,
   useOrganization,
-} from "../../../../src/OrganizationContext";
-import { ProjectProvider, useProject } from "../../../../src/ProjectContext";
+} from "../../../../../src/OrganizationContext";
+import { ProjectProvider, useProject } from "../../../../../src/ProjectContext";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import PaginationTable from "../../../../components/PaginationTable";
+import PaginationTable from "../../../../../components/PaginationTable";
 
 const headCells = [
   { id: "dataId", numeric: false, disablePadding: true, label: "Data Id" },
@@ -59,8 +57,6 @@ export default function ProjectDataset({ session }) {
       dataset: d,
     }));
   }
-
-  console.log(pageData);
 
   return pageData.annotations?.length >= 0 ? (
     <PaginationTable

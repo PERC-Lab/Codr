@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 import { Session } from "next-auth";
-import { Annotation, Project } from "../../../../../../../models/mongoose";
+import { Annotation, Project } from "../../../../../../../../models/mongoose";
 
 /**
  * Api endpoint to get user's organizations.
