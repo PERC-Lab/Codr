@@ -126,6 +126,7 @@ export default function OrgProject({ session }) {
               <CardContent>
                 <MarkdownEditor
                   value={project?.guidelines}
+                  useHighlighter
                   onUpdate={(e) => {
                     setProject({ guidelines: e.target.value });
                   }}
