@@ -23,8 +23,9 @@ import { ProjectProvider, useProject } from "../../../../src/ProjectContext";
 import MarkdownEditor from "../../../../src/MarkdownEditor";
 import AddDatasetModal from "../../../../components/modals/AddDatasetModal";
 import { useState } from "react";
+import { useRouter } from "next/router";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
   },
@@ -55,13 +56,14 @@ export default function OrgProject({ session }) {
   const [project, setProject] = useProject();
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   console.log(project);
 
   return (
     <>
       <AddDatasetModal
-        onCreate={(dataset) => {
+        onCreate={dataset => {
           console.log(dataset);
           insertDataset(org._id, project._id, dataset, () => {
             setProject({
@@ -84,7 +86,7 @@ export default function OrgProject({ session }) {
                   disableUnderline={true}
                   defaultValue={name || project.name}
                   fullWidth
-                  onBlur={(e) => {
+                  onBlur={e => {
                     setProject({ name: e.target.value });
                   }}
                 />
@@ -109,9 +111,17 @@ export default function OrgProject({ session }) {
               />
               <CardContent>
                 <List>
-                  {project?.datasets.map((dataset) =>
+                  {project?.datasets.map(dataset =>
                     dataset.user == session.user.email ? (
-                      <ListItem button key={dataset.label}>
+                      <ListItem
+                        button
+                        key={dataset.label}
+                        onClick={() =>
+                          router.push(
+                            `/${org._id}/project/${project._id}/${dataset.label}`
+                          )
+                        }
+                      >
                         <ListItemText>{dataset.name}</ListItemText>
                       </ListItem>
                     ) : null
@@ -127,7 +137,7 @@ export default function OrgProject({ session }) {
                 <MarkdownEditor
                   value={project?.guidelines}
                   useHighlighter
-                  onUpdate={(e) => {
+                  onUpdate={e => {
                     setProject({ guidelines: e.target.value });
                   }}
                 />
@@ -152,8 +162,8 @@ const insertDataset = (oid, pid, dataset, callback) => {
       body: JSON.stringify(dataset),
     }
   )
-    .then((res) => res.json())
-    .then((res) => callback(res.result));
+    .then(res => res.json())
+    .then(res => callback(res.result));
 };
 
 export async function getServerSideProps({ req }) {

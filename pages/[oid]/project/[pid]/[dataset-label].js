@@ -1,71 +1,93 @@
 import { ProjectLayout } from "../../../../src/Layouts";
 import { getSession } from "next-auth/client";
-import {
-  makeStyles,
-  Typography,
-} from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
+import { DataGrid } from "@material-ui/data-grid";
 import {
   OrganizationProvider,
   useOrganization,
 } from "../../../../src/OrganizationContext";
 import { ProjectProvider, useProject } from "../../../../src/ProjectContext";
 import { useState } from "react";
+import { useRouter } from "next/router";
+import PaginationTable from "../../../../components/PaginationTable";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  paper: {
-    padding: theme.spacing(2),
-    color: theme.palette.text.secondary,
-  },
-  card: {
-    maxWidth: 345,
-  },
-  title: {
-    width: "calc(100% + 32px)",
-    fontSize: "1.5em",
-    borderRadius: 4,
-    padding: "4px 8px",
-    margin: "0 -16px",
-    "&:hover": {
-      backgroundColor: "rgba(0,0,0,0.2)",
-    },
-    "&:active": {
-      backgroundColor: "rgba(0,0,0,0.2)",
-    },
-  },
-}));
-
+const headCells = [
+  { id: "dataId", numeric: false, disablePadding: true, label: "Data Id" },
+  { id: "type", numeric: false, disablePadding: false, label: "Type" },
+];
 export default function ProjectDataset({ session }) {
+  const router = useRouter();
   const [org] = useOrganization();
   const [project] = useProject();
-  const classes = useStyles();
-  const [open, setOpen] = useState(false);
+  const [pageData, setPageData] = useState({
+    sent: false,
+    recieved: false,
+    page: 0,
+    dataset: undefined,
+    annotations: undefined,
+  });
 
-  console.log(project);
+  if (
+    (!pageData.sent ||
+      pageData.dataset?.label !== router.query["dataset-label"]) &&
+    org &&
+    project
+  ) {
+    const d = project.datasets.find(
+      p => p.label == router.query["dataset-label"]
+    );
 
-  return (
-    <>
-      <Typography>Hello</Typography>
-    </>
-  );
+    getAnnotations(org._id, project._id, d._id, pageData.page)
+      .then(a => {
+        setPageData(data => ({
+          ...data,
+          recieved: true,
+          annotations: a,
+        }));
+      })
+      .catch(e => {
+        console.error(e);
+        setPageData(data => ({
+          ...data,
+          recieved: false,
+          annotations: [],
+        }));
+      });
+    setPageData(data => ({
+      ...data,
+      sent: true,
+      dataset: d,
+    }));
+  }
+
+  console.log(pageData);
+
+  return pageData.annotations?.length >= 0 ? (
+    <PaginationTable
+      title={`${pageData.dataset.name}: Annotations`}
+      rows={pageData.annotations}
+      headerCells={headCells}
+      pageSize={10}
+      onPageUpdate={p => {
+        setPageData(data => ({
+          ...data,
+          page: p,
+        }));
+      }}
+    />
+  ) : null;
 }
 
-const insertDataset = (oid, pid, dataset, callback) => {
-  fetch(
-    `${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}/project/${pid}`,
+const getAnnotations = (oid, pid, did, page) => {
+  return fetch(
+    `${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}/project/${pid}/${did}?page=${page}`,
     {
-      method: "PUT",
+      method: "GET",
       credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(dataset),
     }
   )
-    .then((res) => res.json())
-    .then((res) => callback(res.result));
+    .then(res => res.json())
+    .then(res => res.result);
 };
 
 export async function getServerSideProps({ req }) {
