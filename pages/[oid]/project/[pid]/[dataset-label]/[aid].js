@@ -10,6 +10,37 @@ import { useRouter } from "next/router";
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
 import { Skeleton } from "@material-ui/lab";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Card,
+  CardContent,
+  CardHeader,
+  Grid,
+  makeStyles,
+  Typography,
+} from "@material-ui/core";
+
+const useStyles = makeStyles(theme => ({
+  method: {
+    width: "100%",
+    padding: 0,
+  },
+  pre: {
+    width: "100%",
+    whiteSpace: "pre-wrap",
+    overflowWrap: "anywhere",
+    margin: 0,
+    "&, span": {
+      whiteSpace: "pre-wrap",
+    },
+  },
+  labelCard: {
+    position: "sticky",
+    top: 88
+  }
+}));
 
 /**
  *
@@ -24,7 +55,7 @@ import { Skeleton } from "@material-ui/lab";
  * }} method Method
  * @returns
  */
-const Highlighter = function Highlighter(method) {
+const Highlighter = function Highlighter(method, classes) {
   // get code segment
   let code = method.methodID;
   // highlight the portion of code before marked portion
@@ -42,10 +73,7 @@ const Highlighter = function Highlighter(method) {
 
   // set the inner html of the HTML code tag to the highlighted code.
   return (
-    <pre
-      className={`hljs lang-${method.language}`}
-      key={`method-${method.index}`}
-    >
+    <pre className={[`hljs lang-${method.language} ${classes.pre}`]}>
       <code
         dangerouslySetInnerHTML={{
           __html: `${start}<mark style='background-color: ${
@@ -70,6 +98,7 @@ export default function ProjectDatasetAnnotation({ session }) {
     dataset: undefined,
     annotation: undefined,
   });
+  const classes = useStyles();
 
   if (!pageData.sent && org && project) {
     const d = project.datasets.find(
@@ -101,19 +130,37 @@ export default function ProjectDatasetAnnotation({ session }) {
 
   return (
     <>
-      {pageData?.annotation?.data?.methods ? (
-        pageData.annotation.data.methods.map((method, index) => {
-          method.language = pageData.annotation.data.language;
-          method.index = index;
-          return Highlighter(method);
-        })
-      ) : (
-        <>
-          <Skeleton height={100}></Skeleton>
-          <Skeleton height={70}></Skeleton>
-          <Skeleton height={125}></Skeleton>
-        </>
-      )}
+      <Grid container spacing={3}>
+        <Grid item xs={8}>
+          {pageData?.annotation?.data?.methods ? (
+            pageData.annotation.data.methods.map((method, index) => {
+              method.language = pageData.annotation.data.language;
+              return (
+                <Accordion key={`method-${index}`}>
+                  <AccordionSummary>{`Method ${index + 1}`}</AccordionSummary>
+                  <AccordionDetails className={classes.method}>
+                    {Highlighter(method, classes)}
+                  </AccordionDetails>
+                </Accordion>
+              );
+            })
+          ) : (
+            <>
+              <Skeleton height={100}></Skeleton>
+              <Skeleton height={70}></Skeleton>
+              <Skeleton height={125}></Skeleton>
+            </>
+          )}
+        </Grid>
+        <Grid item xs={4}>
+          <Card className={classes.labelCard}>
+            <CardHeader title="Labels" />
+            <CardContent>
+              <Typography>Hello</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
     </>
   );
 }
