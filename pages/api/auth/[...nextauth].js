@@ -35,6 +35,6 @@ export default NextAuth({
     jwt: true,
   },
   pages: {
-    // error: '/login'
+    error: '/login'
   },
 });

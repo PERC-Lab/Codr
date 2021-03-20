@@ -58,13 +58,10 @@ export default function OrgProject({ session }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  console.log(project);
-
   return (
     <>
       <AddDatasetModal
         onCreate={dataset => {
-          console.log(dataset);
           insertDataset(org._id, project._id, dataset, () => {
             setProject({
               datasets: [...project.datasets, dataset],

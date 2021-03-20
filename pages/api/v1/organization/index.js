@@ -44,8 +44,6 @@ const getOrganizations = async (res, session) => {
  * @param {{name: String}} data User input
  */
 const createOrganization = (res, session, data) => {
-  console.log(data);
-
   const d = {
     name: data.name,
     permissions: {},
@@ -57,8 +55,6 @@ const createOrganization = (res, session, data) => {
     ],
     projects: [],
   }
-
-  console.log(d);
 
   Organization.create(d)
     .then((doc) => {

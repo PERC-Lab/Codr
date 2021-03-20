@@ -70,7 +70,6 @@ const insertAnnotation = async (req, res, session) => {
     // create the annotation
     const body = { ...req.body };
     body.datasetId = req.query.did;
-    console.log(body);
 
     Annotation.create(body)
       .then(annotation => {
