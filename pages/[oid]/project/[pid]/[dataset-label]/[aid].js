@@ -5,8 +5,52 @@ import {
   useOrganization,
 } from "../../../../../src/OrganizationContext";
 import { ProjectProvider, useProject } from "../../../../../src/ProjectContext";
+import { HighlightedMarkdown } from "../../../../../src/HighlightedMarkdown";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import hljs from "highlight.js";
+import "highlight.js/styles/atom-one-dark.css";
+
+/**
+ *
+ * @param {{
+ *  methodID: String,
+ *  language: String,
+ *  highlight: {
+ *    start: Number,
+ *    end: Number,
+ *    color: String,
+ *  }
+ * }} method Method
+ * @returns
+ */
+const Highlighter = function Highlighter(method) {
+  let code = method.methodID;
+  let start = hljs.highlight(
+    method.language,
+    code.slice(0, method.highlight.start),
+    true
+  ).value;
+  let end = hljs.highlight(
+    method.language,
+    code.slice(method.highlight.end),
+    true
+  ).value;
+  return (
+    <pre className={"hljs"} key={`method-${method.index}`}>
+      <code
+        dangerouslySetInnerHTML={{
+          __html: `${start}<mark style='background-color: ${
+            method.highlight.color
+          };'>${code.slice(
+            method.highlight.start,
+            method.highlight.end
+          )}</mark>${end}`,
+        }}
+      />
+    </pre>
+  );
+};
 
 export default function ProjectDatasetAnnotation({ session }) {
   const router = useRouter();
@@ -47,7 +91,17 @@ export default function ProjectDatasetAnnotation({ session }) {
     }));
   }
 
-  return <>{JSON.stringify(pageData)}</>;
+  return (
+    <>
+      {pageData?.annotation?.data?.methods
+        ? pageData.annotation.data.methods.map((method, index) => {
+            method.language = pageData.annotation.data.language;
+            method.index = index;
+            return Highlighter(method);
+          })
+        : JSON.stringify(pageData)}
+    </>
+  );
 }
 
 /**
