@@ -40,8 +40,6 @@ export default function AppDrawer() {
   const router = useRouter();
   const [session] = useSession();
 
-  console.log(session);
-
   return (
     <Drawer
       className={classes.drawer}

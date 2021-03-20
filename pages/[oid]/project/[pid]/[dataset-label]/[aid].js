@@ -5,7 +5,6 @@ import {
   useOrganization,
 } from "../../../../../src/OrganizationContext";
 import { ProjectProvider, useProject } from "../../../../../src/ProjectContext";
-import { HighlightedMarkdown } from "../../../../../src/HighlightedMarkdown";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import hljs from "highlight.js";
