@@ -12,22 +12,21 @@ export function HighlightedMarkdown({ children, ...props }) {
    */
 
   useEffect(() => {
-    if (props.useHighlighter)
-      rootRef.current.querySelectorAll("pre code").forEach(
-        /**
-         *
-         * @param {HTMLElement} block HTML Element
-         */
-        block => {
-          console.log(block);
-          // const content = block.innerText;
-          // const out = hljs.highlight("javascript", content, true);
-          // console.log(out);
-          // block.innerHtml = out.value;
-          hljs.highlightBlock(block);
-          // console.log(block.innerText);
-        }
-      );
+    rootRef.current.querySelectorAll("pre code").forEach(
+      /**
+       *
+       * @param {HTMLElement} block HTML Element
+       */
+      block => {
+        console.log(block);
+        // const content = block.innerText;
+        // const out = hljs.highlight("javascript", content, true);
+        // console.log(out);
+        // block.innerHtml = out.value;
+        hljs.highlightBlock(block);
+        // console.log(block.innerText);
+      }
+    );
   }, [children]);
 
   return (

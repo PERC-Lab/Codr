@@ -20,7 +20,7 @@ import {
 import AddMemberModal from "../../components/modals/AddMemberModal";
 import { useState } from "react";
 
-const useToolbarStyles = makeStyles((theme) => ({
+const useToolbarStyles = makeStyles(theme => ({
   root: {
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(1),
@@ -38,8 +38,8 @@ export default function OrgMembers({ session }) {
   return (
     <>
       <AddMemberModal
-        onCreate={(member) => {
-          postMember(org._id, member, (nMember) => {
+        onCreate={member => {
+          postMember(org._id, member, nMember => {
             dispatch({
               members: [nMember, ...org.members],
               ...org,
@@ -55,7 +55,11 @@ export default function OrgMembers({ session }) {
           <Typography variant="h6" className={classes.title}>
             Members
           </Typography>
-          <Button onClick={() => setOpen(true)} color="primary" variant="contained">
+          <Button
+            onClick={() => setOpen(true)}
+            color="primary"
+            variant="contained"
+          >
             Add
           </Button>
         </Toolbar>
@@ -69,7 +73,7 @@ export default function OrgMembers({ session }) {
             </TableHead>
             <TableBody>
               {org?.members
-                ? org.members.map((row) => (
+                ? org.members.map(row => (
                     <TableRow key={row.email}>
                       <TableCell component="th" scope="row">
                         {row.email}
@@ -86,17 +90,21 @@ export default function OrgMembers({ session }) {
   );
 }
 
+/**
+ * 
+ * @param {String} oid Organization Id
+ * @param {{email: String, role: String}} member Member details
+ * @param {Function} callback Callback funtion
+ */
 const postMember = (oid, member, callback) => {
   fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}/member`, {
     method: "POST",
     credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(member),
   })
-    .then((res) => res.json())
-    .then((res) => callback(res.result));
+    .then(res => res.json())
+    .then(res => callback(res.result));
 };
 
 export async function getServerSideProps({ req }) {

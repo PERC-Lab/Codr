@@ -16,6 +16,8 @@ import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { Button } from "@material-ui/core";
+import { useRouter } from "next/router";
 
 function EnhancedTableHead(props) {
   const { headCells, onSelectAllClick, numSelected, rowCount } = props;
@@ -153,10 +155,11 @@ export default function PaginationTable({
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage] = React.useState(pageSize || 10);
+  const router = useRouter();
 
   const handleSelectAllClick = event => {
     if (event.target.checked) {
-      const newSelecteds = rows.map(n => n.dataId);
+      const newSelecteds = rows.map(n => n._id);
       setSelected(newSelecteds);
       return;
     }
@@ -215,21 +218,21 @@ export default function PaginationTable({
               {rows
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row.dataId);
+                  const isItemSelected = isSelected(row._id);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
-                      onClick={event => handleClick(event, row.dataId)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.dataId}
+                      key={row._id}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox
+                          onClick={event => handleClick(event, row._id)}
                           checked={isItemSelected}
                           inputProps={{ "aria-labelledby": labelId }}
                         />
@@ -243,6 +246,19 @@ export default function PaginationTable({
                         {row.dataId}
                       </TableCell>
                       <TableCell>{row.type}</TableCell>
+                      <TableCell align="right">
+                        <Button
+                          onClick={() => {
+                            router.push(
+                              `${window.location.pathname}/${row._id}`
+                            );
+                          }}
+                          variant="contained"
+                          color="primary"
+                        >
+                          Annotate
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   );
                 })}

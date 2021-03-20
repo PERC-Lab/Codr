@@ -1,5 +1,4 @@
 import { Input, makeStyles, Typography } from "@material-ui/core";
-import { Skeleton } from "@material-ui/lab";
 import { useState } from "react";
 import { HighlightedMarkdown } from "./HighlightedMarkdown";
 
@@ -48,15 +47,13 @@ export default function MarkdownEditor({ value, useHighlighter, onUpdate }) {
       className={classes.input}
       autoFocus
     />
-  ) : value ? (
+  ) : (
     <HighlightedMarkdown
       className={classes.text}
       useHighlighter={useHighlighter}
       onClick={() => setEditor(true)}
     >
-      {value}
+      {value ? value : "There are *no* guidelines for this project!"}
     </HighlightedMarkdown>
-  ) : (
-    <Skeleton />
   );
 }

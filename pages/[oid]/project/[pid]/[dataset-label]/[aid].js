@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
+import { Skeleton } from "@material-ui/lab";
 
 /**
  *
@@ -25,19 +26,27 @@ import "highlight.js/styles/atom-one-dark.css";
  * @returns
  */
 const Highlighter = function Highlighter(method) {
+  // get code segment
   let code = method.methodID;
+  // highlight the portion of code before marked portion
   let start = hljs.highlight(
     method.language,
     code.slice(0, method.highlight.start),
     true
   ).value;
+  // highlight the portion of code after marked portion
   let end = hljs.highlight(
     method.language,
     code.slice(method.highlight.end),
     true
   ).value;
+
+  // set the inner html of the HTML code tag to the highlighted code.
   return (
-    <pre className={"hljs"} key={`method-${method.index}`}>
+    <pre
+      className={`hljs lang-${method.language}`}
+      key={`method-${method.index}`}
+    >
       <code
         dangerouslySetInnerHTML={{
           __html: `${start}<mark style='background-color: ${
@@ -93,13 +102,19 @@ export default function ProjectDatasetAnnotation({ session }) {
 
   return (
     <>
-      {pageData?.annotation?.data?.methods
-        ? pageData.annotation.data.methods.map((method, index) => {
-            method.language = pageData.annotation.data.language;
-            method.index = index;
-            return Highlighter(method);
-          })
-        : JSON.stringify(pageData)}
+      {pageData?.annotation?.data?.methods ? (
+        pageData.annotation.data.methods.map((method, index) => {
+          method.language = pageData.annotation.data.language;
+          method.index = index;
+          return Highlighter(method);
+        })
+      ) : (
+        <>
+          <Skeleton height={100}></Skeleton>
+          <Skeleton height={70}></Skeleton>
+          <Skeleton height={125}></Skeleton>
+        </>
+      )}
     </>
   );
 }

@@ -12,6 +12,7 @@ import PaginationTable from "../../../../../components/PaginationTable";
 const headCells = [
   { id: "dataId", numeric: false, disablePadding: true, label: "Data Id" },
   { id: "type", numeric: false, disablePadding: false, label: "Type" },
+  { id: "action", numeric: true, disablePadding: false, label: "Action" }
 ];
 export default function ProjectDataset({ session }) {
   const router = useRouter();
