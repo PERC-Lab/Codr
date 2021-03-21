@@ -149,6 +149,22 @@ const labels = {
   },
 };
 
+function findLabel(option, value) {
+  if (option.label === value.label) {
+    if (option["sub-label"]) {
+      if (option["sub-label"] === value["sub-label"]) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return true;
+    }
+  } else {
+    return false;
+  }
+}
+
 /**
  *
  * @param {{
@@ -184,21 +200,7 @@ const ChipInput = function ChipInput({ labelList }) {
           ? `${option.label} : ${option["sub-label"]}`
           : option.label;
       }}
-      getOptionSelected={(option, value) => {
-        if (option.label === value.label) {
-          if (option["sub-label"]) {
-            if (option["sub-label"] === value["sub-label"]) {
-              return true;
-            } else {
-              return false;
-            }
-          } else {
-            return true;
-          }
-        } else {
-          return false;
-        }
-      }}
+      getOptionSelected={findLabel}
       renderTags={(value, getTagProps) =>
         value.map((option, index) => (
           <Chip
@@ -208,7 +210,9 @@ const ChipInput = function ChipInput({ labelList }) {
                 ? `${option.label} : ${option["sub-label"]}`
                 : option.label
             }
-            style={{ borderColor: option.color }}
+            style={{
+              borderColor: options.find(o => findLabel(o, option)).color,
+            }}
             size="small"
             {...getTagProps({ index })}
           />

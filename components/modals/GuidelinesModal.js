@@ -27,7 +27,7 @@ export default function GuidelinesModal({ open, onClose, children }) {
       aria-labelledby="scroll-dialog-title"
       aria-describedby="scroll-dialog-description"
     >
-      <DialogTitle id="scroll-dialog-title">Subscribe</DialogTitle>
+      <DialogTitle id="scroll-dialog-title">Guidelines</DialogTitle>
       <DialogContent dividers={true}>
         <DialogContentText
           id="scroll-dialog-description"

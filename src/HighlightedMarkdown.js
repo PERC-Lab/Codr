@@ -4,42 +4,17 @@ import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
 
 export function HighlightedMarkdown({ children, ...props }) {
-  const rootRef = useRef();
-
-  /* POSSIBLE SOLUTION??? 
-      => https://github.com/VermontDepartmentOfHealth/docgov/issues/59#issuecomment-573363381
-      => https://jsfiddle.net/KyleMit/5gfo8qde/ 
-   */
-
-  console.log(children)
-
-  useEffect(() => {
-    rootRef.current.querySelectorAll("pre code").forEach(
-      /**
-       *
-       * @param {HTMLElement} block HTML Element
-       */
-      block => {
-        console.log(block);
-        // const content = block.innerText;
-        // const out = hljs.highlight("javascript", content, true);
-        // console.log(out);
-        // block.innerHtml = out.value;
-        hljs.highlightBlock(block);
-        // console.log(block.innerText);
-      }
-    );
-  }, [children]);
-
   return (
-    <div ref={rootRef} {...props}>
+    <div {...props}>
       <Markdown options={{
         disableParsingRawHTML: false,
         overrides: {
+          pre: {
+            component: ({children, ...props}) => (<pre className="hljs">{children}</pre>)
+          },
           code: {
             component: ({children, ...props}) => {
-              console.log(children)
-              return (<code {...props}>{children}</code>)
+              return (<code {...props} dangerouslySetInnerHTML={{ __html: hljs.highlightAuto(children).value}} />)
             }
           }
         }
