@@ -320,7 +320,7 @@ export default function ProjectDatasetAnnotation({ session }) {
             <Card>
               <CardHeader title="Labels" />
               <CardContent>
-                {keys(pageData.annotation?.data.labels).map(key =>
+                {keys(pageData.annotation?.data.labels).length ? keys(pageData.annotation?.data.labels).map(key =>
                   key == "information_accessed" ? null : (
                     <ChipInput
                       labelList={{
@@ -330,7 +330,7 @@ export default function ProjectDatasetAnnotation({ session }) {
                       key={key}
                     />
                   )
-                )}
+                ) : <><Skeleton height={64} /><Skeleton height={64} /></>}
               </CardContent>
             </Card>
             <Card>

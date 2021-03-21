@@ -10,7 +10,7 @@ export function HighlightedMarkdown({ children, ...props }) {
         disableParsingRawHTML: false,
         overrides: {
           pre: {
-            component: ({children, ...props}) => (<pre className="hljs">{children}</pre>)
+            component: ({children, ...props}) => (<pre {...props} className="hljs" >{children}</pre>)
           },
           code: {
             component: ({children, ...props}) => {
