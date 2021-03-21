@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { ProjectLayout } from "../../../../../src/Layouts";
 import { getSession } from "next-auth/client";
 import {
@@ -5,22 +6,25 @@ import {
   useOrganization,
 } from "../../../../../src/OrganizationContext";
 import { ProjectProvider, useProject } from "../../../../../src/ProjectContext";
-import { useState } from "react";
 import { useRouter } from "next/router";
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
-import { Skeleton } from "@material-ui/lab";
+import { Autocomplete, Skeleton } from "@material-ui/lab";
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Button,
   Card,
   CardContent,
   CardHeader,
+  Chip,
   Grid,
   makeStyles,
+  TextField,
   Typography,
 } from "@material-ui/core";
+import { keys } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   method: {
@@ -38,8 +42,16 @@ const useStyles = makeStyles(theme => ({
   },
   labelCard: {
     position: "sticky",
-    top: 88
-  }
+    top: 88,
+    "& > div": {
+      marginBottom: theme.spacing(2),
+    },
+  },
+  labelInput: {
+    "& + *": {
+      marginTop: theme.spacing(2),
+    },
+  },
 }));
 
 /**
@@ -85,6 +97,105 @@ const Highlighter = function Highlighter(method, classes) {
         }}
       />
     </pre>
+  );
+};
+
+const labels = {
+  privacy_practice: {
+    title: "Privacy Practice",
+    labels: [
+      {
+        label: "Processing",
+        color: "yellow",
+      },
+      {
+        label: "Collection",
+        color: "red",
+      },
+      {
+        label: "Sharing",
+        color: "green",
+      },
+    ],
+  },
+  purpose: {
+    title: "Purpose",
+    labels: [
+      {
+        label: "Functionality",
+        "sub-label": "Authentiction",
+        color: "yellow",
+      },
+      {
+        label: "Advertisement",
+        color: "red",
+      },
+      {
+        label: "Analytics",
+        "sub-label": "User Experience",
+        color: "green",
+      },
+      {
+        label: "Analytics",
+        "sub-label": "Crash Analytics",
+        color: "blue",
+      },
+    ],
+  },
+  // information_accessed: {
+  //   title: "Information Accessed",
+  //   labels: ["location", "network"],
+  // },
+};
+
+/**
+ *
+ * @param {{
+ *  type: {
+ *    title: String,
+ *    labels: [{
+ *      label: String,
+ *      "sub-label": String,
+ *      color: String
+ *    }]
+ *  }
+ * }} props Props
+ * @returns {React.Component}
+ */
+const ChipInput = function ChipInput({ type }) {
+  const classes = useStyles();
+
+  return (
+    <Autocomplete
+      className={classes.labelInput}
+      multiple
+      id="tags-outlined"
+      options={type.labels}
+      getOptionLabel={option => {
+        return typeof option["sub-label"] !== "undefined"
+          ? `${option.label} : ${option["sub-label"]}`
+          : option.label;
+      }}
+      renderTags={(value, getTagProps) =>
+        value.map((option, index) => (
+          <Chip
+            variant="outlined"
+            label={
+              typeof option["sub-label"] !== "undefined"
+                ? `${option.label} : ${option["sub-label"]}`
+                : option.label
+            }
+            style={{borderColor: option.color}}
+            size="small"
+            {...getTagProps({ index })}
+          />
+        ))
+      }
+      filterSelectedOptions
+      renderInput={params => (
+        <TextField {...params} variant="outlined" label={type.title} />
+      )}
+    />
   );
 };
 
@@ -153,12 +264,24 @@ export default function ProjectDatasetAnnotation({ session }) {
           )}
         </Grid>
         <Grid item xs={4}>
-          <Card className={classes.labelCard}>
-            <CardHeader title="Labels" />
-            <CardContent>
-              <Typography>Hello</Typography>
-            </CardContent>
-          </Card>
+          <div className={classes.labelCard}>
+            <Card>
+              <CardHeader title="Guidelines" action={(<Button variant="contained" color="primary">View</Button>)} />
+            </Card>
+            <Card>
+              <CardHeader title="Labels" />
+              <CardContent>
+                {keys(labels).map(key => (
+                  <ChipInput type={labels[key]} key={key} />
+                ))}
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent>
+                <Typography>Navigation from one annotation to the next here</Typography>
+              </CardContent>
+            </Card>
+          </div>
         </Grid>
       </Grid>
     </>
