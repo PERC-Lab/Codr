@@ -11,6 +11,8 @@ export function HighlightedMarkdown({ children, ...props }) {
       => https://jsfiddle.net/KyleMit/5gfo8qde/ 
    */
 
+  console.log(children)
+
   useEffect(() => {
     rootRef.current.querySelectorAll("pre code").forEach(
       /**

@@ -25,12 +25,11 @@ const useStyles = makeStyles(() => ({
 /**
  * @param {{
  *  value: String,
- *  useHighlighter: Boolean,
  *  onUpdate: Function}
  * } props
  * @returns {React.Component}
  */
-export default function MarkdownEditor({ value, useHighlighter, onUpdate }) {
+export default function MarkdownEditor({ value, onUpdate }) {
   const [isEditor, setEditor] = useState(false);
   const classes = useStyles();
 
@@ -50,10 +49,9 @@ export default function MarkdownEditor({ value, useHighlighter, onUpdate }) {
   ) : (
     <HighlightedMarkdown
       className={classes.text}
-      useHighlighter={useHighlighter}
       onClick={() => setEditor(true)}
     >
-      {value ? value : "There are *no* guidelines for this project!"}
+      {value ? value : "No guidelines are available for this project!"}
     </HighlightedMarkdown>
   );
 }

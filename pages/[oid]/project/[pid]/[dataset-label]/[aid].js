@@ -25,6 +25,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { keys } from "lodash";
+import GuidelinesModal from "../../../../../components/modals/GuidelinesModal";
 
 const useStyles = makeStyles(theme => ({
   method: {
@@ -142,16 +143,17 @@ const labels = {
       },
     ],
   },
-  // information_accessed: {
-  //   title: "Information Accessed",
-  //   labels: ["location", "network"],
-  // },
+  information_accessed: {
+    title: "Information Accessed",
+    labels: ["location", "network"],
+  },
 };
 
 /**
  *
  * @param {{
- *  type: {
+ *  labelList: {
+ *    key: String,
  *    title: String,
  *    labels: [{
  *      label: String,
@@ -162,7 +164,9 @@ const labels = {
  * }} props Props
  * @returns {React.Component}
  */
-const ChipInput = function ChipInput({ type }) {
+const ChipInput = function ChipInput({ labelList }) {
+  const [value, setValue] = useState([...labelList.labels]);
+  const options = [...labels[labelList["key"]].labels];
   const classes = useStyles();
 
   return (
@@ -170,11 +174,30 @@ const ChipInput = function ChipInput({ type }) {
       className={classes.labelInput}
       multiple
       id="tags-outlined"
-      options={type.labels}
+      options={options}
+      value={value}
+      onChange={(_event, newValue) => {
+        setValue(newValue);
+      }}
       getOptionLabel={option => {
         return typeof option["sub-label"] !== "undefined"
           ? `${option.label} : ${option["sub-label"]}`
           : option.label;
+      }}
+      getOptionSelected={(option, value) => {
+        if (option.label === value.label) {
+          if (option["sub-label"]) {
+            if (option["sub-label"] === value["sub-label"]) {
+              return true;
+            } else {
+              return false;
+            }
+          } else {
+            return true;
+          }
+        } else {
+          return false;
+        }
       }}
       renderTags={(value, getTagProps) =>
         value.map((option, index) => (
@@ -185,7 +208,7 @@ const ChipInput = function ChipInput({ type }) {
                 ? `${option.label} : ${option["sub-label"]}`
                 : option.label
             }
-            style={{borderColor: option.color}}
+            style={{ borderColor: option.color }}
             size="small"
             {...getTagProps({ index })}
           />
@@ -193,7 +216,7 @@ const ChipInput = function ChipInput({ type }) {
       }
       filterSelectedOptions
       renderInput={params => (
-        <TextField {...params} variant="outlined" label={type.title} />
+        <TextField {...params} variant="outlined" label={labelList.title} />
       )}
     />
   );
@@ -210,6 +233,7 @@ export default function ProjectDatasetAnnotation({ session }) {
     annotation: undefined,
   });
   const classes = useStyles();
+  const [open, setOpen] = useState(false);
 
   if (!pageData.sent && org && project) {
     const d = project.datasets.find(
@@ -241,6 +265,14 @@ export default function ProjectDatasetAnnotation({ session }) {
 
   return (
     <>
+      <GuidelinesModal
+        open={open}
+        onClose={() => {
+          setOpen(false);
+        }}
+      >
+        {project?.guidelines}
+      </GuidelinesModal>
       <Grid container spacing={3}>
         <Grid item xs={8}>
           {pageData?.annotation?.data?.methods ? (
@@ -266,19 +298,42 @@ export default function ProjectDatasetAnnotation({ session }) {
         <Grid item xs={4}>
           <div className={classes.labelCard}>
             <Card>
-              <CardHeader title="Guidelines" action={(<Button variant="contained" color="primary">View</Button>)} />
+              <CardHeader
+                title="Guidelines"
+                action={
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      setOpen(true);
+                    }}
+                  >
+                    View
+                  </Button>
+                }
+              />
             </Card>
             <Card>
               <CardHeader title="Labels" />
               <CardContent>
-                {keys(labels).map(key => (
-                  <ChipInput type={labels[key]} key={key} />
-                ))}
+                {keys(pageData.annotation?.data.labels).map(key =>
+                  key == "information_accessed" ? null : (
+                    <ChipInput
+                      labelList={{
+                        ...pageData.annotation?.data.labels[key],
+                        key,
+                      }}
+                      key={key}
+                    />
+                  )
+                )}
               </CardContent>
             </Card>
             <Card>
               <CardContent>
-                <Typography>Navigation from one annotation to the next here</Typography>
+                <Typography>
+                  Navigation from one annotation to the next here
+                </Typography>
               </CardContent>
             </Card>
           </div>
