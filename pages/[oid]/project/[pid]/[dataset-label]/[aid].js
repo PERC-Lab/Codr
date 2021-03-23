@@ -8,7 +8,6 @@ import {
 import { ProjectProvider, useProject } from "../../../../../src/ProjectContext";
 import { useRouter } from "next/router";
 import hljs from "highlight.js";
-import "highlight.js/styles/atom-one-dark.css";
 import { Autocomplete, Skeleton } from "@material-ui/lab";
 import {
   Accordion,
@@ -320,17 +319,24 @@ export default function ProjectDatasetAnnotation({ session }) {
             <Card>
               <CardHeader title="Labels" />
               <CardContent>
-                {keys(pageData.annotation?.data.labels).length ? keys(pageData.annotation?.data.labels).map(key =>
-                  key == "information_accessed" ? null : (
-                    <ChipInput
-                      labelList={{
-                        ...pageData.annotation?.data.labels[key],
-                        key,
-                      }}
-                      key={key}
-                    />
+                {keys(pageData.annotation?.data.labels).length ? (
+                  keys(pageData.annotation?.data.labels).map(key =>
+                    key == "information_accessed" ? null : (
+                      <ChipInput
+                        labelList={{
+                          ...pageData.annotation?.data.labels[key],
+                          key,
+                        }}
+                        key={key}
+                      />
+                    )
                   )
-                ) : <><Skeleton height={64} /><Skeleton height={64} /></>}
+                ) : (
+                  <>
+                    <Skeleton height={64} />
+                    <Skeleton height={64} />
+                  </>
+                )}
               </CardContent>
             </Card>
             <Card>

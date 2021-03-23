@@ -29,6 +29,15 @@ const ProjectSchema = new Schema(
         },
       ],
     },
+    labelset: {
+      type: Map,
+      of: [
+        {
+          label: String,
+          "sub-label": String,
+        },
+      ],
+    }
   },
   { timestamps: true }
 );
