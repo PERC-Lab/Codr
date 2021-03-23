@@ -1,5 +1,5 @@
 import { OrgLayout } from "../../src/Layouts";
-import { getSession } from "next-auth/client";
+import { getSession, useSession } from "next-auth/client";
 import {
   Button,
   List,
@@ -30,7 +30,8 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function Organization({ session }) {
+export default function Organization() {
+  const [session, loading] = useSession();
   const router = useRouter();
   const [org] = useOrganization();
   const [projects, setProjects] = useState([]);
@@ -53,7 +54,7 @@ export default function Organization({ session }) {
     });
   }
 
-  return (
+  return session ? (
     <>
       <AddProjectModal
         onCreate={project => {
@@ -97,6 +98,8 @@ export default function Organization({ session }) {
         </List>
       </Paper>
     </>
+  ) : loading ? null : (
+    router.push("/login")
   );
 }
 
@@ -129,25 +132,6 @@ const createProject = (oid, project) => {
     .then(res => res.json())
     .then(res => res.result);
 };
-
-export async function getServerSideProps({ req }) {
-  // Get the user's session based on the request
-  const session = await getSession({ req });
-
-  if (!session) {
-    // If no user, redirect to login
-    return {
-      props: {},
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
-  // If there is a user, return the current session
-  return { props: { session } };
-}
 
 Organization.Layout = OrgLayout;
 Organization.OrganizationProvider = OrganizationProvider;

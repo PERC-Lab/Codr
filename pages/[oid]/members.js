@@ -1,5 +1,5 @@
 import { OrgLayout } from "../../src/Layouts";
-import { getSession } from "next-auth/client";
+import { getSession, useSession } from "next-auth/client";
 import {
   Button,
   makeStyles,
@@ -30,12 +30,13 @@ const useToolbarStyles = makeStyles(theme => ({
   },
 }));
 
-export default function OrgMembers({ session }) {
+export default function OrgMembers() {
+  const [session, loading] = useSession();
   const [org, dispatch] = useOrganization();
   const classes = useToolbarStyles();
   const [open, setOpen] = useState(false);
 
-  return (
+  return session ? (
     <>
       <AddMemberModal
         onCreate={member => {
@@ -87,6 +88,8 @@ export default function OrgMembers({ session }) {
         </TableContainer>
       </Paper>
     </>
+  ) : loading ? null : (
+    router.push("/login")
   );
 }
 
@@ -106,25 +109,6 @@ const postMember = (oid, member, callback) => {
     .then(res => res.json())
     .then(res => callback(res.result));
 };
-
-export async function getServerSideProps({ req }) {
-  // Get the user's session based on the request
-  const session = await getSession({ req });
-
-  if (!session) {
-    // If no user, redirect to login
-    return {
-      props: {},
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
-  // If there is a user, return the current session
-  return { props: { session } };
-}
 
 OrgMembers.Layout = OrgLayout;
 OrgMembers.OrganizationProvider = OrganizationProvider;

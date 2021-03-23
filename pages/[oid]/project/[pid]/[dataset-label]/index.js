@@ -1,5 +1,5 @@
 import { ProjectLayout } from "../../../../../src/Layouts";
-import { getSession } from "next-auth/client";
+import { getSession, useSession } from "next-auth/client";
 import {
   OrganizationProvider,
   useOrganization,
@@ -12,9 +12,10 @@ import PaginationTable from "../../../../../components/PaginationTable";
 const headCells = [
   { id: "dataId", numeric: false, disablePadding: true, label: "Data Id" },
   { id: "type", numeric: false, disablePadding: false, label: "Type" },
-  { id: "action", numeric: true, disablePadding: false, label: "Action" }
+  { id: "action", numeric: true, disablePadding: false, label: "Action" },
 ];
-export default function ProjectDataset({ session }) {
+export default function ProjectDataset() {
+  const [session, loading] = useSession();
   const router = useRouter();
   const [org] = useOrganization();
   const [project] = useProject();
@@ -59,20 +60,24 @@ export default function ProjectDataset({ session }) {
     }));
   }
 
-  return pageData.annotations?.length >= 0 ? (
-    <PaginationTable
-      title={`${pageData.dataset.name}: Annotations`}
-      rows={pageData.annotations}
-      headerCells={headCells}
-      pageSize={10}
-      onPageUpdate={p => {
-        setPageData(data => ({
-          ...data,
-          page: p,
-        }));
-      }}
-    />
-  ) : null;
+  return session ? (
+    pageData.annotations?.length >= 0 ? (
+      <PaginationTable
+        title={`${pageData.dataset.name}: Annotations`}
+        rows={pageData.annotations}
+        headerCells={headCells}
+        pageSize={10}
+        onPageUpdate={p => {
+          setPageData(data => ({
+            ...data,
+            page: p,
+          }));
+        }}
+      />
+    ) : null
+  ) : loading ? null : (
+    router.push("/login")
+  );
 }
 
 const getAnnotations = (oid, pid, did, page) => {
@@ -86,25 +91,6 @@ const getAnnotations = (oid, pid, did, page) => {
     .then(res => res.json())
     .then(res => res.result);
 };
-
-export async function getServerSideProps({ req }) {
-  // Get the user's session based on the request
-  const session = await getSession({ req });
-
-  if (!session) {
-    // If no user, redirect to login
-    return {
-      props: {},
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
-  // If there is a user, return the current session
-  return { props: { session } };
-}
 
 ProjectDataset.Layout = ProjectLayout;
 ProjectDataset.OrganizationProvider = OrganizationProvider;

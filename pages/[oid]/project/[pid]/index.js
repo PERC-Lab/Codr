@@ -1,5 +1,5 @@
 import { ProjectLayout } from "../../../../src/Layouts";
-import { getSession } from "next-auth/client";
+import { getSession, useSession } from "next-auth/client";
 import {
   Button,
   Card,
@@ -51,14 +51,15 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function OrgProject({ session }) {
+export default function OrgProject() {
+  const [session, loading] = useSession();
   const [org] = useOrganization();
   const [project, setProject] = useProject();
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  return (
+  return session ? (
     <>
       <AddDatasetModal
         onCreate={dataset => {
@@ -143,6 +144,8 @@ export default function OrgProject({ session }) {
         </Grid>
       </div>
     </>
+  ) : loading ? null : (
+    router.push("/login")
   );
 }
 
@@ -161,25 +164,6 @@ const insertDataset = (oid, pid, dataset, callback) => {
     .then(res => res.json())
     .then(res => callback(res.result));
 };
-
-export async function getServerSideProps({ req }) {
-  // Get the user's session based on the request
-  const session = await getSession({ req });
-
-  if (!session) {
-    // If no user, redirect to login
-    return {
-      props: {},
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
-  // If there is a user, return the current session
-  return { props: { session } };
-}
 
 OrgProject.Layout = ProjectLayout;
 OrgProject.OrganizationProvider = OrganizationProvider;

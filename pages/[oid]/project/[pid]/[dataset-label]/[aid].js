@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ProjectLayout } from "../../../../../src/Layouts";
-import { getSession } from "next-auth/client";
+import { getSession, useSession } from "next-auth/client";
 import {
   OrganizationProvider,
   useOrganization,
@@ -225,7 +225,8 @@ const ChipInput = function ChipInput({ labelList }) {
   );
 };
 
-export default function ProjectDatasetAnnotation({ session }) {
+export default function ProjectDatasetAnnotation() {
+  const [session, loading] = useSession();
   const router = useRouter();
   const [org] = useOrganization();
   const [project] = useProject();
@@ -266,7 +267,7 @@ export default function ProjectDatasetAnnotation({ session }) {
     }));
   }
 
-  return (
+  return session ? (
     <>
       <GuidelinesModal
         open={open}
@@ -350,6 +351,8 @@ export default function ProjectDatasetAnnotation({ session }) {
         </Grid>
       </Grid>
     </>
+  ) : loading ? null : (
+    router.push("/login")
   );
 }
 
@@ -372,25 +375,6 @@ const getAnnotation = (oid, pid, did, aid) => {
     .then(res => res.json())
     .then(res => res.result);
 };
-
-export async function getServerSideProps({ req }) {
-  // Get the user's session based on the request
-  const session = await getSession({ req });
-
-  if (!session) {
-    // If no user, redirect to login
-    return {
-      props: {},
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
-  // If there is a user, return the current session
-  return { props: { session } };
-}
 
 ProjectDatasetAnnotation.Layout = ProjectLayout;
 ProjectDatasetAnnotation.OrganizationProvider = OrganizationProvider;
