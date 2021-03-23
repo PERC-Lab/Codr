@@ -1,5 +1,4 @@
 import { OrgLayout } from "../../src/Layouts";
-import { getSession, useSession } from "next-auth/client";
 import {
   Button,
   List,
@@ -31,7 +30,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function Organization() {
-  const [session, loading] = useSession();
   const router = useRouter();
   const [org] = useOrganization();
   const [projects, setProjects] = useState([]);
@@ -54,15 +52,14 @@ export default function Organization() {
     });
   }
 
-  return session ? (
+  return (
     <>
       <AddProjectModal
         onCreate={project => {
-          createProject(org._id, project)
-            .then(nProject => {
-              setProjects([ ...projects, nProject ])
-              setOpen(false);
-            })
+          createProject(org._id, project).then(nProject => {
+            setProjects([...projects, nProject]);
+            setOpen(false);
+          });
         }}
         onCancel={() => setOpen(false)}
         open={open}
@@ -98,8 +95,6 @@ export default function Organization() {
         </List>
       </Paper>
     </>
-  ) : loading ? null : (
-    router.push("/login")
   );
 }
 
@@ -115,7 +110,7 @@ const getProjects = oid => {
 };
 
 /**
- * 
+ *
  * @param {String} oid Organization Id
  * @param {{name: String, guidelines: String}} project Project details
  */

@@ -1,5 +1,4 @@
 import { BlankLayout } from "../src/Layouts";
-import { getSession, useSession } from "next-auth/client";
 import styled from "styled-components";
 import {
   Card,
@@ -59,7 +58,6 @@ const useStyles = makeStyles({
 });
 
 export default function Home() {
-  const [session, loading] = useSession();
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState({
@@ -81,7 +79,7 @@ export default function Home() {
     });
   }
 
-  return session ? (
+  return (
     <Container>
       <Title>Organizations:</Title>
       {status.recieved
@@ -124,8 +122,6 @@ export default function Home() {
         }
       />
     </Container>
-  ) : loading ? null : (
-    router.push("/login")
   );
 }
 

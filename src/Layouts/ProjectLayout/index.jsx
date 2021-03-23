@@ -7,8 +7,9 @@ import { useRouter } from "next/router";
 import { useOrganization } from "../../OrganizationContext";
 import { useProject } from "../../ProjectContext";
 import { Skeleton } from "@material-ui/lab";
+import { useSession } from "next-auth/client";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
   },
@@ -26,26 +27,35 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ProjectLayout({ children }) {
+  const [session, loading] = useSession();
   const router = useRouter();
   const [org] = useOrganization(router.query.oid);
   const [project] = useProject(router.query.oid, router.query.pid);
   const classes = useStyles();
 
-  return (
+  return session ? (
     <div className={classes.root}>
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            <Button variant="text" onClick={() => router.push('/')}>
+            <Button variant="text" onClick={() => router.push("/")}>
               Annotator
             </Button>
             &nbsp;/&nbsp;
-            <Button variant="text" onClick={() => router.push(`/${org?._id}`)} disabled={!org}>
-              { org?.name ?  org.name : <Skeleton width={100} /> }
+            <Button
+              variant="text"
+              onClick={() => router.push(`/${org?._id}`)}
+              disabled={!org}
+            >
+              {org?.name ? org.name : <Skeleton width={100} />}
             </Button>
             &nbsp;/&nbsp;
-            <Button variant="text" onClick={() => router.push(`/${project?._id}`)} disabled={!project}>
-              { project?.name ?  project.name : <Skeleton width={100} /> }
+            <Button
+              variant="text"
+              onClick={() => router.push(`/${project?._id}`)}
+              disabled={!project}
+            >
+              {project?.name ? project.name : <Skeleton width={100} />}
             </Button>
           </Typography>
           <AvatarMenu />
@@ -57,5 +67,7 @@ export default function ProjectLayout({ children }) {
         {children}
       </main>
     </div>
+  ) : loading ? null : (
+    router.push("/router")
   );
 }

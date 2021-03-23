@@ -1,5 +1,5 @@
 import { ProjectLayout } from "../../../../src/Layouts";
-import { getSession, useSession } from "next-auth/client";
+import { useSession } from "next-auth/client";
 import {
   Button,
   Card,
@@ -24,6 +24,7 @@ import MarkdownEditor from "../../../../src/MarkdownEditor";
 import AddDatasetModal from "../../../../components/modals/AddDatasetModal";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { Settings } from "@material-ui/icons";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -37,11 +38,10 @@ const useStyles = makeStyles(theme => ({
     maxWidth: 345,
   },
   title: {
-    width: "calc(100% + 32px)",
     fontSize: "1.5em",
     borderRadius: 4,
     padding: "4px 8px",
-    margin: "0 -16px",
+    margin: "0 16px 0 -16px",
     "&:hover": {
       backgroundColor: "rgba(0,0,0,0.2)",
     },
@@ -52,14 +52,14 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function OrgProject() {
-  const [session, loading] = useSession();
+  const [session] = useSession();
   const [org] = useOrganization();
   const [project, setProject] = useProject();
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  return session ? (
+  return (
     <>
       <AddDatasetModal
         onCreate={dataset => {
@@ -91,6 +91,7 @@ export default function OrgProject() {
               ) : (
                 <Skeleton className={classes.title} width="100%" />
               )}
+              <Button startIcon={<Settings />}>Settings</Button>
             </Toolbar>
           </Grid>
           <Grid item xs={6}>
@@ -110,7 +111,7 @@ export default function OrgProject() {
               <CardContent>
                 <List>
                   {project?.datasets.map(dataset =>
-                    dataset.user == session.user.email ? (
+                    dataset.user == session?.user.email ? (
                       <ListItem
                         button
                         key={dataset.label}
@@ -144,8 +145,6 @@ export default function OrgProject() {
         </Grid>
       </div>
     </>
-  ) : loading ? null : (
-    router.push("/login")
   );
 }
 

@@ -1,5 +1,4 @@
 import { OrgLayout } from "../../src/Layouts";
-import { getSession, useSession } from "next-auth/client";
 import {
   Button,
   makeStyles,
@@ -31,12 +30,11 @@ const useToolbarStyles = makeStyles(theme => ({
 }));
 
 export default function OrgMembers() {
-  const [session, loading] = useSession();
   const [org, dispatch] = useOrganization();
   const classes = useToolbarStyles();
   const [open, setOpen] = useState(false);
 
-  return session ? (
+  return (
     <>
       <AddMemberModal
         onCreate={member => {
@@ -88,13 +86,11 @@ export default function OrgMembers() {
         </TableContainer>
       </Paper>
     </>
-  ) : loading ? null : (
-    router.push("/login")
   );
 }
 
 /**
- * 
+ *
  * @param {String} oid Organization Id
  * @param {{email: String, role: String}} member Member details
  * @param {Function} callback Callback funtion

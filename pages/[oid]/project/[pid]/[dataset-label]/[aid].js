@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { ProjectLayout } from "../../../../../src/Layouts";
-import { getSession, useSession } from "next-auth/client";
 import {
   OrganizationProvider,
   useOrganization,
@@ -226,7 +225,6 @@ const ChipInput = function ChipInput({ labelList }) {
 };
 
 export default function ProjectDatasetAnnotation() {
-  const [session, loading] = useSession();
   const router = useRouter();
   const [org] = useOrganization();
   const [project] = useProject();
@@ -267,7 +265,7 @@ export default function ProjectDatasetAnnotation() {
     }));
   }
 
-  return session ? (
+  return (
     <>
       <GuidelinesModal
         open={open}
@@ -351,8 +349,6 @@ export default function ProjectDatasetAnnotation() {
         </Grid>
       </Grid>
     </>
-  ) : loading ? null : (
-    router.push("/login")
   );
 }
 

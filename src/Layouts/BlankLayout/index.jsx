@@ -1,9 +1,11 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppBar, Toolbar, Typography } from "@material-ui/core";
+import { useRouter } from "next/router";
 import AvatarMenu from "./AvatarMenu";
+import { useSession } from "next-auth/client";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
   },
@@ -21,9 +23,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ClippedDrawer({ children }) {
+  const [session, loading] = useSession();
+  const router = useRouter();
   const classes = useStyles();
 
-  return (
+  return session ? (
     <div className={classes.root}>
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
@@ -38,5 +42,7 @@ export default function ClippedDrawer({ children }) {
         {children}
       </main>
     </div>
+  ) : loading ? null : (
+    router.push("/login")
   );
 }

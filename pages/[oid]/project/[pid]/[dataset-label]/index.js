@@ -1,5 +1,4 @@
 import { ProjectLayout } from "../../../../../src/Layouts";
-import { getSession, useSession } from "next-auth/client";
 import {
   OrganizationProvider,
   useOrganization,
@@ -15,7 +14,6 @@ const headCells = [
   { id: "action", numeric: true, disablePadding: false, label: "Action" },
 ];
 export default function ProjectDataset() {
-  const [session, loading] = useSession();
   const router = useRouter();
   const [org] = useOrganization();
   const [project] = useProject();
@@ -60,24 +58,20 @@ export default function ProjectDataset() {
     }));
   }
 
-  return session ? (
-    pageData.annotations?.length >= 0 ? (
-      <PaginationTable
-        title={`${pageData.dataset.name}: Annotations`}
-        rows={pageData.annotations}
-        headerCells={headCells}
-        pageSize={10}
-        onPageUpdate={p => {
-          setPageData(data => ({
-            ...data,
-            page: p,
-          }));
-        }}
-      />
-    ) : null
-  ) : loading ? null : (
-    router.push("/login")
-  );
+  return pageData.annotations?.length >= 0 ? (
+    <PaginationTable
+      title={`${pageData.dataset.name}: Annotations`}
+      rows={pageData.annotations}
+      headerCells={headCells}
+      pageSize={10}
+      onPageUpdate={p => {
+        setPageData(data => ({
+          ...data,
+          page: p,
+        }));
+      }}
+    />
+  ) : null;
 }
 
 const getAnnotations = (oid, pid, did, page) => {
