@@ -38,8 +38,11 @@ function ProjectReducer(state, payload) {
 
     console.log("saving project");
 
-    // immediately save for onBlur events
-    saveProject(s);
+    // immediately save PAYLOAD with the 
+    // intent to save for onBlur events
+    payload.organization = state.organization;
+    payload._id = state._id;
+    saveProject(payload);
 
     // return new state to re-render page.
     return s;
@@ -70,7 +73,7 @@ function useProject(oid, pid) {
 
   // simple check to ensure Project data is available.
   if (oid && pid && (state === null || state?._id !== pid)) {
-    getProject(oid, pid).then((project) => setState(project));
+    getProject(oid, pid).then(project => setState(project));
   }
 
   return [state, setState];
@@ -88,8 +91,8 @@ const getProject = (oid, pid) => {
       method: "GET",
     }
   )
-    .then((res) => res.json())
-    .then((res) => res.result);
+    .then(res => res.json())
+    .then(res => res.result);
 };
 
 /**
@@ -106,7 +109,7 @@ const getProject = (oid, pid) => {
  *   _id: String
  * }} project Project Data
  */
-const saveProject = (project) => {
+const saveProject = project => {
   const proj = { ...project }; // don't want to mess with important references...
 
   delete proj.organizer;
@@ -126,8 +129,8 @@ const saveProject = (project) => {
       body: JSON.stringify(proj),
     }
   )
-    .then((res) => res.json())
-    .then((res) => res.result);
+    .then(res => res.json())
+    .then(res => res.result);
 };
 
 export { ProjectProvider, useProject };

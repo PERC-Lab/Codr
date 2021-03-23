@@ -1,26 +1,16 @@
 import {
   Button,
-  Chip,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  makeStyles,
+  TextField,
   Typography,
 } from "@material-ui/core";
 import React from "react";
 import { useProject } from "../../src/ProjectContext";
-
-const useStyles = makeStyles(theme => ({
-  chips: {
-    display: "flex",
-    flexWrap: "wrap",
-    "& > *": {
-      margin: `${theme.spacing(0.5)}px ${theme.spacing(2)}px`,
-    },
-  },
-}));
+import AddLabelset from "../AddLabelset";
 
 /**
  *
@@ -32,7 +22,6 @@ const useStyles = makeStyles(theme => ({
  */
 export default function ProjectSettingsModal({ open, onClose }) {
   const [project, setProject] = useProject();
-  const classes = useStyles();
 
   return (
     <Dialog
@@ -46,33 +35,45 @@ export default function ProjectSettingsModal({ open, onClose }) {
     >
       <DialogTitle id="scroll-dialog-title">Project Settings</DialogTitle>
       <DialogContent dividers={true}>
-        <DialogContentText id="scroll-dialog-description">
-          <Typography variant="h6">Labelsets:</Typography>
-          <div className={classes.chips}>
-            <Typography variant="body1" style={{width: "100%"}}>Privacy Practice:</Typography>
-            <Chip
-              variant="outlined"
-              label="Testing"
-              style={{
-                borderColor: "aquamarine",
-              }}
-              size="small"
-              onDelete={() => {}}
-            />
-          </div>
-          <div className={classes.chips}>
-            <Typography variant="body1" style={{width: "100%"}}>Purpose:</Typography>
-            <Chip
-              variant="outlined"
-              label="Testing"
-              style={{
-                borderColor: "aquamarine",
-              }}
-              size="small"
-              onDelete={() => {}}
-            />
-          </div>
-        </DialogContentText>
+        <Typography variant="h6">Labelsets:</Typography>
+        <AddLabelset labels={[]} title="Privacy Practices" />
+        <AddLabelset
+          labels={[
+            {
+              label: "Functionality",
+              color: "orange",
+            },
+            {
+              label: "Functionality",
+              "sub-label": "Authentiction",
+              color: "yellow",
+            },
+            {
+              label: "Advertisement",
+              color: "red",
+            },
+            {
+              label: "Analytics",
+              color: "aqua",
+            },
+            {
+              label: "Analytics",
+              "sub-label": "User Experience",
+              color: "green",
+            },
+            {
+              label: "Analytics",
+              "sub-label": "Crash Analytics",
+              color: "blue",
+            },
+          ]}
+          title="Purpose"
+        />
+        <span>
+          <Typography component="span">Create a new labelset: </Typography>
+          <TextField placeholder="My labelset" />
+          <Button onClick={() => {}}>Create</Button>
+        </span>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
