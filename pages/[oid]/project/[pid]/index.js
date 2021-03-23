@@ -25,6 +25,7 @@ import AddDatasetModal from "../../../../components/modals/AddDatasetModal";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { Settings } from "@material-ui/icons";
+import ProjectSettingsModal from "../../../../components/modals/ProjectSettingsModal";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -56,7 +57,8 @@ export default function OrgProject() {
   const [org] = useOrganization();
   const [project, setProject] = useProject();
   const classes = useStyles();
-  const [open, setOpen] = useState(false);
+  const [openDataset, setOpenDataset] = useState(false);
+  const [openSettings, setOpenSettings] = useState(false);
   const router = useRouter();
 
   return (
@@ -68,11 +70,15 @@ export default function OrgProject() {
               datasets: [...project.datasets, dataset],
               disableSave: true,
             });
-            setOpen(false);
+            setOpenDataset(false);
           });
         }}
-        onCancel={() => setOpen(false)}
-        open={open}
+        onCancel={() => setOpenDataset(false)}
+        open={openDataset}
+      />
+      <ProjectSettingsModal
+        onClose={() => setOpenSettings(false)}
+        open={openSettings}
       />
       <div className={classes.root}>
         <Grid container spacing={3}>
@@ -82,7 +88,7 @@ export default function OrgProject() {
                 <Input
                   className={classes.title}
                   disableUnderline={true}
-                  defaultValue={name || project.name}
+                  defaultValue={project.name}
                   fullWidth
                   onBlur={e => {
                     setProject({ name: e.target.value });
@@ -91,7 +97,7 @@ export default function OrgProject() {
               ) : (
                 <Skeleton className={classes.title} width="100%" />
               )}
-              <Button startIcon={<Settings />}>Settings</Button>
+              <Button startIcon={<Settings />} onClick={() => setOpenSettings(true)}>Settings</Button>
             </Toolbar>
           </Grid>
           <Grid item xs={6}>
@@ -99,7 +105,7 @@ export default function OrgProject() {
               <CardHeader
                 action={
                   <Button
-                    onClick={() => setOpen(true)}
+                    onClick={() => setOpenDataset(true)}
                     variant="contained"
                     color="primary"
                   >

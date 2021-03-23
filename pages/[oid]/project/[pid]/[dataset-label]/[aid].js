@@ -22,7 +22,7 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import { keys } from "lodash";
+import { keys, isEqual } from "lodash";
 import GuidelinesModal from "../../../../../components/modals/GuidelinesModal";
 
 const useStyles = makeStyles(theme => ({
@@ -122,12 +122,20 @@ const labels = {
     labels: [
       {
         label: "Functionality",
+        color: "orange",
+      },
+      {
+        label: "Functionality",
         "sub-label": "Authentiction",
         color: "yellow",
       },
       {
         label: "Advertisement",
         color: "red",
+      },
+      {
+        label: "Analytics",
+        color: "aqua",
       },
       {
         label: "Analytics",
@@ -148,19 +156,14 @@ const labels = {
 };
 
 function findLabel(option, value) {
-  if (option.label === value.label) {
-    if (option["sub-label"]) {
-      if (option["sub-label"] === value["sub-label"]) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return true;
-    }
-  } else {
-    return false;
-  }
+  // deep copy and remove color from objects.
+  const o = {...option}
+  const v = {...value}
+  delete o.color
+  delete v.color
+
+  // return if they're equal
+  return isEqual(o, v);
 }
 
 /**
@@ -209,7 +212,7 @@ const ChipInput = function ChipInput({ labelList }) {
                 : option.label
             }
             style={{
-              borderColor: options.find(o => findLabel(o, option)).color,
+              borderColor: options.find(o => findLabel(o, option))?.color,
             }}
             size="small"
             {...getTagProps({ index })}

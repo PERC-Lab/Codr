@@ -5,20 +5,19 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Typography,
 } from "@material-ui/core";
 import React from "react";
-import { HighlightedMarkdown } from '../../src/HighlightedMarkdown';
 
 /**
- * 
+ *
  * @param {{
  *  open: Boolean,
- *  onClose: Function,
- *  children: String
+ *  onClose: Function
  * }} param0 props
  * @returns {React.Component}
  */
-export default function GuidelinesModal({ open, onClose, children }) {
+export default function ProjectSettingsModal({ open, onClose }) {
   return (
     <Dialog
       open={open}
@@ -29,14 +28,11 @@ export default function GuidelinesModal({ open, onClose, children }) {
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle id="scroll-dialog-title">Guidelines</DialogTitle>
+      <DialogTitle id="scroll-dialog-title">Project Settings</DialogTitle>
       <DialogContent dividers={true}>
-        <DialogContentText
-          id="scroll-dialog-description"
-        >
-          <HighlightedMarkdown>
-            {children ? children : "No guidelines are available for this project!"}
-          </HighlightedMarkdown>
+        <DialogContentText id="scroll-dialog-description">
+          <Typography variant="h5">Labelsets:</Typography>
+          <span>Chips will appear here</span>
         </DialogContentText>
       </DialogContent>
       <DialogActions>

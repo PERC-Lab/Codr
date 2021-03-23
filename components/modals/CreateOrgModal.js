@@ -23,6 +23,8 @@ export default function CreateOrgModal({ open, onCancel, onCreate }) {
       open={open}
       onClose={handleCancel}
       aria-labelledby="form-dialog-title"
+      fullWidth
+      maxWidth="sm"
     >
       <DialogTitle id="form-dialog-title">Create an organization</DialogTitle>
       <DialogContent>

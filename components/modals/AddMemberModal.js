@@ -32,6 +32,8 @@ export default function AddMemberModal({ open, onCancel, onCreate }) {
       open={open}
       onClose={handleCancel}
       aria-labelledby="form-dialog-title"
+      fullWidth
+      maxWidth="sm"
     >
       <DialogTitle id="form-dialog-title">Add a member.</DialogTitle>
       <DialogContent>
