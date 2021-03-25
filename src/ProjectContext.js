@@ -1,6 +1,8 @@
 import { isEqual } from "lodash";
 import React from "react";
 
+const isBrowser = typeof window !== "undefined";
+
 const ProjectContext = React.createContext();
 
 /**
@@ -21,6 +23,9 @@ function ProjectReducer(state, payload) {
 
   // if state does not exist, save state without sending an update.
   if (!!!state || disableSave) {
+    // if is browser, save state to localstorage
+    isBrowser && localStorage.setItem("project", JSON.stringify(s));
+
     // save state.
     return s;
   }
@@ -38,13 +43,16 @@ function ProjectReducer(state, payload) {
 
     console.log("saving project");
 
-    // immediately save PAYLOAD with the 
+    // immediately save PAYLOAD with the
     // intent to save for onBlur events
     payload.organization = state.organization;
     payload._id = state._id;
     saveProject(payload)
       .then(value => console.log(value))
       .catch(err => console.error(err));
+
+    // if is browser, save state to localstorage
+    isBrowser && localStorage.setItem("project", JSON.stringify(s));
 
     // return new state to re-render page.
     return s;
@@ -87,6 +95,22 @@ function useProject(oid, pid) {
  * @param {String} pid Project Id
  */
 const getProject = (oid, pid) => {
+  // if browser, try to get state from localstorage
+  if (isBrowser) {
+    return new Promise((resolve) => {
+      const p = JSON.parse(localStorage.getItem("project"));
+      if (!!p) {
+        return resolve(p);
+      } else {
+        return fetchProject(oid, pid).then(project => resolve(project));
+      }
+    });
+  } else {
+    return fetchProject(oid, pid);
+  }
+};
+
+const fetchProject = (oid, pid) => {
   return fetch(
     `${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}/project/${pid}`,
     {
@@ -95,7 +119,7 @@ const getProject = (oid, pid) => {
   )
     .then(res => res.json())
     .then(res => res.result);
-};
+}
 
 /**
  *
