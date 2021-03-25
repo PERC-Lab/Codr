@@ -16,7 +16,7 @@ const headCells = [
 export default function ProjectDataset() {
   const router = useRouter();
   const [org] = useOrganization();
-  const [project] = useProject();
+  const [project, setProject] = useProject();
   const [pageData, setPageData] = useState({
     sent: false,
     recieved: false,
@@ -42,6 +42,10 @@ export default function ProjectDataset() {
           recieved: true,
           annotations: a,
         }));
+        setProject({
+          datasetAnnotations: a.map(anno => anno._id),
+          disableSave: true
+        })
       })
       .catch(e => {
         console.error(e);

@@ -181,6 +181,34 @@ const ChipInput = function ChipInput({ labelList, options, labelsetName }) {
   );
 };
 
+/**
+ *
+ * @param {String[]} list List of Annotations
+ * @param {String} currentItem Current annotation Id
+ */
+function Navigator(list, currentItem) {
+  this.list = list;
+  this.index = list.findIndex(i => i === currentItem);
+  this.size = this.list.length;
+}
+
+Navigator.prototype = {
+  getNext: function () {
+    ++this.index;
+    return this.list[this.index];
+  },
+  hasNext: function () {
+    return this.index < this.size - 1;
+  },
+  getPrev: function () {
+    --this.index;
+    return this.list[this.index];
+  },
+  hasPrev: function () {
+    return this.index > 0;
+  },
+};
+
 export default function ProjectDatasetAnnotation() {
   const router = useRouter();
   const [org] = useOrganization();
@@ -193,8 +221,12 @@ export default function ProjectDatasetAnnotation() {
   });
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+  var myNav;
 
-  if (!pageData.sent && org && project) {
+  if (project?.datasetAnnotations && !myNav)
+    myNav = new Navigator(project.datasetAnnotations, router.query.aid);
+
+  if ((!pageData.sent && org && project)) {
     const d = project.datasets.find(
       p => p.label == router.query["dataset-label"]
     );
@@ -212,7 +244,6 @@ export default function ProjectDatasetAnnotation() {
         setPageData(data => ({
           ...data,
           recieved: false,
-          annotation: [],
         }));
       });
     setPageData(data => ({
@@ -220,6 +251,32 @@ export default function ProjectDatasetAnnotation() {
       sent: true,
       dataset: d,
     }));
+  }
+
+  // if annotation id in url changes, fetch new annotation data.
+  if (pageData.annotation?._id && pageData.annotation._id !== router.query.aid) {
+    setPageData(data => ({
+      ...data,
+      recieved: false,
+      annotation: null,
+    }));
+
+    getAnnotation(org._id, project._id, pageData.dataset._id, router.query.aid)
+      .then(a => {
+        setPageData(data => ({
+          ...data,
+          recieved: true,
+          annotation: a,
+        }));
+      })
+      .catch(e => {
+        console.error(e);
+        setPageData(data => ({
+          ...data,
+          recieved: false,
+          annotation: [],
+        }));
+      });    
   }
 
   return (
@@ -304,9 +361,33 @@ export default function ProjectDatasetAnnotation() {
             </Card>
             <Card>
               <CardContent>
-                <Typography>
-                  Navigation from one annotation to the next here
-                </Typography>
+                <Button
+                  color="primary"
+                  disabled={!myNav?.hasPrev()}
+                  onClick={() => {
+                    const oid = router.query.oid,
+                      pid = router.query.pid,
+                      ds = router.query["dataset-label"],
+                      aid = myNav.getPrev();
+                    router.push(`/${oid}/project/${pid}/${ds}/${aid}`);
+                  }}
+                >
+                  Prev
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={!myNav?.hasNext()}
+                  onClick={() => {
+                    const oid = router.query.oid,
+                      pid = router.query.pid,
+                      ds = router.query["dataset-label"],
+                      aid = myNav.getNext();
+                    router.push(`/${oid}/project/${pid}/${ds}/${aid}`);
+                  }}
+                >
+                  Next
+                </Button>
               </CardContent>
             </Card>
           </div>
