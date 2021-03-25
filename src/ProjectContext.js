@@ -20,7 +20,7 @@ function ProjectReducer(state, payload) {
   }
 
   // if state does not exist, save state without sending an update.
-  if (!state || disableSave) {
+  if (!!!state || disableSave) {
     // save state.
     return s;
   }
@@ -42,7 +42,9 @@ function ProjectReducer(state, payload) {
     // intent to save for onBlur events
     payload.organization = state.organization;
     payload._id = state._id;
-    saveProject(payload);
+    saveProject(payload)
+      .then(value => console.log(value))
+      .catch(err => console.error(err));
 
     // return new state to re-render page.
     return s;

@@ -99,68 +99,16 @@ const Highlighter = function Highlighter(method, classes) {
   );
 };
 
-const labels = {
-  privacy_practice: {
-    title: "Privacy Practice",
-    labels: [
-      {
-        label: "Processing",
-        color: "yellow",
-      },
-      {
-        label: "Collection",
-        color: "red",
-      },
-      {
-        label: "Sharing",
-        color: "green",
-      },
-    ],
-  },
-  purpose: {
-    title: "Purpose",
-    labels: [
-      {
-        label: "Functionality",
-        color: "orange",
-      },
-      {
-        label: "Functionality",
-        "sub-label": "Authentiction",
-        color: "yellow",
-      },
-      {
-        label: "Advertisement",
-        color: "red",
-      },
-      {
-        label: "Analytics",
-        color: "aqua",
-      },
-      {
-        label: "Analytics",
-        "sub-label": "User Experience",
-        color: "green",
-      },
-      {
-        label: "Analytics",
-        "sub-label": "Crash Analytics",
-        color: "blue",
-      },
-    ],
-  },
-  information_accessed: {
-    title: "Information Accessed",
-    labels: ["location", "network"],
-  },
-};
-
 function findLabel(option, value) {
-  // deep copy and remove color from objects.
-  const o = {...option}
-  const v = {...value}
-  delete o.color
-  delete v.color
+  // capture only label and sub-label for matching.
+  const o = { 
+    label: option.label,
+    "sub-label": option["sub-label"] || null
+  };
+  const v = { 
+    label: value.label,
+    "sub-label": value["sub-label"] || null
+  };
 
   // return if they're equal
   return isEqual(o, v);
@@ -174,16 +122,19 @@ function findLabel(option, value) {
  *    title: String,
  *    labels: [{
  *      label: String,
- *      "sub-label": String,
- *      color: String
+ *      "sub-label": String
  *    }]
  *  }
+ *  options: {
+ *    label: String,
+ *    "sub-label": String,
+ *    color: String
+ *  }[]
  * }} props Props
  * @returns {React.Component}
  */
-const ChipInput = function ChipInput({ labelList }) {
+const ChipInput = function ChipInput({ labelList, options }) {
   const [value, setValue] = useState([...labelList.labels]);
-  const options = [...labels[labelList["key"]].labels];
   const classes = useStyles();
 
   return (
@@ -197,7 +148,8 @@ const ChipInput = function ChipInput({ labelList }) {
         setValue(newValue);
       }}
       getOptionLabel={option => {
-        return typeof option["sub-label"] !== "undefined"
+        return typeof option["sub-label"] !== "undefined" &&
+          !!option["sub-label"]
           ? `${option.label} : ${option["sub-label"]}`
           : option.label;
       }}
@@ -207,12 +159,13 @@ const ChipInput = function ChipInput({ labelList }) {
           <Chip
             variant="outlined"
             label={
-              typeof option["sub-label"] !== "undefined"
+              typeof option["sub-label"] !== "undefined" &&
+              !!option["sub-label"]
                 ? `${option.label} : ${option["sub-label"]}`
                 : option.label
             }
             style={{
-              borderColor: options.find(o => findLabel(o, option))?.color,
+              backgroundColor: options.find(o => findLabel(o, option))?.color,
             }}
             size="small"
             {...getTagProps({ index })}
@@ -321,14 +274,15 @@ export default function ProjectDatasetAnnotation() {
             <Card>
               <CardHeader title="Labels" />
               <CardContent>
-                {keys(pageData.annotation?.data.labels).length ? (
-                  keys(pageData.annotation?.data.labels).map(key =>
+                {(pageData.annotation?.data?.labels && keys(project?.labelsets).length) ? (
+                  keys(project.labelsets).map(key =>
                     key == "information_accessed" ? null : (
                       <ChipInput
                         labelList={{
                           ...pageData.annotation?.data.labels[key],
                           key,
                         }}
+                        options={project?.labelsets[key].labels}
                         key={key}
                       />
                     )

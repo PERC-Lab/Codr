@@ -56,8 +56,8 @@ export default function AddProjectModal({ open, onCancel, onCreate }) {
           margin="dense"
           id="project-guidelines"
           label="Guidelines"
-          name="name"
-          defaultValue={form?.name}
+          name="guidelines"
+          defaultValue={form?.guidelines}
           autoComplete="false"
           onKeyUp={handleChange}
           fullWidth

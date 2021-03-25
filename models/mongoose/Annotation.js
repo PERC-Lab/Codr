@@ -33,16 +33,21 @@ const AnnotationSchema = new Schema(
           ],
         },
         language: String,
-        labels: {
+        labelsets: {
           type: Map,
-          of: [
-            {
-              label: String,
-              "sub-label": String,
+          of: {
+            title: String,
+            labels: {
+              type: [
+                {
+                  label: String,
+                  "sub-label": String,
+                  color: String,
+                },
+              ],
             },
-          ],
+          },
         },
-        information_accessed: [String],
       },
     },
     project: {

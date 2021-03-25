@@ -10,12 +10,12 @@ const ProjectSchema = new Schema(
     organization: {
       type: Schema.Types.ObjectId,
       ref: "Organization",
-      reqired: [true, "Organization Id is required."],
+      required: [true, "Organization Id is required."],
     },
     organizer: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      reqired: [true, "Are you signed in?"],
+      required: [true, "Are you signed in?"],
     },
     guidelines: {
       type: Schema.Types.String,
@@ -29,15 +29,21 @@ const ProjectSchema = new Schema(
         },
       ],
     },
-    labelset: {
+    labelsets: {
       type: Map,
-      of: [
-        {
-          label: String,
-          "sub-label": String,
+      of: {
+        title: String,
+        labels: {
+          type: [
+            {
+              label: String,
+              "sub-label": String,
+              color: String,
+            },
+          ],
         },
-      ],
-    }
+      },
+    },
   },
   { timestamps: true }
 );

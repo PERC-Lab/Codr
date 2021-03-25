@@ -3,14 +3,14 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   TextField,
   Typography,
 } from "@material-ui/core";
-import React from "react";
+import { keys } from "lodash";
+import React, { useState } from "react";
 import { useProject } from "../../src/ProjectContext";
-import AddLabelset from "../AddLabelset";
+import ModifyLabelset from "../ModifyLabelset";
 
 /**
  *
@@ -22,6 +22,10 @@ import AddLabelset from "../AddLabelset";
  */
 export default function ProjectSettingsModal({ open, onClose }) {
   const [project, setProject] = useProject();
+  /**
+   * @type {[string, function]}
+   */
+  const [newLabelset, setNewLabelset] = useState("");
 
   return (
     <Dialog
@@ -36,43 +40,43 @@ export default function ProjectSettingsModal({ open, onClose }) {
       <DialogTitle id="scroll-dialog-title">Project Settings</DialogTitle>
       <DialogContent dividers={true}>
         <Typography variant="h6">Labelsets:</Typography>
-        <AddLabelset labels={[]} title="Privacy Practices" />
-        <AddLabelset
-          labels={[
-            {
-              label: "Functionality",
-              color: "orange",
-            },
-            {
-              label: "Functionality",
-              "sub-label": "Authentiction",
-              color: "yellow",
-            },
-            {
-              label: "Advertisement",
-              color: "red",
-            },
-            {
-              label: "Analytics",
-              color: "aqua",
-            },
-            {
-              label: "Analytics",
-              "sub-label": "User Experience",
-              color: "green",
-            },
-            {
-              label: "Analytics",
-              "sub-label": "Crash Analytics",
-              color: "blue",
-            },
-          ]}
-          title="Purpose"
-        />
+        {keys(project?.labelsets).map(key => (
+          <ModifyLabelset
+            key={`labelset-${key}`}
+            labels={[...project.labelsets[key].labels]}
+            title={project.labelsets[key].title}
+            onChange={labels => {
+              const ls = { labelsets: { ...project.labelsets } };
+              // need to replace entire object for auto-change detect to pick it up.
+              ls.labelsets[key] = {
+                title: project.labelsets[key].title,
+                labels: [...labels],
+              };
+              setProject(ls);
+            }}
+          />
+        ))}
         <span>
           <Typography component="span">Create a new labelset: </Typography>
-          <TextField placeholder="My labelset" />
-          <Button onClick={() => {}}>Create</Button>
+          <TextField
+            placeholder="My labelset"
+            value={newLabelset}
+            onChange={e => {
+              setNewLabelset(e.target.value);
+            }}
+          />
+          <Button
+            onClick={() => {
+              const key = newLabelset.toLowerCase().replaceAll(/\s/g, "_");
+              const ls = { labelsets: { ...project.labelsets } };
+              ls.labelsets[key] = { title: newLabelset, labels: [] };
+              setProject(ls);
+              setNewLabelset("");
+            }}
+            disabled={newLabelset === ""}
+          >
+            Create
+          </Button>
         </span>
       </DialogContent>
       <DialogActions>
