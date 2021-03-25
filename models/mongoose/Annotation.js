@@ -6,7 +6,7 @@ const AnnotationSchema = new Schema(
     datasetId: {
       type: Schema.Types.ObjectId,
       ref: "Project.datasets",
-      reqired: [true, "Dataset Id is required."],
+      required: [true, "Dataset Id is required."],
     },
     dataId: {
       type: String,
@@ -33,37 +33,29 @@ const AnnotationSchema = new Schema(
           ],
         },
         language: String,
-        labelsets: {
+        labels: {
           type: Map,
-          of: {
-            title: String,
-            labels: {
-              type: [
-                {
-                  label: String,
-                  "sub-label": String,
-                  color: String,
-                },
-              ],
+          of: [
+            {
+              label: String,
+              "sub-label": String,
             },
-          },
+          ],
         },
       },
     },
     project: {
       type: Schema.Types.ObjectId,
       ref: "Project",
-      reqired: [true, "Project Id is required."],
+      required: [true, "Project Id is required."],
     },
     verified_by: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      reqired: [true, "User Id is required."],
     },
     annotated_by: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      reqired: [true, "User Id is required."],
     },
   },
   { timestamps: true }

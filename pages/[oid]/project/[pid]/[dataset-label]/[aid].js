@@ -101,13 +101,13 @@ const Highlighter = function Highlighter(method, classes) {
 
 function findLabel(option, value) {
   // capture only label and sub-label for matching.
-  const o = { 
+  const o = {
     label: option.label,
-    "sub-label": option["sub-label"] || null
+    "sub-label": option["sub-label"] || null,
   };
-  const v = { 
+  const v = {
     label: value.label,
-    "sub-label": value["sub-label"] || null
+    "sub-label": value["sub-label"] || null,
   };
 
   // return if they're equal
@@ -130,10 +130,11 @@ function findLabel(option, value) {
  *    "sub-label": String,
  *    color: String
  *  }[]
+ *  labelsetName: String
  * }} props Props
  * @returns {React.Component}
  */
-const ChipInput = function ChipInput({ labelList, options }) {
+const ChipInput = function ChipInput({ labelList, options, labelsetName }) {
   const [value, setValue] = useState([...labelList.labels]);
   const classes = useStyles();
 
@@ -174,7 +175,7 @@ const ChipInput = function ChipInput({ labelList, options }) {
       }
       filterSelectedOptions
       renderInput={params => (
-        <TextField {...params} variant="outlined" label={labelList.title} />
+        <TextField {...params} variant="outlined" label={labelsetName} />
       )}
     />
   );
@@ -274,15 +275,21 @@ export default function ProjectDatasetAnnotation() {
             <Card>
               <CardHeader title="Labels" />
               <CardContent>
-                {(pageData.annotation?.data?.labels && keys(project?.labelsets).length) ? (
+                {keys(project?.labelsets).length ? (
                   keys(project.labelsets).map(key =>
                     key == "information_accessed" ? null : (
                       <ChipInput
                         labelList={{
-                          ...pageData.annotation?.data.labels[key],
+                          ...(pageData.annotation?.data?.labels &&
+                          pageData.annotation.data.labels[key]
+                            ? pageData.annotation?.data.labels[key]
+                            : {
+                                labels: [],
+                              }),
                           key,
                         }}
                         options={project?.labelsets[key].labels}
+                        labelsetName={project?.labelsets[key].title}
                         key={key}
                       />
                     )
