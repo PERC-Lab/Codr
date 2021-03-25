@@ -33,6 +33,7 @@ const useStyles = makeStyles(theme => ({
   pre: {
     width: "100%",
     whiteSpace: "pre-wrap",
+    fontSize: "1rem",
     overflowWrap: "anywhere",
     margin: 0,
     "&, span": {
