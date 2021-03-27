@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ProjectLayout } from "../../../../../src/Layouts";
 import {
   OrganizationProvider,
@@ -24,6 +24,7 @@ import {
 } from "@material-ui/core";
 import { keys, isEqual } from "lodash";
 import GuidelinesModal from "../../../../../components/modals/GuidelinesModal";
+import Navigator from "../../../../../lib/navigator";
 
 const useStyles = makeStyles(theme => ({
   method: {
@@ -136,8 +137,13 @@ function findLabel(option, value) {
  * @returns {React.Component}
  */
 const ChipInput = function ChipInput({ labelList, options, labelsetName }) {
-  const [value, setValue] = useState([...labelList.labels]);
+  const [value, setValue] = useState([...labelList?.labels]);
   const classes = useStyles();
+
+  // fix default value issue
+  useEffect(() => {
+    setValue(labelList?.labels)
+  }, [labelList])
 
   return (
     <Autocomplete
@@ -180,34 +186,6 @@ const ChipInput = function ChipInput({ labelList, options, labelsetName }) {
       )}
     />
   );
-};
-
-/**
- *
- * @param {String[]} list List of Annotations
- * @param {String} currentItem Current annotation Id
- */
-function Navigator(list, currentItem) {
-  this.list = list;
-  this.index = list.findIndex(i => i === currentItem);
-  this.size = this.list.length;
-}
-
-Navigator.prototype = {
-  getNext: function () {
-    ++this.index;
-    return this.list[this.index];
-  },
-  hasNext: function () {
-    return this.index < this.size - 1;
-  },
-  getPrev: function () {
-    --this.index;
-    return this.list[this.index];
-  },
-  hasPrev: function () {
-    return this.index > 0;
-  },
 };
 
 export default function ProjectDatasetAnnotation() {
@@ -279,6 +257,8 @@ export default function ProjectDatasetAnnotation() {
         }));
       });    
   }
+
+  console.log(pageData)
 
   return (
     <>

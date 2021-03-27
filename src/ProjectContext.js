@@ -97,12 +97,12 @@ function useProject(oid, pid) {
 const getProject = (oid, pid) => {
   // if browser, try to get state from localstorage
   if (isBrowser) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const p = JSON.parse(localStorage.getItem("project"));
       if (!!p) {
         return resolve(p);
       } else {
-        return fetchProject(oid, pid).then(project => resolve(project));
+        return fetchProject(oid, pid).then(resolve);
       }
     });
   } else {
@@ -119,7 +119,7 @@ const fetchProject = (oid, pid) => {
   )
     .then(res => res.json())
     .then(res => res.result);
-}
+};
 
 /**
  *
