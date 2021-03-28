@@ -13,9 +13,6 @@ const OrgSchema = new Schema(
     members: {
       type: Array,
     },
-    projects: {
-      type: Array,
-    }
   },
   { timestamps: true }
 );

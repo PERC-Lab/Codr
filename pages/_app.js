@@ -4,6 +4,7 @@ import React from "react";
 import theme from "../src/theme";
 import { responsiveFontSizes, ThemeProvider } from "@material-ui/core/styles";
 import { CssBaseline } from "@material-ui/core";
+import "highlight.js/styles/atom-one-dark.css";
 
 function App({ Component, pageProps }) {
   const OrganizationProvider = Component.OrganizationProvider

@@ -1,5 +1,4 @@
 import { Input, makeStyles, Typography } from "@material-ui/core";
-import { Skeleton } from "@material-ui/lab";
 import { useState } from "react";
 import { HighlightedMarkdown } from "./HighlightedMarkdown";
 
@@ -19,10 +18,17 @@ const useStyles = makeStyles(() => ({
     margin: "-8px",
     "&:hover": {
       background: "rgba(0,0,0,0.2)",
-    }
-  }
+    },
+  },
 }));
 
+/**
+ * @param {{
+ *  value: String,
+ *  onUpdate: Function}
+ * } props
+ * @returns {React.Component}
+ */
 export default function MarkdownEditor({ value, onUpdate }) {
   const [isEditor, setEditor] = useState(false);
   const classes = useStyles();
@@ -33,16 +39,19 @@ export default function MarkdownEditor({ value, onUpdate }) {
       defaultValue={value}
       fullWidth
       multiline
-      onBlur={(e) => {
+      onBlur={e => {
         onUpdate(e);
         setEditor(false);
       }}
       className={classes.input}
       autoFocus
     />
-  ) : value ? (
-    <HighlightedMarkdown className={classes.text} onClick={() => setEditor(true)} >
-      {value}
+  ) : (
+    <HighlightedMarkdown
+      className={classes.text}
+      onClick={() => setEditor(true)}
+    >
+      {value ? value : "No guidelines are available for this project!"}
     </HighlightedMarkdown>
-  ) : <Skeleton />;
+  );
 }

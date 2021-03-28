@@ -13,10 +13,11 @@ import { Dashboard, Storage } from "@material-ui/icons";
 import { useOrganization } from "../../OrganizationContext";
 import { useProject } from "../../ProjectContext";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/client";
 
 const drawerWidth = 240;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
   },
@@ -37,6 +38,7 @@ export default function AppDrawer() {
   const [project] = useProject();
   const classes = useStyles();
   const router = useRouter();
+  const [session] = useSession();
 
   return (
     <Drawer
@@ -66,14 +68,24 @@ export default function AppDrawer() {
           <ListSubheader>
             <ListItemText primary="Datasets" />
           </ListSubheader>
-          {project?.datasets.map((dataset) => (
-            <ListItem button key={dataset.label}>
-              <ListItemIcon>
-                <Storage />
-              </ListItemIcon>
-              <ListItemText primary={dataset.name} />
-            </ListItem>
-          ))}
+          {project?.datasets.map(dataset =>
+            dataset.user == session?.user?.email ? (
+              <ListItem
+                button
+                key={dataset.label}
+                onClick={() =>
+                  router.push(
+                    `/${org._id}/project/${project._id}/${dataset.label}`
+                  )
+                }
+              >
+                <ListItemIcon>
+                  <Storage />
+                </ListItemIcon>
+                <ListItemText primary={dataset.name} />
+              </ListItem>
+            ) : null
+          )}
         </List>
       </div>
     </Drawer>

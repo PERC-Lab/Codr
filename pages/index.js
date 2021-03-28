@@ -1,5 +1,4 @@
 import { BlankLayout } from "../src/Layouts";
-import { getSession } from "next-auth/client";
 import styled from "styled-components";
 import {
   Card,
@@ -58,7 +57,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Home({ session }) {
+export default function Home() {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState({
@@ -69,7 +68,7 @@ export default function Home({ session }) {
   const router = useRouter();
 
   if (!status.sent) {
-    getOrganizations().then((orgs) => {
+    getOrganizations().then(orgs => {
       setOrgs(orgs);
       setStatus(({ sent }) => {
         return { sent, recieved: true };
@@ -84,8 +83,8 @@ export default function Home({ session }) {
     <Container>
       <Title>Organizations:</Title>
       {status.recieved
-        ? orgs.map((org) => (
-            <Card>
+        ? orgs.map(org => (
+            <Card key={org._id}>
               <CardActionArea
                 className={classes.card}
                 onClick={() => {
@@ -113,12 +112,14 @@ export default function Home({ session }) {
         onCancel={() => {
           setOpen(false);
         }}
-        onCreate={(name) => postOrganization(name, (org) => {
-          setOrgs(o => {
-            return [org, ...o];
+        onCreate={name =>
+          postOrganization(name, org => {
+            setOrgs(o => {
+              return [org, ...o];
+            });
+            setOpen(false);
           })
-          setOpen(false);
-        })}
+        }
       />
     </Container>
   );
@@ -133,8 +134,8 @@ const postOrganization = (name, callback) => {
     },
     body: JSON.stringify({ name }),
   })
-    .then((res) => res.json())
-    .then((res) => callback(res.result))
+    .then(res => res.json())
+    .then(res => callback(res.result));
 };
 
 const getOrganizations = () => {
@@ -142,27 +143,8 @@ const getOrganizations = () => {
     method: "GET",
     credentials: "same-origin",
   })
-    .then((res) => res.json())
-    .then((res) => res.result);
+    .then(res => res.json())
+    .then(res => res.result);
 };
-
-export async function getServerSideProps({ req }) {
-  // Get the user's session based on the request
-  const session = await getSession({ req });
-
-  if (!session) {
-    // If no user, redirect to login
-    return {
-      props: {},
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
-  // If there is a user, return the current session
-  return { props: { session } };
-}
 
 Home.Layout = BlankLayout;

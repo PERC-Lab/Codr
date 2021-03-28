@@ -9,27 +9,40 @@ const ProjectSchema = new Schema(
     },
     organization: {
       type: Schema.Types.ObjectId,
-      ref: "Organizaion",
-      reqired: [true, "Organization Id is required."],
+      ref: "Organization",
+      required: [true, "Organization Id is required."],
     },
     organizer: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      reqired: [true, "Are you signed in?"],
+      required: [true, "Are you signed in?"],
     },
     guidelines: {
       type: Schema.Types.String,
     },
     datasets: {
-      type: [{
-        name: Schema.Types.String,
-        user: Schema.Types.String,
-        label: Schema.Types.String,
-        annotations: [{
-          type: Schema.Types.ObjectId,
-          ref: "Annotation",
-        }]
-      }],
+      type: [
+        {
+          name: Schema.Types.String,
+          user: Schema.Types.String,
+          label: Schema.Types.String,
+        },
+      ],
+    },
+    labelsets: {
+      type: Map,
+      of: {
+        title: String,
+        labels: {
+          type: [
+            {
+              label: String,
+              "sub-label": String,
+              color: String,
+            },
+          ],
+        },
+      },
     },
   },
   { timestamps: true }

@@ -37,7 +37,7 @@ export default function AvatarMenu() {
           >
             <Avatar
               alt={session.user.name}
-              src={session.user.picture}
+              src={session.user.image}
               className={classes.avatar}
             />
             {session.user.name}

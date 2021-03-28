@@ -1,6 +1,8 @@
 import { isEqual } from "lodash";
 import React from "react";
 
+const isBrowser = typeof window !== "undefined";
+
 const ProjectContext = React.createContext();
 
 /**
@@ -20,7 +22,10 @@ function ProjectReducer(state, payload) {
   }
 
   // if state does not exist, save state without sending an update.
-  if (!state || disableSave) {
+  if (!!!state || disableSave) {
+    // if is browser, save state to localstorage
+    isBrowser && localStorage.setItem("project", JSON.stringify(s));
+
     // save state.
     return s;
   }
@@ -38,8 +43,16 @@ function ProjectReducer(state, payload) {
 
     console.log("saving project");
 
-    // immediately save for onBlur events
-    saveProject(s);
+    // immediately save PAYLOAD with the
+    // intent to save for onBlur events
+    payload.organization = state.organization;
+    payload._id = state._id;
+    saveProject(payload)
+      .then(value => console.log(value))
+      .catch(err => console.error(err));
+
+    // if is browser, save state to localstorage
+    isBrowser && localStorage.setItem("project", JSON.stringify(s));
 
     // return new state to re-render page.
     return s;
@@ -70,7 +83,7 @@ function useProject(oid, pid) {
 
   // simple check to ensure Project data is available.
   if (oid && pid && (state === null || state?._id !== pid)) {
-    getProject(oid, pid).then((project) => setState(project));
+    getProject(oid, pid).then(project => setState(project));
   }
 
   return [state, setState];
@@ -82,14 +95,30 @@ function useProject(oid, pid) {
  * @param {String} pid Project Id
  */
 const getProject = (oid, pid) => {
+  // if browser, try to get state from localstorage
+  if (isBrowser) {
+    return new Promise(resolve => {
+      const p = JSON.parse(localStorage.getItem("project"));
+      if (!!p) {
+        return resolve(p);
+      } else {
+        return fetchProject(oid, pid).then(resolve);
+      }
+    });
+  } else {
+    return fetchProject(oid, pid);
+  }
+};
+
+const fetchProject = (oid, pid) => {
   return fetch(
     `${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}/project/${pid}`,
     {
       method: "GET",
     }
   )
-    .then((res) => res.json())
-    .then((res) => res.result);
+    .then(res => res.json())
+    .then(res => res.result);
 };
 
 /**
@@ -106,7 +135,7 @@ const getProject = (oid, pid) => {
  *   _id: String
  * }} project Project Data
  */
-const saveProject = (project) => {
+const saveProject = project => {
   const proj = { ...project }; // don't want to mess with important references...
 
   delete proj.organizer;
@@ -126,8 +155,8 @@ const saveProject = (project) => {
       body: JSON.stringify(proj),
     }
   )
-    .then((res) => res.json())
-    .then((res) => res.result);
+    .then(res => res.json())
+    .then(res => res.result);
 };
 
 export { ProjectProvider, useProject };

@@ -58,7 +58,9 @@ const Image = styled(Img)`
   object-fit: cover;
 `;
 
-export default function Login({ photo }) {
+export default function Login({ photo, ...props }) {
+  // console.log(props);
+
   return (
     <Page photo={photo}>
       <Image
@@ -85,6 +87,8 @@ export default function Login({ photo }) {
 export async function getServerSideProps({ req }) {
   const session = await getSession({ req });
 
+  // console.log(req);
+
   if (session) {
     // If user, redirect to dashboard
     return {
@@ -98,7 +102,7 @@ export async function getServerSideProps({ req }) {
 
   const photo = await unsplash.photos
     .getRandom({
-      collectionIds: ["1369818", "1004513"],
+      collectionIds: ["23354607"],
     })
     .then((res) => {
       return res.response;
