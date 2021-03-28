@@ -117,14 +117,10 @@ function findLabel(option, value) {
 /**
  *
  * @param {{
- *  labelList: {
- *    key: String,
- *    title: String,
- *    labels: [{
- *      label: String,
- *      "sub-label": String
- *    }]
- *  }
+ *  labelList: [{
+ *    label: String,
+ *    "sub-label": String
+ *  }]
  *  options: {
  *    label: String,
  *    "sub-label": String,
@@ -141,12 +137,12 @@ const ChipInput = function ChipInput({
   labelsetName,
   onChange,
 }) {
-  const [value, setValue] = useState([...labelList?.labels]);
+  const [value, setValue] = useState([...labelList]);
   const classes = useStyles();
 
   // fix default value issue
   useEffect(() => {
-    setValue(labelList?.labels);
+    setValue(labelList);
   }, [labelList]);
 
   return (
@@ -331,23 +327,29 @@ export default function ProjectDatasetAnnotation() {
                   keys(project.labelsets).map(key =>
                     key == "information_accessed" ? null : (
                       <ChipInput
-                        labelList={{
-                          ...(pageData.annotation?.data?.labels &&
+                        labelList={
+                          pageData.annotation?.data?.labels &&
                           pageData.annotation.data.labels[key]
                             ? pageData.annotation?.data.labels[key]
-                            : {
-                                labels: [],
-                              }),
-                          key,
-                        }}
+                            : []
+                        }
                         options={project?.labelsets[key].labels}
                         labelsetName={project?.labelsets[key].title}
-                        onChange={labels =>
-                          console.log({
-                            key,
-                            labels,
-                          })
-                        }
+                        onChange={labels => {
+                          const d = {
+                            data: {
+                              labels: { ...pageData.annotation.data.labels },
+                            },
+                          };
+                          d.data.labels[key] = labels;
+                          updateAnnotation(
+                            org._id,
+                            project._id,
+                            pageData.dataset._id,
+                            router.query.aid,
+                            d
+                          );
+                        }}
                         key={key}
                       />
                     )
@@ -357,6 +359,30 @@ export default function ProjectDatasetAnnotation() {
                     <Skeleton height={64} />
                     <Skeleton height={64} />
                   </>
+                )}
+                {pageData.recieved ? (
+                  <TextField
+                    variant="outlined"
+                    label="Comments"
+                    fullWidth
+                    multiline
+                    defaultValue={pageData.annotation.data?.comments}
+                    onBlur={e => {
+                      updateAnnotation(
+                        org._id,
+                        project._id,
+                        pageData.dataset._id,
+                        router.query.aid,
+                        {
+                          data: {
+                            comments: e.target.value,
+                          },
+                        }
+                      );
+                    }}
+                  />
+                ) : (
+                  <Skeleton height={64} />
                 )}
               </CardContent>
             </Card>
@@ -412,6 +438,36 @@ const getAnnotation = (oid, pid, did, aid) => {
     {
       method: "GET",
       credentials: "same-origin",
+    }
+  )
+    .then(res => res.json())
+    .then(res => res.result);
+};
+
+/**
+ * @description Get annotation data
+ * @param {string} oid Organization Id
+ * @param {string} pid Project Id
+ * @param {string} did Dataset Id
+ * @param {string} aid Annotation Data Id
+ * @param {{
+ *  data: {
+ *    labels: Object.<string, {label: string, "sub-label": string}[]>
+ *    comment: string
+ *  }
+ * }} update Data to update
+ * @returns {Promise}
+ */
+const updateAnnotation = (oid, pid, did, aid, update) => {
+  return fetch(
+    `${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}/project/${pid}/${did}/${aid}`,
+    {
+      method: "PATCH",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(update),
     }
   )
     .then(res => res.json())

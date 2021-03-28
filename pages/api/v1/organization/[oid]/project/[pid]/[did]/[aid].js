@@ -15,6 +15,9 @@ async function AnnotationHandler(req, res) {
     case "GET":
       getAnnotation(req, res, session);
       break;
+    case "PATCH":
+      updateAnnotation(req, res, session);
+      break;
     case "DELETE":
       deleteAnnotation(req, res, session);
       break;
@@ -85,7 +88,46 @@ const deleteAnnotation = async (req, res, session) => {
   }
 };
 
+/**
+ *
+ * @param {NextApiRequest} req Response
+ * @param {NextApiResponse} res Response
+ * @param {Session} session Session
+ */
+const updateAnnotation = async (req, res, session) => {
+  if (session?.user) {
+    const annotation = await Annotation.updateOne(
+      { _id: req.query.aid },
+      { ...convertJsonToDot(req.body) }
+    ).exec();
+
+    if (annotation?.nModified === 1) {
+      res.status(200).json({
+        status: true,
+        result: `Annotation '${req.query.aid}' was successfully modified!`,
+      });
+    } else {
+      res.status(400).json({
+        status: false,
+        result: `Annotation '${req.query.aid}' was not able to be modified!`,
+      });
+    }
+  } else {
+    res.status(401).json({
+      status: false,
+      result: "Unauthorized Access.",
+    });
+  }
+};
+
 export default AnnotationHandler;
+
+function convertJsonToDot(obj, parent = [], keyValue = {}) {
+  for (let key in obj.data) {
+    keyValue[`data.${key}`] = obj.data[key];
+  }
+  return keyValue;
+}
 
 export const config = {
   api: {

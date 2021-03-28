@@ -9,11 +9,11 @@ const AnnotationSchema = new Schema(
       required: [true, "Dataset Id is required."],
     },
     dataId: {
-      type: String,
+      type: Schema.Types.String,
       required: true,
     },
     type: {
-      type: String,
+      type: Schema.Types.String,
       required: true,
     },
     data: {
@@ -21,27 +21,28 @@ const AnnotationSchema = new Schema(
         methods: {
           type: [
             {
-              methodId: String,
+              methodId: Schema.Types.String,
               highlight: {
                 type: {
-                  start: Number,
-                  end: Number,
-                  color: String,
+                  start: Schema.Types.String,
+                  end: Schema.Types.Number,
+                  color: Schema.Types.String,
                 },
               },
             },
           ],
         },
-        language: String,
+        language: Schema.Types.String,
         labels: {
-          type: Map,
+          type: Schema.Types.Map,
           of: [
             {
-              label: String,
-              "sub-label": String,
+              label: Schema.Types.String,
+              "sub-label": Schema.Types.String,
             },
           ],
         },
+        comment: Schema.Types.String
       },
     },
     project: {
