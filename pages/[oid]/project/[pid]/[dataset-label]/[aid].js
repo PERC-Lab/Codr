@@ -72,17 +72,15 @@ const Highlighter = function Highlighter(method, classes) {
   // get code segment
   let code = method.methodID;
   // highlight the portion of code before marked portion
-  let start = hljs.highlight(
-    method.language,
-    code.slice(0, method.highlight.start),
-    true
-  ).value;
+  let start = hljs.highlight(code.slice(0, method.highlight.start), {
+    language: method.language,
+    ignoreIllegals: true,
+  }).value;
   // highlight the portion of code after marked portion
-  let end = hljs.highlight(
-    method.language,
-    code.slice(method.highlight.end),
-    true
-  ).value;
+  let end = hljs.highlight(code.slice(method.highlight.end), {
+    language: method.language,
+    ignoreIllegals: true,
+  }).value;
 
   // set the inner html of the HTML code tag to the highlighted code.
   return (
@@ -133,17 +131,23 @@ function findLabel(option, value) {
  *    color: String
  *  }[]
  *  labelsetName: String
+ *  onChange: Function
  * }} props Props
  * @returns {React.Component}
  */
-const ChipInput = function ChipInput({ labelList, options, labelsetName }) {
+const ChipInput = function ChipInput({
+  labelList,
+  options,
+  labelsetName,
+  onChange,
+}) {
   const [value, setValue] = useState([...labelList?.labels]);
   const classes = useStyles();
 
   // fix default value issue
   useEffect(() => {
-    setValue(labelList?.labels)
-  }, [labelList])
+    setValue(labelList?.labels);
+  }, [labelList]);
 
   return (
     <Autocomplete
@@ -153,7 +157,12 @@ const ChipInput = function ChipInput({ labelList, options, labelsetName }) {
       options={options}
       value={value}
       onChange={(_event, newValue) => {
-        setValue(newValue);
+        const val = newValue.map(v => ({
+          label: v.label,
+          "sub-label": v["sub-label"],
+        }));
+        onChange(val);
+        setValue(val);
       }}
       getOptionLabel={option => {
         return typeof option["sub-label"] !== "undefined" &&
@@ -205,7 +214,7 @@ export default function ProjectDatasetAnnotation() {
   if (project?.datasetAnnotations && !myNav)
     myNav = new Navigator(project.datasetAnnotations, router.query.aid);
 
-  if ((!pageData.sent && org && project)) {
+  if (!pageData.sent && org && project) {
     const d = project.datasets.find(
       p => p.label == router.query["dataset-label"]
     );
@@ -233,32 +242,37 @@ export default function ProjectDatasetAnnotation() {
   }
 
   // if annotation id in url changes, fetch new annotation data.
-  if (pageData.annotation?._id && pageData.annotation._id !== router.query.aid) {
-    setPageData(data => ({
-      ...data,
-      recieved: false,
-      annotation: null,
-    }));
+  useEffect(() => {
+    if (org && project) {
+      setPageData(data => ({
+        ...data,
+        recieved: false,
+        annotation: null,
+      }));
 
-    getAnnotation(org._id, project._id, pageData.dataset._id, router.query.aid)
-      .then(a => {
-        setPageData(data => ({
-          ...data,
-          recieved: true,
-          annotation: a,
-        }));
-      })
-      .catch(e => {
-        console.error(e);
-        setPageData(data => ({
-          ...data,
-          recieved: false,
-          annotation: [],
-        }));
-      });    
-  }
-
-  console.log(pageData)
+      getAnnotation(
+        org._id,
+        project._id,
+        pageData.dataset._id,
+        router.query.aid
+      )
+        .then(a => {
+          setPageData(data => ({
+            ...data,
+            recieved: true,
+            annotation: a,
+          }));
+        })
+        .catch(e => {
+          console.error(e);
+          setPageData(data => ({
+            ...data,
+            recieved: false,
+            annotation: [],
+          }));
+        });
+    }
+  }, [router.query.aid]);
 
   return (
     <>
@@ -328,6 +342,12 @@ export default function ProjectDatasetAnnotation() {
                         }}
                         options={project?.labelsets[key].labels}
                         labelsetName={project?.labelsets[key].title}
+                        onChange={labels =>
+                          console.log({
+                            key,
+                            labels,
+                          })
+                        }
                         key={key}
                       />
                     )
