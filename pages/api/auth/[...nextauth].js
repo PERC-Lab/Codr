@@ -19,6 +19,7 @@ const getProviders = (ownership, platform, codeVerifier) => {
       ? Providers.Google({
           clientId: process.env.GOOGLE_CLIENT_ID,
           clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          state: false,
           params: {
             grant_type: "authorization_code",
             redirect_uri: "https://auth.expo.io/@dylanbulmer/annotator",
@@ -27,6 +28,7 @@ const getProviders = (ownership, platform, codeVerifier) => {
       : platform === "ios"
       ? Providers.Google({
           clientId: process.env.GOOGLE_IOS_CLIENT_ID,
+          state: false,
           params: {
             grant_type: "authorization_code",
             redirect_uri: `${reverseDomain(
@@ -38,6 +40,7 @@ const getProviders = (ownership, platform, codeVerifier) => {
       : platform === "android"
       ? Providers.Google({
           clientId: process.env.GOOGLE_ANDROID_CLIENT_ID,
+          state: false,
           params: {
             grant_type: "authorization_code",
             redirect_uri: "com.bulmersolutions.annotator:/oauthredirect",
