@@ -50,6 +50,7 @@ const getProviders = (ownership, platform, codeVerifier) => {
       : Providers.Google({
           clientId: process.env.GOOGLE_CLIENT_ID,
           clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          state: false,
           params: {
             grant_type: "authorization_code",
           },
