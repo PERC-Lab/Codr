@@ -77,7 +77,7 @@ export default function handler(req, res) {
     ),
     secret: process.env.SECRET,
     session: {
-      jwt: true,
+      jwt: false,
     },
     pages: {
       error: "/login",
