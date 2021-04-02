@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import React from "react";
 
 const OrganizationContext = React.createContext();
@@ -29,11 +30,9 @@ function OrganizationProvider({ children }) {
   );
 }
 
-/**
- *
- * @param {String} [oid] Organization Id
- */
-function useOrganization(oid) {
+function useOrganization() {
+  const router = useRouter()
+  const { oid } = router.query;
   const [state, setState] = React.useContext(OrganizationContext);
   if (state === undefined) {
     throw new Error(

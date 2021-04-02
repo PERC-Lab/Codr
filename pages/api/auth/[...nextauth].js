@@ -80,6 +80,12 @@ export default function handler(req, res) {
     session: {
       jwt: false,
     },
+    callbacks: {
+      async session(session, user) {
+        session.user = user
+        return session
+      },
+    },
     pages: {
       error: "/login",
     },
