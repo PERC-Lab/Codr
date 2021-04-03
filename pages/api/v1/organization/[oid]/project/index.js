@@ -55,7 +55,7 @@ const createProject = async (res, req, session) => {
     name: req.body.name,
     guidelines: req.body.guidelines || "",
     organization: req.query.oid,
-    organizer: session.user.id,
+    organizer: session.user.id || session.user.sub,
     datasets: [],
   };
 

@@ -78,7 +78,7 @@ export default function handler(req, res) {
     ),
     secret: process.env.SECRET,
     session: {
-      jwt: false,
+      jwt: process.env.NODE_ENV === "development",
     },
     callbacks: {
       async session(session, user) {
