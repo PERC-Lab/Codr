@@ -21,7 +21,8 @@ const AnnotationSchema = new Schema(
         methods: {
           type: [
             {
-              methodId: Schema.Types.String,
+              method_id: Schema.Types.String,
+              src_code: Schema.Types.String,
               highlight: {
                 type: {
                   start: Schema.Types.String,
@@ -33,7 +34,7 @@ const AnnotationSchema = new Schema(
           ],
         },
         language: Schema.Types.String,
-        labels: {
+        labelsets: {
           type: Schema.Types.Map,
           of: [
             {

@@ -70,7 +70,7 @@ const useStyles = makeStyles(theme => ({
  */
 const Highlighter = function Highlighter(method, classes) {
   // get code segment
-  let code = method.methodID;
+  let code = method.methodID || method.src_code;
   // highlight the portion of code before marked portion
   let start = hljs.highlight(code.slice(0, method.highlight.start), {
     language: method.language,
