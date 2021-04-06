@@ -31,18 +31,18 @@ const getProjects = async (res, session, oid) => {
   if (session?.user) {
     Project.find({ organization: oid })
       .populate({ path: "organizer", select: "name email" })
-      .exec()
-      .then(projects => {
-        res.status(200).json({
-          status: true,
-          result: projects,
-        });
-      })
-      .catch(e => {
-        res.status(500).json({
-          status: false,
-          result: e
-        })
+      .exec((err, projects) => {
+        if (err) {
+          res.status(500).json({
+            status: false,
+            result: err
+          })
+        } else {
+          res.status(200).json({
+            status: true,
+            result: projects,
+          });
+        }
       })
   } else {
     res.status(401).json({
