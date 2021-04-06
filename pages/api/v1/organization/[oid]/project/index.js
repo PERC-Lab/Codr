@@ -29,13 +29,21 @@ async function ProjectsHandler(req, res) {
  */
 const getProjects = async (res, session, oid) => {
   if (session?.user) {
-    const projects = await Project.find({ organization: oid })
+    Project.find({ organization: oid })
       .populate({ path: "organizer", select: "name email" })
-      .exec();
-    res.status(200).json({
-      status: true,
-      result: projects,
-    });
+      .exec()
+      .then(projects => {
+        res.status(200).json({
+          status: true,
+          result: projects,
+        });
+      })
+      .catch(e => {
+        res.status(500).json({
+          status: false,
+          result: e
+        })
+      })
   } else {
     res.status(401).json({
       status: false,
