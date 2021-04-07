@@ -25,12 +25,12 @@
     "react-dom": "17.0.1",
     "react-image": "^4.0.3",
     "role-acl": "^4.5.4",
+    "styled-components": "^5.2.1",
     "unsplash-js": "^7.0.4"
   },
   "devDependencies": {
     "@types/next-auth": "^3.1.24",
     "eslint": "^7.20.0",
-    "prettier": "^2.2.1",
-    "styled-components": "^5.2.1"
+    "prettier": "^2.2.1"
   }
 }

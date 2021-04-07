@@ -49,7 +49,7 @@ function useOrganization() {
 }
 
 const getOrganization = (oid) => {
-  return fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}`, {
+  return fetch(process.env.NEXT_PUBLIC_DOMAIN + `/api/v1/organization/${oid}`, {
     method: "GET",
   })
     .then((res) => res.json())

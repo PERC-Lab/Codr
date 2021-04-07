@@ -27,3 +27,10 @@ jobs:
         registry: docker.pkg.github.com
         repository: dylanbulmer/annotator/annotator
         tag_with_ref: true
+
+  deploy: 
+    runs-on: self-hosted
+
+    steps:
+      - name: Deploy to server
+        run: cd ~/projects/annotator && docker-compose up
