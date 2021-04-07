@@ -16,7 +16,7 @@ async function DatasetHandler(req, res) {
       getDataset(req, res, session);
       break;
     case "POST":
-      // bulkInsertAnnotations(req, res, session);
+      bulkInsertAnnotations(req, res, session);
       break;
     case "PUT":
       insertAnnotation(req, res, session);
@@ -35,22 +35,39 @@ async function DatasetHandler(req, res) {
  */
 const getDataset = async (req, res, session) => {
   if (session?.user) {
-    Annotation.find({ datasetId: req.query.did })
-      .limit(10)
-      .skip(10 * req.query.page)
-      .exec()
-      .then(annoations => {
-        res.status(200).json({
-          status: true,
-          result: annoations,
+    if (req.query.page) {
+      Annotation.find({ datasetId: req.query.did })
+        .limit(10)
+        .skip(10 * req.query.page)
+        .exec()
+        .then(annoations => {
+          res.status(200).json({
+            status: true,
+            result: annoations,
+          });
+        })
+        .catch(e => {
+          res.status(500).json({
+            status: false,
+            result: e,
+          });
         });
-      })
-      .catch(e => {
-        res.status(500).json({
-          status: false,
-          result: e,
+    } else {
+      Annotation.find({ datasetId: req.query.did })
+        .exec()
+        .then(annoations => {
+          res.status(200).json({
+            status: true,
+            result: annoations,
+          });
+        })
+        .catch(e => {
+          res.status(500).json({
+            status: false,
+            result: e,
+          });
         });
-      });
+    }
   } else {
     res.status(401).json({
       status: false,
@@ -84,6 +101,57 @@ const insertAnnotation = async (req, res, session) => {
           result: e,
         });
       });
+  } else {
+    res.status(401).json({
+      status: false,
+      result: "Unauthorized Access.",
+    });
+  }
+};
+
+/**
+ * @description Inserts an annotation into a dataset.
+ * @param {NextApiRequest} req Response
+ * @param {NextApiResponse} res Response
+ * @param {Session} session Session
+ */
+const bulkInsertAnnotations = async function bulkInsertAnnotations(
+  req,
+  res,
+  session
+) {
+  if (session?.user) {
+    const annotations = req.body;
+
+    const result = {
+      nCreated: 0,
+      nFailed: 0,
+      length: annotations?.length,
+      dataset: [],
+      error: null,
+    };
+
+    for (const a of annotations) {
+      a.datasetId = req.query.did;
+      a.project = req.query.pid;
+
+      await Annotation.create(a)
+        .then(annotation => {
+          result.nCreated += 1;
+          result.dataset.push(annotation._id);
+        })
+        .catch(e => {
+          result.nFailed += 1;
+          result.error = e;
+        });
+    }
+
+    res.status(200).json({
+      status: true,
+      result,
+    });
+
+    // console.log(annotations);
   } else {
     res.status(401).json({
       status: false,

@@ -29,13 +29,21 @@ async function ProjectsHandler(req, res) {
  */
 const getProjects = async (res, session, oid) => {
   if (session?.user) {
-    const projects = await Project.find({ organization: oid })
+    Project.find({ organization: oid })
       .populate({ path: "organizer", select: "name email" })
-      .exec();
-    res.status(200).json({
-      status: true,
-      result: projects,
-    });
+      .exec((err, projects) => {
+        if (err) {
+          res.status(500).json({
+            status: false,
+            result: err
+          })
+        } else {
+          res.status(200).json({
+            status: true,
+            result: projects,
+          });
+        }
+      })
   } else {
     res.status(401).json({
       status: false,
@@ -55,7 +63,7 @@ const createProject = async (res, req, session) => {
     name: req.body.name,
     guidelines: req.body.guidelines || "",
     organization: req.query.oid,
-    organizer: session.user.sub,
+    organizer: session.user.id || session.user.sub,
     datasets: [],
   };
 

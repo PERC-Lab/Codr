@@ -97,7 +97,12 @@ export default function OrgProject() {
               ) : (
                 <Skeleton className={classes.title} width="100%" />
               )}
-              <Button startIcon={<Settings />} onClick={() => setOpenSettings(true)}>Settings</Button>
+              <Button
+                startIcon={<Settings />}
+                onClick={() => setOpenSettings(true)}
+              >
+                Settings
+              </Button>
             </Toolbar>
           </Grid>
           <Grid item xs={6}>
@@ -117,7 +122,9 @@ export default function OrgProject() {
               <CardContent>
                 <List>
                   {project?.datasets.map(dataset =>
-                    dataset.user == session?.user.email ? (
+                    dataset.user == session?.user.email ||
+                    org.members.find(m => m.email === session.user.email)
+                      .role === "admin" ? (
                       <ListItem
                         button
                         key={dataset.label}

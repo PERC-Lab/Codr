@@ -1,5 +1,6 @@
-import { isEqual } from "lodash";
 import React from "react";
+import { isEqual } from "lodash";
+import { useRouter } from "next/router";
 
 const isBrowser = typeof window !== "undefined";
 
@@ -71,11 +72,9 @@ function ProjectProvider({ children }) {
   );
 }
 
-/**
- * @param {String} oid Organization id
- * @param {String} pid Project id
- */
-function useProject(oid, pid) {
+function useProject() {
+  const router = useRouter();
+  const { oid, pid } = router.query;
   const [state, setState] = React.useContext(ProjectContext);
   if (state === undefined) {
     throw new Error("useProject must be used within a ProjectProvider");
@@ -95,11 +94,14 @@ function useProject(oid, pid) {
  * @param {String} pid Project Id
  */
 const getProject = (oid, pid) => {
+  const [state] = React.useContext(ProjectContext);
+  console.log(state?._id !== pid)
+
   // if browser, try to get state from localstorage
   if (isBrowser) {
     return new Promise(resolve => {
       const p = JSON.parse(localStorage.getItem("project"));
-      if (!!p) {
+      if (state?._id === pid && !!p) {
         return resolve(p);
       } else {
         return fetchProject(oid, pid).then(resolve);
