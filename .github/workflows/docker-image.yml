@@ -33,4 +33,4 @@ jobs:
 
     steps:
       - name: Deploy to server
-        run: cd ~/projects/annotator && docker-compose up
+        run: cd ~/projects/annotator && docker-compose up -d
