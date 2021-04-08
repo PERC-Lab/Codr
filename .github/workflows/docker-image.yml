@@ -17,6 +17,23 @@ jobs:
       name: Checkout the repo
       uses: actions/checkout@v2
     -
+      name: Prepare
+      id: prep
+      run: |
+        DOCKER_IMAGE=dylanbulmer/annotator
+        VERSION=edge
+        if [[ $GITHUB_REF == refs/tags/* ]]; then
+          VERSION=${GITHUB_REF#refs/tags/}
+        elif [[ $GITHUB_REF == refs/heads/* ]]; then
+          VERSION=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')
+        elif [[ $GITHUB_REF == refs/pull/* ]]; then
+          VERSION=pr-${{ github.event.number }}
+        fi
+        TAGS="${DOCKER_IMAGE}:${VERSION}"
+        echo ::set-output name=version::${VERSION}
+        echo ::set-output name=tags::${TAGS}
+        echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+    -
       name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
     -
@@ -33,9 +50,9 @@ jobs:
         context: .
         pull: true
         push: true
-        cache-from: type=registry,ref=dylanbulmer/annotator:latest
+        cache-from: dylanbulmer/annotator:latest
         cache-to: type=inline
-        tags: dylanbulmer/annotator:latest
+        tags: ${{ steps.prep.outputs.tags }}
 
   deploy: 
     runs-on: self-hosted
