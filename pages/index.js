@@ -126,7 +126,6 @@ export default function Home() {
 }
 
 const postOrganization = (name, callback) => {
-  console.log(process.env.NEXT_PUBLIC_DOMAIN, `${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization`)
   fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization`, {
     method: "POST",
     credentials: "same-origin",
@@ -140,6 +139,7 @@ const postOrganization = (name, callback) => {
 };
 
 const getOrganizations = () => {
+  console.log(process.env.NEXT_PUBLIC_DOMAIN, `${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization`)
   return fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization`, {
     method: "GET",
     credentials: "same-origin",
