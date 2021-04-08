@@ -80,7 +80,7 @@ export default function ProjectDataset() {
 
 const getAnnotations = (oid, pid, did, page) => {
   return fetch(
-    `${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}/project/${pid}/${did}`,
+    `/api/v1/organization/${oid}/project/${pid}/${did}`,
     {
       method: "GET",
       credentials: "same-origin",

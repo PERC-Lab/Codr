@@ -96,7 +96,7 @@ export default function OrgMembers() {
  * @param {Function} callback Callback funtion
  */
 const postMember = (oid, member, callback) => {
-  fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}/member`, {
+  fetch(`/api/v1/organization/${oid}/member`, {
     method: "POST",
     credentials: "same-origin",
     headers: { "Content-Type": "application/json" },

@@ -100,7 +100,7 @@ export default function Organization() {
 
 const getProjects = oid => {
   return fetch(
-    `${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}/project`,
+    `/api/v1/organization/${oid}/project`,
     {
       method: "GET",
     }
@@ -116,7 +116,7 @@ const getProjects = oid => {
  */
 const createProject = (oid, project) => {
   return fetch(
-    `${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}/project`,
+    `/api/v1/organization/${oid}/project`,
     {
       method: "POST",
       credentials: "same-origin",

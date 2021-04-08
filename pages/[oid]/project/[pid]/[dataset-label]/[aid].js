@@ -434,7 +434,7 @@ export default function ProjectDatasetAnnotation() {
  */
 const getAnnotation = (oid, pid, did, aid) => {
   return fetch(
-    `${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}/project/${pid}/${did}/${aid}`,
+    `/api/v1/organization/${oid}/project/${pid}/${did}/${aid}`,
     {
       method: "GET",
       credentials: "same-origin",
@@ -460,7 +460,7 @@ const getAnnotation = (oid, pid, did, aid) => {
  */
 const updateAnnotation = (oid, pid, did, aid, update) => {
   return fetch(
-    `${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}/project/${pid}/${did}/${aid}`,
+    `/api/v1/organization/${oid}/project/${pid}/${did}/${aid}`,
     {
       method: "PATCH",
       credentials: "same-origin",

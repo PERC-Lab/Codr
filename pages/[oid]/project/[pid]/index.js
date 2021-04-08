@@ -163,7 +163,7 @@ export default function OrgProject() {
 
 const insertDataset = (oid, pid, dataset, callback) => {
   fetch(
-    `${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}/project/${pid}`,
+    `/api/v1/organization/${oid}/project/${pid}`,
     {
       method: "PUT",
       credentials: "same-origin",

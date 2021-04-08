@@ -114,7 +114,7 @@ const getProject = (oid, pid) => {
 
 const fetchProject = (oid, pid) => {
   return fetch(
-    `${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${oid}/project/${pid}`,
+    `/api/v1/organization/${oid}/project/${pid}`,
     {
       method: "GET",
     }
@@ -147,7 +147,7 @@ const saveProject = project => {
   delete proj._id;
 
   return fetch(
-    `${process.env.NEXT_PUBLIC_DOMAIN}/api/v1/organization/${project.organization}/project/${project._id}`,
+    `/api/v1/organization/${project.organization}/project/${project._id}`,
     {
       method: "PATCH",
       credentials: "same-origin",
