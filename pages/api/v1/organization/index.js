@@ -11,13 +11,20 @@ import { Organization } from "../../../../models/mongoose";
 async function Organizations(req, res) {
   const session = await getSession({ req });
 
-  switch (req.method) {
-    case "GET":
-      getOrganizations(res, session);
-      break;
-    case "POST":
-      createOrganization(res, session, req.body);
-      break;
+  if (session) {
+    switch (req.method) {
+      case "GET":
+        getOrganizations(res, session);
+        break;
+      case "POST":
+        createOrganization(res, session, req.body);
+        break;
+    }
+  } else {
+    res.status(401).json({
+      status: false,
+      result: "User is unauthorized, please log in and try again.",
+    });
   }
 }
 
@@ -54,16 +61,16 @@ const createOrganization = (res, session, data) => {
       },
     ],
     projects: [],
-  }
+  };
 
   Organization.create(d)
-    .then((doc) => {
+    .then(doc => {
       res.status(201).json({
         status: true,
         result: doc,
       });
     })
-    .catch((err) => {
+    .catch(err => {
       res.status(500).json({
         status: false,
         result: err,
