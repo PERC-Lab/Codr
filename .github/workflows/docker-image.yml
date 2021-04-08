@@ -15,7 +15,7 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          DOCKER_IMAGE=dylanbulmer/annotator
+          DOCKER_IMAGE=ghcr.io/dylanbulmer/annotator
           VERSION=edge
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/}
@@ -42,7 +42,7 @@ jobs:
           context: .
           pull: true
           push: true
-          cache-from: dylanbulmer/annotator:latest
+          cache-from: type=registry,ref=${{ steps.prep.outputs.tags }}
           cache-to: type=inline
           tags: ${{ steps.prep.outputs.tags }}
   deploy:
