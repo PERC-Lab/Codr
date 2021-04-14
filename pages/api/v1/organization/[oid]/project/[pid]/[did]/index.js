@@ -13,17 +13,30 @@ async function DatasetHandler(req, res) {
 
   switch (req.method) {
     case "GET":
+      // get all annotations in dataset
       getDataset(req, res, session);
       break;
     case "POST":
+      // bulk add annotations
       bulkInsertAnnotations(req, res, session);
       break;
     case "PUT":
+      // single add annotation
       insertAnnotation(req, res, session);
       break;
-    case "DELETE":
-      deleteDataset(req, res, session);
+    case "PATCH":
+      // bulk update
+      bulkUpdateAnnotations(req, res, session);
       break;
+    case "DELETE":
+      // delete dataset: NOT DEVELOPED
+      // deleteDataset(req, res, session);
+      break;
+    default:
+      res.status(500).json({
+        status: false,
+        result: "Unknown request.",
+      });
   }
 }
 
@@ -161,31 +174,55 @@ const bulkInsertAnnotations = async function bulkInsertAnnotations(
 };
 
 /**
- *
+ * @description Inserts an annotation into a dataset.
  * @param {NextApiRequest} req Response
  * @param {NextApiResponse} res Response
  * @param {Session} session Session
  */
-const deleteDataset = async (req, res, session) => {
+const bulkUpdateAnnotations = async function bulkUpdateAnnotations(
+  req,
+  res,
+  session
+) {
   if (session?.user) {
-    const project = await Project.updateOne(
-      // find document where id and oranization match
-      { _id: req.query.pid, organization: req.query.oid },
-      // push the new dataset into project
-      { $push: { datasets: req.body } }
-    ).exec();
+    const annotations = req.body;
 
-    if (project?.nModified === 1) {
-      res.status(200).json({
-        status: true,
-        result: `Project '${req.query.pid}' was successfully modified!`,
-      });
-    } else {
-      res.status(400).json({
-        status: false,
-        result: `Project '${req.query.pid}' was not able to be modified!`,
-      });
+    const result = {
+      nModified: 0,
+      nFailed: 0,
+      length: annotations?.length,
+      error: null,
+    };
+
+    for (const a of annotations) {
+      // a.datasetId = req.query.did;
+      // a.project = req.query.pid;
+
+      await Annotation.updateMany(
+        {
+          dataId: a.dataId,
+          datasetId: req.query.did,
+          project: req.query.pid,
+        },
+        { ...convertJsonToDot(a) }
+      )
+        .exec()
+        .then(annotation => {
+          result.nModified += annotation.nModified;
+        })
+        .catch(e => {
+          console.log(e)
+          result.nFailed += 1;
+          result.error = e;
+        });
     }
+
+    res.status(200).json({
+      status: true,
+      result,
+    });
+
+    // console.log(annotations);
   } else {
     res.status(401).json({
       status: false,
@@ -194,7 +231,48 @@ const deleteDataset = async (req, res, session) => {
   }
 };
 
+/**
+ *
+ * @param {NextApiRequest} req Response
+ * @param {NextApiResponse} res Response
+ * @param {Session} session Session
+ */
+// const deleteDataset = async (req, res, session) => {
+//   if (session?.user) {
+//     const project = await Project.updateOne(
+//       // find document where id and oranization match
+//       { _id: req.query.pid, organization: req.query.oid },
+//       // push the new dataset into project
+//       { $push: { datasets: req.body } }
+//     ).exec();
+
+//     if (project?.nModified === 1) {
+//       res.status(200).json({
+//         status: true,
+//         result: `Project '${req.query.pid}' was successfully modified!`,
+//       });
+//     } else {
+//       res.status(400).json({
+//         status: false,
+//         result: `Project '${req.query.pid}' was not able to be modified!`,
+//       });
+//     }
+//   } else {
+//     res.status(401).json({
+//       status: false,
+//       result: "Unauthorized Access.",
+//     });
+//   }
+// };
+
 export default DatasetHandler;
+
+function convertJsonToDot(obj, parent = [], keyValue = {}) {
+  for (let key in obj.data) {
+    keyValue[`data.${key}`] = obj.data[key];
+  }
+  return keyValue;
+}
 
 export const config = {
   api: {
