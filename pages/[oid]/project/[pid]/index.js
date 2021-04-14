@@ -162,17 +162,14 @@ export default function OrgProject() {
 }
 
 const insertDataset = (oid, pid, dataset, callback) => {
-  fetch(
-    `/api/v1/organization/${oid}/project/${pid}`,
-    {
-      method: "PUT",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(dataset),
-    }
-  )
+  fetch(`/api/v1/organization/${oid}/project/${pid}`, {
+    method: "PUT",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(dataset),
+  })
     .then(res => res.json())
     .then(res => callback(res.result));
 };

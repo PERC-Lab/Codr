@@ -20,7 +20,6 @@ import {
   Grid,
   makeStyles,
   TextField,
-  Typography,
 } from "@material-ui/core";
 import { keys, isEqual, set } from "lodash";
 import GuidelinesModal from "../../../../../components/modals/GuidelinesModal";
@@ -344,17 +343,17 @@ export default function ProjectDatasetAnnotation() {
                             },
                           };
                           d.data.labels[key] = labels;
-                          
+
                           // also save to the local "pageData" to fix de-sync error
                           const p = {
-                            ...pageData
-                          }
-                          p.annotation.data.labels[key] = labels
-                          setPageData(p)
+                            ...pageData,
+                          };
+                          p.annotation.data.labels[key] = labels;
+                          setPageData(p);
 
                           // set to true, to wait for save function to finish
                           setSaving(true);
-                          
+
                           // send off data to be saved.
                           updateAnnotation(
                             org._id,
@@ -386,10 +385,10 @@ export default function ProjectDatasetAnnotation() {
                     onBlur={e => {
                       // update local "pageData" to fix potential de-sync error
                       const p = {
-                        ...pageData
-                      }
-                      p.annotation.data.comments = e.target.value
-                      setPageData(p)
+                        ...pageData,
+                      };
+                      p.annotation.data.comments = e.target.value;
+                      setPageData(p);
 
                       // wait for save
                       setSaving(true);
@@ -417,39 +416,46 @@ export default function ProjectDatasetAnnotation() {
             </Card>
             <Card>
               <CardContent>
-                {saving ? (
-                  "Saving..."
-                ) : (
-                  <>
-                    <Button
-                      color="primary"
-                      disabled={!myNav?.hasPrev()}
-                      onClick={() => {
-                        const oid = router.query.oid,
-                          pid = router.query.pid,
-                          ds = router.query["dataset-label"],
-                          aid = myNav.getPrev();
-                        router.push(`/${oid}/project/${pid}/${ds}/${aid}`);
-                      }}
-                    >
-                      Prev
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      disabled={!myNav?.hasNext()}
-                      onClick={() => {
-                        const oid = router.query.oid,
-                          pid = router.query.pid,
-                          ds = router.query["dataset-label"],
-                          aid = myNav.getNext();
-                        router.push(`/${oid}/project/${pid}/${ds}/${aid}`);
-                      }}
-                    >
-                      Next
-                    </Button>
-                  </>
-                )}
+                <Grid container spacing={2}>
+                  <Grid item xs={6} style={{alignItems: "center", display: "flex"}}>
+                    {myNav ? myNav.index + 1 : 0} of {myNav ? myNav.size : 0}
+                  </Grid>
+                  <Grid item xs={6} style={{alignItems: "center", display: "flex", justifyContent: "flex-end"}}>
+                    {saving ? (
+                      "Saving..."
+                    ) : (
+                      <>
+                        <Button
+                          color="primary"
+                          disabled={!myNav?.hasPrev()}
+                          onClick={() => {
+                            const oid = router.query.oid,
+                              pid = router.query.pid,
+                              ds = router.query["dataset-label"],
+                              aid = myNav.getPrev();
+                            router.push(`/${oid}/project/${pid}/${ds}/${aid}`);
+                          }}
+                        >
+                          Prev
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          disabled={!myNav?.hasNext()}
+                          onClick={() => {
+                            const oid = router.query.oid,
+                              pid = router.query.pid,
+                              ds = router.query["dataset-label"],
+                              aid = myNav.getNext();
+                            router.push(`/${oid}/project/${pid}/${ds}/${aid}`);
+                          }}
+                        >
+                          Next
+                        </Button>
+                      </>
+                    )}
+                  </Grid>
+                </Grid>
               </CardContent>
             </Card>
           </div>
