@@ -21,6 +21,7 @@ export default function ProjectDataset() {
     sent: false,
     recieved: false,
     page: 0,
+    pageSize: 10,
     dataset: undefined,
     annotations: undefined,
   });
@@ -67,11 +68,16 @@ export default function ProjectDataset() {
       title={`${pageData.dataset.name}: Annotations`}
       rows={pageData.annotations}
       headerCells={headCells}
-      pageSize={10}
       onPageUpdate={p => {
         setPageData(data => ({
           ...data,
           page: p,
+        }));
+      }}
+      onPageSizeUpdate={p => {
+        setPageData(data => ({
+          ...data,
+          pageSize: p,
         }));
       }}
     />

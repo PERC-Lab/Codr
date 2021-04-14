@@ -149,12 +149,13 @@ export default function PaginationTable({
   rows,
   pageSize,
   onPageUpdate,
+  onPageSizeUpdate,
   title,
 }) {
   const classes = useStyles();
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage] = React.useState(pageSize || 10);
+  const [rowsPerPage, setRowsPerPage] = React.useState(pageSize || 10);
   const router = useRouter();
 
   const handleSelectAllClick = event => {
@@ -189,6 +190,13 @@ export default function PaginationTable({
   const handleChangePage = (event, newPage) => {
     onPageUpdate(newPage);
     setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    onPageSizeUpdate(parseInt(event.target.value, 10));
+    onPageUpdate(0);
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   const isSelected = name => selected.indexOf(name) !== -1;
@@ -276,6 +284,7 @@ export default function PaginationTable({
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
     </div>
