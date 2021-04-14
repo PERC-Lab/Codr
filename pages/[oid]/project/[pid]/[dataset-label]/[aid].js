@@ -22,7 +22,7 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import { keys, isEqual } from "lodash";
+import { keys, isEqual, set } from "lodash";
 import GuidelinesModal from "../../../../../components/modals/GuidelinesModal";
 import Navigator from "../../../../../lib/navigator";
 
@@ -197,6 +197,7 @@ export default function ProjectDatasetAnnotation() {
   const router = useRouter();
   const [org] = useOrganization();
   const [project] = useProject();
+  const [saving, setSaving] = useState(false);
   const [pageData, setPageData] = useState({
     sent: false,
     recieved: false,
@@ -336,19 +337,34 @@ export default function ProjectDatasetAnnotation() {
                         options={project?.labelsets[key].labels}
                         labelsetName={project?.labelsets[key].title}
                         onChange={labels => {
+                          // capture update to send to db
                           const d = {
                             data: {
                               labels: { ...pageData.annotation.data.labels },
                             },
                           };
                           d.data.labels[key] = labels;
+                          
+                          // also save to the local "pageData" to fix de-sync error
+                          const p = {
+                            ...pageData
+                          }
+                          p.annotation.data.labels[key] = labels
+                          setPageData(p)
+
+                          // set to true, to wait for save function to finish
+                          setSaving(true);
+                          
+                          // send off data to be saved.
                           updateAnnotation(
                             org._id,
                             project._id,
                             pageData.dataset._id,
                             router.query.aid,
                             d
-                          );
+                          ).then(() => {
+                            setSaving(false);
+                          });
                         }}
                         key={key}
                       />
@@ -368,6 +384,17 @@ export default function ProjectDatasetAnnotation() {
                     multiline
                     defaultValue={pageData.annotation.data?.comments}
                     onBlur={e => {
+                      // update local "pageData" to fix potential de-sync error
+                      const p = {
+                        ...pageData
+                      }
+                      p.annotation.data.comments = e.target.value
+                      setPageData(p)
+
+                      // wait for save
+                      setSaving(true);
+
+                      // send off save
                       updateAnnotation(
                         org._id,
                         project._id,
@@ -378,7 +405,9 @@ export default function ProjectDatasetAnnotation() {
                             comments: e.target.value,
                           },
                         }
-                      );
+                      ).then(() => {
+                        setSaving(false);
+                      });
                     }}
                   />
                 ) : (
@@ -388,33 +417,39 @@ export default function ProjectDatasetAnnotation() {
             </Card>
             <Card>
               <CardContent>
-                <Button
-                  color="primary"
-                  disabled={!myNav?.hasPrev()}
-                  onClick={() => {
-                    const oid = router.query.oid,
-                      pid = router.query.pid,
-                      ds = router.query["dataset-label"],
-                      aid = myNav.getPrev();
-                    router.push(`/${oid}/project/${pid}/${ds}/${aid}`);
-                  }}
-                >
-                  Prev
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  disabled={!myNav?.hasNext()}
-                  onClick={() => {
-                    const oid = router.query.oid,
-                      pid = router.query.pid,
-                      ds = router.query["dataset-label"],
-                      aid = myNav.getNext();
-                    router.push(`/${oid}/project/${pid}/${ds}/${aid}`);
-                  }}
-                >
-                  Next
-                </Button>
+                {saving ? (
+                  "Saving..."
+                ) : (
+                  <>
+                    <Button
+                      color="primary"
+                      disabled={!myNav?.hasPrev()}
+                      onClick={() => {
+                        const oid = router.query.oid,
+                          pid = router.query.pid,
+                          ds = router.query["dataset-label"],
+                          aid = myNav.getPrev();
+                        router.push(`/${oid}/project/${pid}/${ds}/${aid}`);
+                      }}
+                    >
+                      Prev
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      disabled={!myNav?.hasNext()}
+                      onClick={() => {
+                        const oid = router.query.oid,
+                          pid = router.query.pid,
+                          ds = router.query["dataset-label"],
+                          aid = myNav.getNext();
+                        router.push(`/${oid}/project/${pid}/${ds}/${aid}`);
+                      }}
+                    >
+                      Next
+                    </Button>
+                  </>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -433,13 +468,10 @@ export default function ProjectDatasetAnnotation() {
  * @returns {Promise}
  */
 const getAnnotation = (oid, pid, did, aid) => {
-  return fetch(
-    `/api/v1/organization/${oid}/project/${pid}/${did}/${aid}`,
-    {
-      method: "GET",
-      credentials: "same-origin",
-    }
-  )
+  return fetch(`/api/v1/organization/${oid}/project/${pid}/${did}/${aid}`, {
+    method: "GET",
+    credentials: "same-origin",
+  })
     .then(res => res.json())
     .then(res => res.result);
 };
@@ -459,17 +491,14 @@ const getAnnotation = (oid, pid, did, aid) => {
  * @returns {Promise}
  */
 const updateAnnotation = (oid, pid, did, aid, update) => {
-  return fetch(
-    `/api/v1/organization/${oid}/project/${pid}/${did}/${aid}`,
-    {
-      method: "PATCH",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(update),
-    }
-  )
+  return fetch(`/api/v1/organization/${oid}/project/${pid}/${did}/${aid}`, {
+    method: "PATCH",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(update),
+  })
     .then(res => res.json())
     .then(res => res.result);
 };
