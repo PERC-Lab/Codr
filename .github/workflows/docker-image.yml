@@ -54,5 +54,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Deploy to server
+      - name: Pull image
+        run: docker pull ghcr.io/dylanbulmer/annotator:main
+      - name: Re-Deploy image
         run: cd ~/projects/annotator && docker-compose up -d
