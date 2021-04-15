@@ -19,7 +19,7 @@ async function AnnotationHandler(req, res) {
       updateAnnotation(req, res, session);
       break;
     case "DELETE":
-      deleteAnnotation(req, res, session);
+      // deleteAnnotation(req, res, session);
       break;
   }
 }
@@ -60,33 +60,33 @@ const getAnnotation = async (req, res, session) => {
  * @param {NextApiResponse} res Response
  * @param {Session} session Session
  */
-const deleteAnnotation = async (req, res, session) => {
-  if (session?.user) {
-    const project = await Project.updateOne(
-      // find document where id and oranization match
-      { _id: req.query.pid, organization: req.query.oid },
-      // push the new dataset into project
-      { $push: { datasets: req.body } }
-    ).exec();
+// const deleteAnnotation = async (req, res, session) => {
+//   if (session?.user) {
+//     const project = await Project.updateOne(
+//       // find document where id and oranization match
+//       { _id: req.query.pid, organization: req.query.oid },
+//       // push the new dataset into project
+//       { $push: { datasets: req.body } }
+//     ).exec();
 
-    if (project?.nModified === 1) {
-      res.status(200).json({
-        status: true,
-        result: `Project '${req.query.pid}' was successfully modified!`,
-      });
-    } else {
-      res.status(400).json({
-        status: false,
-        result: `Project '${req.query.pid}' was not able to be modified!`,
-      });
-    }
-  } else {
-    res.status(401).json({
-      status: false,
-      result: "Unauthorized Access.",
-    });
-  }
-};
+//     if (project?.nModified === 1) {
+//       res.status(200).json({
+//         status: true,
+//         result: `Project '${req.query.pid}' was successfully modified!`,
+//       });
+//     } else {
+//       res.status(400).json({
+//         status: false,
+//         result: `Project '${req.query.pid}' was not able to be modified!`,
+//       });
+//     }
+//   } else {
+//     res.status(401).json({
+//       status: false,
+//       result: "Unauthorized Access.",
+//     });
+//   }
+// };
 
 /**
  *
@@ -98,7 +98,7 @@ const updateAnnotation = async (req, res, session) => {
   if (session?.user) {
     const annotation = await Annotation.updateOne(
       { _id: req.query.aid },
-      { ...convertJsonToDot(req.body) }
+      { ...convertJsonToDot(req.body), annotated_by: session.user.email }
     ).exec();
 
     if (annotation?.nModified === 1) {
