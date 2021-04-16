@@ -20,7 +20,7 @@ import {
   useOrganization,
 } from "../../../../src/OrganizationContext";
 import { ProjectProvider, useProject } from "../../../../src/ProjectContext";
-import MarkdownEditor from "../../../../src/MarkdownEditor";
+import MarkdownEditor from "../../../../src/components/MarkdownEditor";
 import AddDatasetModal from "../../../../src/components/modals/AddDatasetModal";
 import { useState } from "react";
 import { useRouter } from "next/router";
