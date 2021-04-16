@@ -122,7 +122,7 @@ export default function OrgProject() {
               <CardContent>
                 <List>
                   {project?.datasets.map(dataset =>
-                    dataset.user == session?.user.email ||
+                    dataset.user.includes(session?.user.email) ||
                     org.members.find(m => m.email === session.user.email)
                       .role === "admin" ? (
                       <ListItem
