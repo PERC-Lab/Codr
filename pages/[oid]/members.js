@@ -16,7 +16,7 @@ import {
   OrganizationProvider,
   useOrganization,
 } from "../../src/OrganizationContext";
-import AddMemberModal from "../../components/modals/AddMemberModal";
+import AddMemberModal from "../../src/components/modals/AddMemberModal";
 import { useState } from "react";
 
 const useToolbarStyles = makeStyles(theme => ({

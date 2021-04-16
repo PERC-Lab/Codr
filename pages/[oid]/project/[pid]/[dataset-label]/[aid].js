@@ -22,7 +22,7 @@ import {
   TextField,
 } from "@material-ui/core";
 import { keys, isEqual, set } from "lodash";
-import GuidelinesModal from "../../../../../components/modals/GuidelinesModal";
+import GuidelinesModal from "../../../../../src/components/modals/GuidelinesModal";
 import Navigator from "../../../../../lib/navigator";
 
 const useStyles = makeStyles(theme => ({

@@ -21,11 +21,11 @@ import {
 } from "../../../../src/OrganizationContext";
 import { ProjectProvider, useProject } from "../../../../src/ProjectContext";
 import MarkdownEditor from "../../../../src/MarkdownEditor";
-import AddDatasetModal from "../../../../components/modals/AddDatasetModal";
+import AddDatasetModal from "../../../../src/components/modals/AddDatasetModal";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { Settings } from "@material-ui/icons";
-import ProjectSettingsModal from "../../../../components/modals/ProjectSettingsModal";
+import ProjectSettingsModal from "../../../../src/components/modals/ProjectSettingsModal";
 
 const useStyles = makeStyles(theme => ({
   root: {

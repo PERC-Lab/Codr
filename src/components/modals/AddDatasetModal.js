@@ -13,7 +13,7 @@ import {
   MenuItem,
   Select,
 } from "@material-ui/core";
-import { useOrganization } from "../../src/OrganizationContext";
+import { useOrganization } from "../../OrganizationContext";
 
 const useSelectStyles = makeStyles({
   root: {

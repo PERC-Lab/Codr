@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core";
 import Skeleton from "@material-ui/lab/Skeleton";
 import { Add } from "@material-ui/icons";
-import CreateOrgModal from "../components/modals/CreateOrgModal";
+import CreateOrgModal from "../src/components/modals/CreateOrgModal";
 import { useState } from "react";
 import { useRouter } from "next/router";
 
