@@ -24,6 +24,8 @@ import {
 import { keys, isEqual, set } from "lodash";
 import GuidelinesModal from "../../../../../src/components/modals/GuidelinesModal";
 import Navigator from "../../../../../lib/navigator";
+import AccessControlManager from "../../../../../lib/abac";
+import { useSession } from "next-auth/client";
 
 const useStyles = makeStyles(theme => ({
   method: {
@@ -196,6 +198,7 @@ export default function ProjectDatasetAnnotation() {
   const router = useRouter();
   const [org] = useOrganization();
   const [project] = useProject();
+  const [session] = useSession();
   const [saving, setSaving] = useState(false);
   const [pageData, setPageData] = useState({
     sent: false,
@@ -206,6 +209,14 @@ export default function ProjectDatasetAnnotation() {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   var myNav;
+
+  var ACL = undefined;
+
+  useEffect(() => {
+    if (pageData?.dataset?.permissions) {
+      ACL = new AccessControlManager(pageData?.dataset?.permissions)
+    }
+  }, [pageData?.dataset?.permissions])
 
   if (project?.datasetAnnotations && !myNav)
     myNav = new Navigator(project.datasetAnnotations, router.query.aid);
