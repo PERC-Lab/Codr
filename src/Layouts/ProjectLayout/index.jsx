@@ -52,7 +52,7 @@ export default function ProjectLayout({ children }) {
             &nbsp;/&nbsp;
             <Button
               variant="text"
-              onClick={() => router.push(`/${project?._id}`)}
+              onClick={() => router.push(`/${org?._id}/project/${project?._id}`)}
               disabled={!project}
             >
               {project?.name ? project.name : <Skeleton width={100} />}

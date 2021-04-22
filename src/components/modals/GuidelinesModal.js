@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@material-ui/core";
 import React from "react";
-import { HighlightedMarkdown } from '../../src/HighlightedMarkdown';
+import { HighlightedMarkdown } from '../HighlightedMarkdown';
 
 /**
  * 

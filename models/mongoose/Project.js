@@ -24,21 +24,22 @@ const ProjectSchema = new Schema(
       type: [
         {
           name: Schema.Types.String,
-          user: Schema.Types.String,
+          user: Schema.Types.Mixed,
           label: Schema.Types.String,
+          permissions: Object
         },
       ],
     },
     labelsets: {
-      type: Map,
+      type: Schema.Types.Map,
       of: {
-        title: String,
+        title: Schema.Types.String,
         labels: {
           type: [
             {
-              label: String,
-              "sub-label": String,
-              color: String,
+              label: Schema.Types.String,
+              "sub-label": Schema.Types.String,
+              color: Schema.Types.String,
             },
           ],
         },

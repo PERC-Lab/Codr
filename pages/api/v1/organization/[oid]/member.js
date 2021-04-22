@@ -32,7 +32,7 @@ const addMember = async (res, session, oid, member) => {
         'members.email': session.user.email
       },
       {
-        $push: { "members": member },
+        $addToSet: { "members": member },
         $currentDate: { lastModified: true }
       }
    )

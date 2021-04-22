@@ -15,6 +15,9 @@ async function Organizations(req, res) {
     case "GET":
       getOrganization(res, session, req.query.oid);
       break;
+    case "PATCH":
+      updateOrganization(req, res, session);
+      break;
   }
 }
 
@@ -40,6 +43,38 @@ const getOrganization = async (res, session, oid) => {
       status: false,
       result: "You do not have access to this organization."
     })
+  }
+};
+
+/**
+ *
+ * @param {NextApiRequest} req Response
+ * @param {NextApiResponse} res Response
+ * @param {Session} session Session
+ */
+const updateOrganization = async (req, res, session) => {
+  if (session?.user) {
+    const project = await Organization.updateOne(
+      { _id: req.query.oid },
+      { ...req.body }
+    ).exec();
+
+    if (project?.nModified === 1) {
+      res.status(200).json({
+        status: true,
+        result: `Organization '${req.query.oid}' was successfully modified!`,
+      });
+    } else {
+      res.status(400).json({
+        status: false,
+        result: `Organization '${req.query.oid}' was not able to be modified!`,
+      });
+    }
+  } else {
+    res.status(401).json({
+      status: false,
+      result: "Unauthorized Access.",
+    });
   }
 };
 

@@ -6,7 +6,7 @@ import {
 import { ProjectProvider, useProject } from "../../../../../src/ProjectContext";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import PaginationTable from "../../../../../components/PaginationTable";
+import PaginationTable from "../../../../../src/components/PaginationTable";
 
 const headCells = [
   { id: "dataId", numeric: false, disablePadding: true, label: "Data Id" },

@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 import { keys } from "lodash";
 import React, { useState } from "react";
-import { useProject } from "../../src/ProjectContext";
+import { useProject } from "../../ProjectContext";
 import ModifyLabelset from "../ModifyLabelset";
 
 /**

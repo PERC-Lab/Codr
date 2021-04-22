@@ -17,7 +17,7 @@ import {
 import { useState } from "react";
 import { Folder } from "@material-ui/icons";
 import { useRouter } from "next/router";
-import AddProjectModal from "../../components/modals/AddProjectModal";
+import AddProjectModal from "../../src/components/modals/AddProjectModal";
 
 const useStyles = makeStyles(theme => ({
   toolbar: {

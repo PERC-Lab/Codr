@@ -13,7 +13,7 @@ import {
   MenuItem,
   Select,
 } from "@material-ui/core";
-import { useOrganization } from "../../src/OrganizationContext";
+import { useOrganization } from "../../OrganizationContext";
 
 const useSelectStyles = makeStyles({
   root: {
@@ -23,7 +23,9 @@ const useSelectStyles = makeStyles({
 
 export default function AddDatasetModal({ open, onCancel, onCreate }) {
   const [organization] = useOrganization();
-  const [form, setForm] = React.useState({});
+  const [form, setForm] = React.useState({
+    permissions: {}
+  });
   const selectClassses = useSelectStyles();
 
   const handleChange = (e) => {
@@ -69,12 +71,13 @@ export default function AddDatasetModal({ open, onCancel, onCreate }) {
           fullWidth
         />
         <FormControl className={selectClassses.root}>
-          <InputLabel id="member-label">User Assigned</InputLabel>
+          <InputLabel id="member-label">User(s) Assigned</InputLabel>
           <Select
             labelId="member-label"
             id="user"
             name="user"
-            value={form?.user || ""}
+            value={form?.user || []}
+            multiple
             onChange={handleChange}
             className={selectClassses.root}
           >

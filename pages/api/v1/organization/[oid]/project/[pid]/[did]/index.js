@@ -1,7 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 import { Session } from "next-auth";
-import { Annotation, Project } from "../../../../../../../../models/mongoose";
+import { Annotation } from "../../../../../../../../models/mongoose";
+import { toInteger } from "lodash";
 
 /**
  * Api endpoint to get user's organizations.
@@ -48,39 +49,33 @@ async function DatasetHandler(req, res) {
  */
 const getDataset = async (req, res, session) => {
   if (session?.user) {
+    // start query
+    const query = Annotation.find({ datasetId: req.query.did })
+
+    // modify query
     if (req.query.page) {
-      Annotation.find({ datasetId: req.query.did })
+      query
         .limit(10)
         .skip(10 * req.query.page)
-        .exec()
-        .then(annoations => {
-          res.status(200).json({
-            status: true,
-            result: annoations,
-          });
-        })
-        .catch(e => {
-          res.status(500).json({
-            status: false,
-            result: e,
-          });
-        });
-    } else {
-      Annotation.find({ datasetId: req.query.did })
-        .exec()
-        .then(annoations => {
-          res.status(200).json({
-            status: true,
-            result: annoations,
-          });
-        })
-        .catch(e => {
-          res.status(500).json({
-            status: false,
-            result: e,
-          });
-        });
+    } else if (req.query.limit) {
+      query.limit(toInteger(req.query.limit))
     }
+
+    // execute query and send resolve API call.
+    query
+      .exec()
+      .then(annoations => {
+        res.status(200).json({
+          status: true,
+          result: annoations,
+        });
+      })
+      .catch(e => {
+        res.status(500).json({
+          status: false,
+          result: e,
+        });
+      });
   } else {
     res.status(401).json({
       status: false,
