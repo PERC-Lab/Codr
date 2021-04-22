@@ -50,19 +50,18 @@ async function DatasetHandler(req, res) {
 const getDataset = async (req, res, session) => {
   if (session?.user) {
     // start query
-    const query = Annotation.find({ datasetId: req.query.did })
+    const query = Annotation.find({ datasetId: req.query.did });
 
     // modify query
     if (req.query.page) {
-      query
-        .limit(10)
-        .skip(10 * req.query.page)
+      query.limit(10).skip(10 * req.query.page);
     } else if (req.query.limit) {
-      query.limit(toInteger(req.query.limit))
+      query.limit(toInteger(req.query.limit));
     }
 
     // execute query and send resolve API call.
     query
+      .populate({ path: "annotated_by", select: ["email", "name"] })
       .exec()
       .then(annoations => {
         res.status(200).json({
@@ -206,7 +205,7 @@ const bulkUpdateAnnotations = async function bulkUpdateAnnotations(
           result.nModified += annotation.nModified;
         })
         .catch(e => {
-          console.log(e)
+          console.log(e);
           result.nFailed += 1;
           result.error = e;
         });

@@ -56,7 +56,7 @@ const AnnotationSchema = new Schema(
       ref: "User",
     },
     annotated_by: {
-      type: Schema.Types.String,
+      type: Schema.Types.ObjectId,
       ref: "User",
     },
   },

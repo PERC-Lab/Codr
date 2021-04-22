@@ -98,7 +98,7 @@ const updateAnnotation = async (req, res, session) => {
   if (session?.user) {
     const annotation = await Annotation.updateOne(
       { _id: req.query.aid },
-      { ...convertJsonToDot(req.body), annotated_by: session.user.email }
+      { ...convertJsonToDot(req.body), annotated_by: (session.user.sub || session.user.id) }
     ).exec();
 
     if (annotation?.nModified === 1) {

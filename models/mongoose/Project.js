@@ -1,5 +1,32 @@
 import { Schema, models, model } from "mongoose";
 
+const DatasetSchema = new Schema({
+  name: {
+    type: Schema.Types.String,
+    required: true,
+  },
+  user: {
+    type: Schema.Types.Mixed,
+    required: true,
+  },
+  label: {
+    type: Schema.Types.String,
+    required: true,
+  },
+  permissions: {
+    type: Schema.Types.Map,
+    of: {
+      score: Schema.Types.Number,
+      grants: [{
+        resource: [Schema.Types.String],
+        action: [Schema.Types.String],
+        attributes: [Schema.Types.String],
+        condition: Schema.Types.Mixed
+      }]
+    }
+  },
+});
+
 /* UserSchema will correspond to a collection in your MongoDB database. */
 const ProjectSchema = new Schema(
   {
@@ -21,14 +48,8 @@ const ProjectSchema = new Schema(
       type: Schema.Types.String,
     },
     datasets: {
-      type: [
-        {
-          name: Schema.Types.String,
-          user: Schema.Types.Mixed,
-          label: Schema.Types.String,
-          permissions: Object
-        },
-      ],
+      type: [DatasetSchema],
+      default: [],
     },
     labelsets: {
       type: Schema.Types.Map,
