@@ -95,7 +95,6 @@ function useProject() {
  */
 const getProject = (oid, pid) => {
   const [state] = React.useContext(ProjectContext);
-  console.log(state?._id !== pid)
 
   // if browser, try to get state from localstorage
   if (isBrowser) {

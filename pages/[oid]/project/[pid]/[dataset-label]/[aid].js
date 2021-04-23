@@ -137,6 +137,7 @@ const ChipInput = function ChipInput({
   options,
   labelsetName,
   onChange,
+  disabled,
 }) {
   const [value, setValue] = useState([...labelList]);
   const classes = useStyles();
@@ -149,8 +150,9 @@ const ChipInput = function ChipInput({
   return (
     <Autocomplete
       className={classes.labelInput}
+      disabled={disabled}
       multiple
-      id="tags-outlined"
+      id={`${labelsetName}-input`}
       options={options}
       value={value}
       onChange={(_event, newValue) => {
@@ -210,13 +212,20 @@ export default function ProjectDatasetAnnotation() {
   const [open, setOpen] = useState(false);
   var myNav;
 
-  var ACL = undefined;
+  /**
+   * @type {[AccessControlManager, function]}
+   */
+  const [ACL, setACL] = useState();
 
   useEffect(() => {
     if (pageData?.dataset?.permissions) {
-      ACL = new AccessControlManager(pageData?.dataset?.permissions)
+      setACL(() => {
+        const ac = new AccessControlManager(pageData?.dataset?.permissions);
+        ac?.setRole(org.members.find(m => m.email === session.user.email).role);
+        return ac;
+      });
     }
-  }, [pageData?.dataset?.permissions])
+  }, [pageData?.dataset?.permissions]);
 
   if (project?.datasetAnnotations && !myNav)
     myNav = new Navigator(project.datasetAnnotations, router.query.aid);
@@ -334,7 +343,7 @@ export default function ProjectDatasetAnnotation() {
             <Card>
               <CardHeader title="Labels" />
               <CardContent>
-                {keys(project?.labelsets).length ? (
+                {(keys(project?.labelsets).length && pageData.recieved) ? (
                   keys(project.labelsets).map(key =>
                     key == "information_accessed" ? null : (
                       <ChipInput
@@ -344,6 +353,16 @@ export default function ProjectDatasetAnnotation() {
                             ? pageData.annotation?.data.labels[key]
                             : []
                         }
+                        disabled={(function () {
+                          try {
+                            return !ACL?.canUser()
+                              .execute("update")
+                              .sync()
+                              .on("annotation").granted;
+                          } catch (e) {
+                            return true;
+                          }
+                        })()}
                         options={project?.labelsets[key].labels}
                         labelsetName={project?.labelsets[key].title}
                         onChange={labels => {
@@ -392,6 +411,16 @@ export default function ProjectDatasetAnnotation() {
                     label="Comments"
                     fullWidth
                     multiline
+                    disabled={(function () {
+                      try {
+                        return !ACL?.canUser()
+                          .execute("update")
+                          .sync()
+                          .on("annotation").granted;
+                      } catch (e) {
+                        return true;
+                      }
+                    })()}
                     defaultValue={pageData.annotation.data?.comments}
                     onBlur={e => {
                       // update local "pageData" to fix potential de-sync error
@@ -428,10 +457,22 @@ export default function ProjectDatasetAnnotation() {
             <Card>
               <CardContent>
                 <Grid container spacing={2}>
-                  <Grid item xs={6} style={{alignItems: "center", display: "flex"}}>
+                  <Grid
+                    item
+                    xs={6}
+                    style={{ alignItems: "center", display: "flex" }}
+                  >
                     {myNav ? myNav.index + 1 : 0} of {myNav ? myNav.size : 0}
                   </Grid>
-                  <Grid item xs={6} style={{alignItems: "center", display: "flex", justifyContent: "flex-end"}}>
+                  <Grid
+                    item
+                    xs={6}
+                    style={{
+                      alignItems: "center",
+                      display: "flex",
+                      justifyContent: "flex-end",
+                    }}
+                  >
                     {saving ? (
                       "Saving..."
                     ) : (
