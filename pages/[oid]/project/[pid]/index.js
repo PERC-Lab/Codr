@@ -31,13 +31,6 @@ const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
   },
-  paper: {
-    padding: theme.spacing(2),
-    color: theme.palette.text.secondary,
-  },
-  card: {
-    maxWidth: 345,
-  },
   title: {
     fontSize: "1.5em",
     borderRadius: 4,
@@ -99,7 +92,9 @@ export default function OrgProject() {
               )}
               <Button
                 startIcon={<Settings />}
+                variant="outlined"
                 onClick={() => setOpenSettings(true)}
+                style={{marginRight: "-8px"}}
               >
                 Settings
               </Button>

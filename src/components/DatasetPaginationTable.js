@@ -18,6 +18,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Button } from "@material-ui/core";
 import { useRouter } from "next/router";
+import { Settings } from "@material-ui/icons";
 
 function EnhancedTableHead(props) {
   const { headCells, onSelectAllClick, numSelected, rowCount } = props;
@@ -77,6 +78,7 @@ const useToolbarStyles = makeStyles(theme => ({
 const EnhancedTableToolbar = props => {
   const classes = useToolbarStyles();
   const { numSelected, title } = props;
+  const router = useRouter();
 
   return (
     <Toolbar
@@ -110,7 +112,20 @@ const EnhancedTableToolbar = props => {
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-      ) : null}
+      ) : (
+        <Button
+          startIcon={<Settings />}
+          variant="outlined"
+          style={{marginRight: "8px"}}
+          onClick={() => {
+            if (typeof window !== "undefined") {
+              router.push(`${window.location.href}/settings`);
+            }
+          }}
+        >
+          Settings
+        </Button>
+      )}
     </Toolbar>
   );
 };

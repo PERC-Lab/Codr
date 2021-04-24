@@ -6,7 +6,7 @@ import {
 import { ProjectProvider, useProject } from "../../../../../src/ProjectContext";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import PaginationTable from "../../../../../src/components/PaginationTable";
+import PaginationTable from "../../../../../src/components/DatasetPaginationTable";
 
 const headCells = [
   { id: "dataId", numeric: false, disablePadding: true, label: "Data Id" },
@@ -56,6 +56,7 @@ export default function ProjectDataset() {
           annotations: [],
         }));
       });
+    
     setPageData(data => ({
       ...data,
       sent: true,

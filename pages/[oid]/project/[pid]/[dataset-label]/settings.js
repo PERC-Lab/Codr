@@ -1,0 +1,185 @@
+import { ProjectLayout } from "../../../../../src/Layouts";
+import {
+  OrganizationProvider,
+  useOrganization,
+} from "../../../../../src/OrganizationContext";
+import { ProjectProvider, useProject } from "../../../../../src/ProjectContext";
+import { useState } from "react";
+import { useRouter } from "next/router";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Card,
+  CardContent,
+  Grid,
+  Input,
+  makeStyles,
+  Paper,
+  Toolbar,
+  Typography,
+} from "@material-ui/core";
+import AccessControlManager from "../../../../../lib/abac";
+import PermissionEditor from "../../../../../src/components/PermissionEditor";
+import { Skeleton } from "@material-ui/lab";
+
+const useStyles = makeStyles(theme => ({
+  title: {
+    fontSize: "1.5em",
+    borderRadius: 4,
+    padding: "4px 8px",
+    margin: "0 16px 0 -16px",
+    "&:hover": {
+      backgroundColor: "rgba(0,0,0,0.2)",
+    },
+    "&:active": {
+      backgroundColor: "rgba(0,0,0,0.2)",
+    },
+  },
+}));
+
+export default function ProjectDataset() {
+  const router = useRouter();
+  const [org] = useOrganization();
+  const [project] = useProject();
+  const [dataset, setDataset] = useState({
+    dataset: undefined,
+  });
+  const classes = useStyles();
+
+  /**
+   * @type {[AccessControlManager, function]}
+   */
+  const [ACL, setACL] = useState();
+
+  if (dataset?.label !== router.query["dataset-label"] && org && project) {
+    const d = project.datasets.find(
+      p => p.label == router.query["dataset-label"]
+    );
+    setACL(() => {
+      const ac = new AccessControlManager(d?.permissions);
+      return ac;
+    });
+    console.log(ACL?.ac?.getGrants(), d);
+    setDataset(d);
+  }
+
+  const handlePermissionChange = (role, perms) => {
+    const d = { ...dataset };
+    const p = {
+      ...d.permissions,
+      [role]: {
+        grants: perms,
+      },
+    };
+    d.permissions = p;
+    console.log(p);
+    setDataset(d);
+  };
+
+  return (
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
+        <Toolbar component={Paper}>
+          {dataset?.name ? (
+            <Input
+              className={classes.title}
+              disableUnderline={true}
+              defaultValue={dataset.name}
+              fullWidth
+              onBlur={e => {
+                setDataset(d => ({ ...d, name: e.target.value }));
+              }}
+            />
+          ) : (
+            <Skeleton className={classes.title} width="100%" />
+          )}
+        </Toolbar>
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Grid item xs={12}>
+          <Typography variant="h5" gutterBottom>
+            General
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              User(s):
+              <br />
+              {dataset?.user?.join(", ")}
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <Grid item xs={12}>
+          <Typography variant="h5" gutterBottom>
+            Permissions
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          {ACL?.roles.map(role => (
+            <Accordion key={`perm-accordion-${role}`}>
+              <AccordionSummary>
+                {role.charAt(0).toUpperCase() + role.slice(1)}
+              </AccordionSummary>
+              <AccordionDetails>
+                <PermissionEditor
+                  key={`permeditor-${role}`}
+                  role={role}
+                  values={ACL.ac.getGrants()[role]?.grants}
+                  resources={[
+                    {
+                      value: "dataset",
+                      display: "Dataset",
+                    },
+                    {
+                      value: "annotation",
+                      display: "Annotation",
+                    },
+                  ]}
+                  actions={[
+                    {
+                      value: "read",
+                      display: "Read",
+                    },
+                    {
+                      value: "write",
+                      display: "Write",
+                    },
+                    {
+                      value: "update",
+                      display: "Update",
+                    },
+                    {
+                      value: "delete",
+                      display: "Delete",
+                    },
+                    {
+                      value: "*",
+                      display: "Any",
+                    },
+                  ]}
+                  attributes={[
+                    {
+                      value: "*",
+                      display: "Any",
+                    },
+                  ]}
+                  onChange={perms => {
+                    handlePermissionChange(role, perms);
+                  }}
+                />
+              </AccordionDetails>
+            </Accordion>
+          ))}
+        </Grid>
+      </Grid>
+    </Grid>
+  );
+}
+
+ProjectDataset.Layout = ProjectLayout;
+ProjectDataset.OrganizationProvider = OrganizationProvider;
+ProjectDataset.ProjectProvider = ProjectProvider;
