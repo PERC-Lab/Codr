@@ -123,7 +123,7 @@ export default function ProjectDataset() {
               }}
             />
           ) : (
-            <Skeleton className={classes.title} width="100%" />
+            <Skeleton className={classes.title} />
           )}
         </Toolbar>
       </Grid>

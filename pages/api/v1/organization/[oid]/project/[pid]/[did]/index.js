@@ -59,7 +59,9 @@ const getDataset = async (req, res, session) => {
 
     // modify query
     if (req.query.page) {
-      query.limit(10).skip(10 * req.query.page);
+      query
+        .limit(req.query.limit ? toInteger(req.query.limit) : 10)
+        .skip(10 * toInteger(req.query.page));
     } else if (req.query.limit) {
       query.limit(toInteger(req.query.limit));
     }
