@@ -25,10 +25,11 @@ import { Skeleton } from "@material-ui/lab";
 
 const useStyles = makeStyles(theme => ({
   title: {
+    width: "calc(100% + 32px)",
     fontSize: "1.5em",
     borderRadius: 4,
     padding: "4px 8px",
-    margin: "0 16px 0 -16px",
+    margin: "0 -16px 0 -16px",
     "&:hover": {
       backgroundColor: "rgba(0,0,0,0.2)",
     },
@@ -46,6 +47,7 @@ export default function ProjectDataset() {
     dataset: undefined,
   });
   const classes = useStyles();
+  const [permExpanded, setPermExpanded] = useState(false);
 
   /**
    * @type {[AccessControlManager, function]}
@@ -75,6 +77,10 @@ export default function ProjectDataset() {
     d.permissions = p;
     console.log(p);
     setDataset(d);
+  };
+
+  const handlePermExpandedChange = panel => (event, isExpanded) => {
+    setPermExpanded(isExpanded ? panel : false);
   };
 
   return (
@@ -120,7 +126,11 @@ export default function ProjectDataset() {
         </Grid>
         <Grid item xs={12}>
           {ACL?.roles.map(role => (
-            <Accordion key={`perm-accordion-${role}`}>
+            <Accordion
+              key={`perm-accordion-${role}`}
+              expanded={permExpanded === role}
+              onChange={handlePermExpandedChange(role)}
+            >
               <AccordionSummary>
                 {role.charAt(0).toUpperCase() + role.slice(1)}
               </AccordionSummary>

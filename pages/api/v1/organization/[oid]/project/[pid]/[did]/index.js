@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 import { Session } from "next-auth";
-import { Annotation } from "../../../../../../../../models/mongoose";
+import { Annotation, Project } from "../../../../../../../../models/mongoose";
 import { toInteger } from "lodash";
 
 /**
@@ -18,12 +18,17 @@ async function DatasetHandler(req, res) {
       getDataset(req, res, session);
       break;
     case "POST":
-      // bulk add annotations
-      bulkInsertAnnotations(req, res, session);
+      if (req.query.bulk) {
+        // bulk add annotations
+        bulkInsertAnnotations(req, res, session);
+      } else {
+        // single add annotation
+        insertAnnotation(req, res, session);
+      }
       break;
     case "PUT":
-      // single add annotation
-      insertAnnotation(req, res, session);
+      // update dataset
+      updateDataset(req, res, session)
       break;
     case "PATCH":
       // bulk update
@@ -31,7 +36,7 @@ async function DatasetHandler(req, res) {
       break;
     case "DELETE":
       // delete dataset: NOT DEVELOPED
-      // deleteDataset(req, res, session);
+      deleteDataset(req, res, session);
       break;
     default:
       res.status(500).json({
@@ -231,33 +236,91 @@ const bulkUpdateAnnotations = async function bulkUpdateAnnotations(
  * @param {NextApiResponse} res Response
  * @param {Session} session Session
  */
-// const deleteDataset = async (req, res, session) => {
-//   if (session?.user) {
-//     const project = await Project.updateOne(
-//       // find document where id and oranization match
-//       { _id: req.query.pid, organization: req.query.oid },
-//       // push the new dataset into project
-//       { $push: { datasets: req.body } }
-//     ).exec();
+const deleteDataset = async (req, res, session) => {
+  if (session?.user) {
+    // const project = await Project.updateOne(
+    //   // find document where id and oranization match
+    //   { _id: req.query.pid, organization: req.query.oid },
+    //   // push the new dataset into project
+    //   { $push: { datasets: req.body } }
+    // ).exec();
 
-//     if (project?.nModified === 1) {
-//       res.status(200).json({
-//         status: true,
-//         result: `Project '${req.query.pid}' was successfully modified!`,
-//       });
-//     } else {
-//       res.status(400).json({
-//         status: false,
-//         result: `Project '${req.query.pid}' was not able to be modified!`,
-//       });
-//     }
-//   } else {
-//     res.status(401).json({
-//       status: false,
-//       result: "Unauthorized Access.",
-//     });
-//   }
-// };
+    // if (project?.nModified === 1) {
+    //   res.status(200).json({
+    //     status: true,
+    //     result: `Project '${req.query.pid}' was successfully modified!`,
+    //   });
+    // } else {
+    //   res.status(400).json({
+    //     status: false,
+    //     result: `Project '${req.query.pid}' was not able to be modified!`,
+    //   });
+    // }
+    Annotation.deleteMany({
+      datasetId: req.query.did,
+    })
+      .exec()
+      .then(d =>
+        res.json({
+          status: true,
+          result: d,
+        })
+      )
+      .catch(e =>
+        res.json({
+          status: false,
+          result: e,
+        })
+      );
+  } else {
+    res.status(401).json({
+      status: false,
+      result: "Unauthorized Access.",
+    });
+  }
+};
+
+/**
+ *
+ * @param {NextApiRequest} req Response
+ * @param {NextApiResponse} res Response
+ * @param {Session} session Session
+ */
+const updateDataset = async (req, res, session) => {
+  if (session?.user) {
+    Project.findOneAndUpdate(
+      {
+        _id: req.query.pid,
+        "datasets._id": req.query.did,
+      },
+      {
+        "datasets.$": { ...req.body }
+      },
+      {
+        returnOriginal: false
+      }
+    )
+      .exec()
+      .then(r => {
+        res.status(200).json({
+          status: true,
+          result: r,
+          message: `Dataset '${req.query.did}' was successfully modified!`,
+        });
+      })
+      .catch(e => {
+        res.status(400).json({
+          status: false,
+          result: `Dataset '${req.query.did}' was not able to be modified!`,
+        });
+      });
+  } else {
+    res.status(401).json({
+      status: false,
+      result: "Unauthorized Access.",
+    });
+  }
+};
 
 export default DatasetHandler;
 

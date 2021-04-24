@@ -37,38 +37,15 @@ export default function PermissionEditor({
         <Table aria-label="permission table" size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Resource</TableCell>
               <TableCell>Perform</TableCell>
               <TableCell>Attribute(s)</TableCell>
+              <TableCell>Resource</TableCell>
               <TableCell align="right">Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {permissions?.map((perm, i) => (
               <TableRow key={`perm-${role}-${i}`}>
-                <TableCell component="th" scope="row">
-                  <FormControl style={{ width: "100%" }}>
-                    <Select
-                      id="resources"
-                      value={perm.resource[0]}
-                      onChange={e => {
-                        const perms = [...permissions];
-                        perms[i].resource = [e.target.value];
-                        handleChange(perms);
-                      }}
-                      style={{ width: "100%" }}
-                    >
-                      {resources.map(resource => (
-                        <MenuItem
-                          value={resource.value}
-                          key={`resource-${resource.value}-${i}`}
-                        >
-                          {resource.display}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </TableCell>
                 <TableCell>
                   <FormControl style={{ width: "100%" }}>
                     <Select
@@ -111,6 +88,29 @@ export default function PermissionEditor({
                           key={`attribute-${att.value}-${i}`}
                         >
                           {att.display}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </TableCell>
+                <TableCell component="th" scope="row">
+                  <FormControl style={{ width: "100%" }}>
+                    <Select
+                      id="resources"
+                      value={perm.resource[0]}
+                      onChange={e => {
+                        const perms = [...permissions];
+                        perms[i].resource = [e.target.value];
+                        handleChange(perms);
+                      }}
+                      style={{ width: "100%" }}
+                    >
+                      {resources.map(resource => (
+                        <MenuItem
+                          value={resource.value}
+                          key={`resource-${resource.value}-${i}`}
+                        >
+                          {resource.display}
                         </MenuItem>
                       ))}
                     </Select>
