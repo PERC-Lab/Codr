@@ -28,7 +28,7 @@ async function DatasetHandler(req, res) {
       break;
     case "PUT":
       // update dataset
-      updateDataset(req, res, session)
+      updateDataset(req, res, session);
       break;
     case "PATCH":
       // bulk update
@@ -288,32 +288,40 @@ const deleteDataset = async (req, res, session) => {
  */
 const updateDataset = async (req, res, session) => {
   if (session?.user) {
-    Project.findOneAndUpdate(
-      {
-        _id: req.query.pid,
-        "datasets._id": req.query.did,
-      },
-      {
-        "datasets.$": { ...req.body }
-      },
-      {
-        returnOriginal: false
-      }
-    )
-      .exec()
-      .then(r => {
-        res.status(200).json({
-          status: true,
-          result: r,
-          message: `Dataset '${req.query.did}' was successfully modified!`,
+    if (typeof req.body === "object") {
+      Project.findOneAndUpdate(
+        {
+          _id: req.query.pid,
+          "datasets._id": req.query.did,
+        },
+        {
+          "datasets.$": { ...req.body },
+        },
+        {
+          returnOriginal: false,
+        }
+      )
+        .exec()
+        .then(r => {
+          res.status(200).json({
+            status: true,
+            result: r,
+            message: `Dataset '${req.query.did}' was successfully modified!`,
+          });
+        })
+        .catch(e => {
+          res.status(400).json({
+            status: false,
+            result: `Dataset '${req.query.did}' was not able to be modified!`,
+          });
         });
-      })
-      .catch(e => {
-        res.status(400).json({
-          status: false,
-          result: `Dataset '${req.query.did}' was not able to be modified!`,
-        });
+    } else {
+      res.status(400).json({
+        status: false,
+        result: {},
+        message: `Dataset '${req.query.did}' was not able to be modified!`,
       });
+    }
   } else {
     res.status(401).json({
       status: false,

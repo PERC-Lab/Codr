@@ -4,7 +4,7 @@ import {
   useOrganization,
 } from "../../../../../src/OrganizationContext";
 import { ProjectProvider, useProject } from "../../../../../src/ProjectContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import {
   Accordion,
@@ -42,10 +42,8 @@ const useStyles = makeStyles(theme => ({
 export default function ProjectDataset() {
   const router = useRouter();
   const [org] = useOrganization();
-  const [project] = useProject();
-  const [dataset, setDataset] = useState({
-    dataset: undefined,
-  });
+  const [project, setProject] = useProject();
+  const [dataset, setDataset] = useState({ save: false });
   const classes = useStyles();
   const [permExpanded, setPermExpanded] = useState(false);
 
@@ -53,6 +51,31 @@ export default function ProjectDataset() {
    * @type {[AccessControlManager, function]}
    */
   const [ACL, setACL] = useState();
+
+  useEffect(() => {
+    console.log(dataset);
+    if (typeof dataset !== "undefined" && dataset.save) {
+      delete dataset.save
+      updateDataset(
+        router.query.oid,
+        router.query.pid,
+        dataset._id,
+        dataset
+      ).then(p => {
+        console.log(p);
+        if (typeof p === "object") {
+          setProject({
+            ...p,
+            disableSave: true,
+          });
+          setDataset({
+            ...dataset,
+            save: false
+          })
+        }
+      });
+    }
+  }, [dataset]);
 
   if (dataset?.label !== router.query["dataset-label"] && org && project) {
     const d = project.datasets.find(
@@ -62,8 +85,7 @@ export default function ProjectDataset() {
       const ac = new AccessControlManager(d?.permissions);
       return ac;
     });
-    console.log(ACL?.ac?.getGrants(), d);
-    setDataset(d);
+    setDataset({...d, save: false});
   }
 
   const handlePermissionChange = (role, perms) => {
@@ -76,7 +98,10 @@ export default function ProjectDataset() {
     };
     d.permissions = p;
     console.log(p);
-    setDataset(d);
+    setDataset({
+      ...d,
+      save: true
+    });
   };
 
   const handlePermExpandedChange = panel => (event, isExpanded) => {
@@ -94,7 +119,7 @@ export default function ProjectDataset() {
               defaultValue={dataset.name}
               fullWidth
               onBlur={e => {
-                setDataset(d => ({ ...d, name: e.target.value }));
+                setDataset(d => ({ ...d, name: e.target.value, save: true }));
               }}
             />
           ) : (
@@ -189,6 +214,19 @@ export default function ProjectDataset() {
     </Grid>
   );
 }
+
+const updateDataset = (oid, pid, did, dataset) => {
+  return fetch(`/api/v1/organization/${oid}/project/${pid}/${did}`, {
+    method: "PUT",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(dataset),
+  })
+    .then(res => res.json())
+    .then(res => res.result);
+};
 
 ProjectDataset.Layout = ProjectLayout;
 ProjectDataset.OrganizationProvider = OrganizationProvider;
