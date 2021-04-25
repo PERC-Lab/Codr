@@ -12,10 +12,14 @@ import {
   AccordionSummary,
   Card,
   CardContent,
+  FormControl,
   Grid,
   Input,
+  InputLabel,
   makeStyles,
+  MenuItem,
   Paper,
+  Select,
   Toolbar,
   Typography,
 } from "@material-ui/core";
@@ -55,7 +59,7 @@ export default function ProjectDataset() {
   useEffect(() => {
     console.log(dataset);
     if (typeof dataset !== "undefined" && dataset.save) {
-      delete dataset.save
+      delete dataset.save;
       updateDataset(
         router.query.oid,
         router.query.pid,
@@ -70,8 +74,8 @@ export default function ProjectDataset() {
           });
           setDataset({
             ...dataset,
-            save: false
-          })
+            save: false,
+          });
         }
       });
     }
@@ -85,7 +89,7 @@ export default function ProjectDataset() {
       const ac = new AccessControlManager(d?.permissions);
       return ac;
     });
-    setDataset({...d, save: false});
+    setDataset({ ...d, save: false });
   }
 
   const handlePermissionChange = (role, perms) => {
@@ -100,8 +104,14 @@ export default function ProjectDataset() {
     console.log(p);
     setDataset({
       ...d,
-      save: true
+      save: true,
     });
+  };
+
+  const handleChange = e => {
+    const d = { ...dataset, save: false };
+    d[e.target.name] = e.target.value;
+    setDataset(d);
   };
 
   const handlePermExpandedChange = panel => (event, isExpanded) => {
@@ -136,9 +146,29 @@ export default function ProjectDataset() {
         <Grid item xs={12}>
           <Card>
             <CardContent>
-              User(s):
-              <br />
-              {dataset?.user?.join(", ")}
+              <FormControl fullWidth>
+                <InputLabel id="member-label">User(s) Assigned:</InputLabel>
+                <Select
+                  labelId="member-label"
+                  id="user"
+                  name="user"
+                  value={dataset?.user || []}
+                  multiple
+                  onChange={handleChange}
+                  onBlur={() => {
+                    setDataset(d => ({
+                      ...d,
+                      save: true,
+                    }));
+                  }}
+                >
+                  {org?.members.map(member => (
+                    <MenuItem value={member.email} key={member.email}>
+                      {member.email}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </CardContent>
           </Card>
         </Grid>

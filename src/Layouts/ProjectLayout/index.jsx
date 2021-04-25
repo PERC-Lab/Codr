@@ -20,6 +20,7 @@ const useStyles = makeStyles(theme => ({
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
+    maxWidth: "calc(100% - 240px)",
   },
   title: {
     flexGrow: 1,
