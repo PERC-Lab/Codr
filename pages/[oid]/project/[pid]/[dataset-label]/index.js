@@ -4,7 +4,7 @@ import {
   useOrganization,
 } from "../../../../../src/OrganizationContext";
 import { ProjectProvider, useProject } from "../../../../../src/ProjectContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import PaginationTable from "../../../../../src/components/DatasetPaginationTable";
 
@@ -36,17 +36,25 @@ export default function ProjectDataset() {
       p => p.label == router.query["dataset-label"]
     );
 
-    getAnnotations(org._id, project._id, d._id, pageData.page)
+    getAnnotations(
+      org._id,
+      project._id,
+      d._id,
+      pageData.page,
+      pageData.pageSize
+    )
       .then(a => {
+        console.log(a);
         setPageData(data => ({
           ...data,
           recieved: true,
-          annotations: a,
+          datasetSize: a.size,
+          annotations: a.annotations,
         }));
         setProject({
-          datasetAnnotations: a.map(anno => anno._id),
-          disableSave: true
-        })
+          datasetAnnotations: a.annotations.map(anno => anno._id),
+          disableSave: true,
+        });
       })
       .catch(e => {
         console.error(e);
@@ -56,7 +64,7 @@ export default function ProjectDataset() {
           annotations: [],
         }));
       });
-    
+
     setPageData(data => ({
       ...data,
       sent: true,
@@ -64,10 +72,48 @@ export default function ProjectDataset() {
     }));
   }
 
+  useEffect(() => {
+    if (project && org) {
+      const d = project.datasets.find(
+        p => p.label == router.query["dataset-label"]
+      );
+
+      getAnnotations(
+        org._id,
+        project._id,
+        d._id,
+        pageData.page,
+        pageData.pageSize
+      )
+        .then(a => {
+          console.log(a);
+          setPageData(data => ({
+            ...data,
+            recieved: true,
+            datasetSize: a.size,
+            annotations: a.annotations,
+          }));
+          setProject({
+            datasetAnnotations: a.annotations.map(anno => anno._id),
+            disableSave: true,
+          });
+        })
+        .catch(e => {
+          console.error(e);
+          setPageData(data => ({
+            ...data,
+            recieved: false,
+            annotations: [],
+          }));
+        });
+    }
+  }, [pageData.pageSize, pageData.page]);
+
   return pageData.annotations?.length >= 0 ? (
     <PaginationTable
       title={`${pageData.dataset.name}: Annotations`}
       rows={pageData.annotations}
+      size={pageData.datasetSize}
       headerCells={headCells}
       onPageUpdate={p => {
         setPageData(data => ({
@@ -85,9 +131,9 @@ export default function ProjectDataset() {
   ) : null;
 }
 
-const getAnnotations = (oid, pid, did, page) => {
+const getAnnotations = (oid, pid, did, page, limit) => {
   return fetch(
-    `/api/v1/organization/${oid}/project/${pid}/${did}`,
+    `/api/v1/organization/${oid}/project/${pid}/${did}?page=${page}&limit=${limit}`,
     {
       method: "GET",
       credentials: "same-origin",

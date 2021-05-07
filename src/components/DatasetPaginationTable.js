@@ -162,6 +162,7 @@ const useStyles = makeStyles(theme => ({
 export default function PaginationTable({
   headerCells,
   rows,
+  size,
   pageSize,
   onPageUpdate,
   onPageSizeUpdate,
@@ -217,7 +218,7 @@ export default function PaginationTable({
   const isSelected = name => selected.indexOf(name) !== -1;
 
   const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+    rowsPerPage - Math.min(rowsPerPage, rows.length);
 
   return (
     <div className={classes.root}>
@@ -239,7 +240,7 @@ export default function PaginationTable({
             />
             <TableBody>
               {rows
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row._id);
                   const labelId = `enhanced-table-checkbox-${index}`;
@@ -295,7 +296,7 @@ export default function PaginationTable({
         </TableContainer>
         <TablePagination
           component="div"
-          count={rows.length}
+          count={size}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}

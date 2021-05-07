@@ -54,8 +54,9 @@ async function DatasetHandler(req, res) {
  */
 const getDataset = async (req, res, session) => {
   if (session?.user) {
-    // start query
+    // start queries
     const query = Annotation.find({ datasetId: req.query.did });
+    const count = Annotation.count({ datasetId: req.query.did });
 
     // modify query
     if (req.query.page) {
@@ -70,10 +71,17 @@ const getDataset = async (req, res, session) => {
     query
       .populate({ path: "annotated_by", select: ["email", "name"] })
       .exec()
-      .then(annoations => {
+      .then(async a => {
+        const c = await count.countDocuments().exec();
+        return {annotations: a, count: c};
+      })
+      .then(({annotations, count}) => {
         res.status(200).json({
           status: true,
-          result: annoations,
+          result: {
+            size: count,
+            annotations
+          },
         });
       })
       .catch(e => {
@@ -344,5 +352,8 @@ function convertJsonToDot(obj, parent = [], keyValue = {}) {
 export const config = {
   api: {
     externalResolver: true,
+    bodyParser: {
+      sizeLimit: '12mb',
+    },
   },
 };
