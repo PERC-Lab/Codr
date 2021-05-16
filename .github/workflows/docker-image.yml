@@ -56,4 +56,4 @@ jobs:
       - name: Pull image
         run: docker pull ghcr.io/dylanbulmer/annotator:main
       - name: Re-Deploy image
-        run: cd ~/projects/annotator && docker-compose up -d
+        run: cd ~/services/annotator && microk8s.kubectl apply -f 002-Deployments.yaml
