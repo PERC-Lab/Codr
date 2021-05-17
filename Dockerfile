@@ -31,11 +31,11 @@ RUN adduser -S nextjs -u 1001
 RUN chown -R nextjs:nodejs /usr/src/.next
 USER nextjs
 
-EXPOSE 8080
+EXPOSE 80
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry.
-# RUN npx next telemetry disable
+RUN npx next telemetry disable
 
-CMD ["yarn", "start", "0.0.0.0", "8080"]
+CMD ["yarn", "start", "0.0.0.0", "80"]

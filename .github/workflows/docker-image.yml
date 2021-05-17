@@ -57,5 +57,7 @@ jobs:
         run: docker pull ghcr.io/dylanbulmer/annotator:main
       - name: Tag image
         run: docker tag ghcr.io/dylanbulmer/annotator:main localhost:32000/annotator:latest
+      - name: Push image to private registry
+        run: docker push localhost:32000/annotator
       - name: Re-Deploy image
         run: cd ~/services/annotator && microk8s.kubectl set image deployment/annotator-prod annotator-prod=localhost:32000/annotator
