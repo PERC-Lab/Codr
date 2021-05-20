@@ -5,12 +5,11 @@ const MemberSchma = new Schema(
   {
     email: {
       type: String,
-      index: true,
-      unique: true,
-      dropDups: true
+      required: [true, "Please provide the user's email address."]
     },
     role: {
-      type: String
+      type: String,
+      required: [true, "Please provide the user's assigned role."]
     }
   }
 )
