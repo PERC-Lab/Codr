@@ -54,20 +54,22 @@ async function DatasetHandler(req, res) {
  */
 const getDataset = async (req, res, session) => {
   if (session?.user) {
+    const { page, limit, skip, dl, did } = req.query;
     // start queries
-    const query = Annotation.find({ datasetId: req.query.did });
-    const count = Annotation.count({ datasetId: req.query.did });
+    const query = Annotation.find({ datasetId: did });
+    const count = Annotation.count({ datasetId: did });
 
     // modify query
-    if (req.query.page) {
+    if (page) {
       query
-        .limit(req.query.limit ? toInteger(req.query.limit) : 10)
-        .skip(
-          (req.query.limit ? toInteger(req.query.limit) : 10) *
-            toInteger(req.query.page)
-        );
-    } else if (req.query.limit) {
-      query.limit(toInteger(req.query.limit));
+        .limit(limit ? toInteger(limit) : 10)
+        .skip((limit ? toInteger(limit) : 10) * toInteger(page));
+    } else if (limit) {
+      query.limit(toInteger(limit));
+
+      if (skip) {
+        query.skip(toInteger(skip));
+      }
     }
 
     // execute query and send resolve API call.
@@ -79,17 +81,28 @@ const getDataset = async (req, res, session) => {
         return { annotations: a, count: c };
       })
       .then(({ annotations, count }) => {
-        res.status(200).json({
-          status: true,
-          result: {
-            size: count,
-            start:
-              (req.query.limit ? toInteger(req.query.limit) : 10) *
-              toInteger(req.query.page),
-            limit: req.query.limit ? toInteger(req.query.limit) : 10,
-            annotations,
-          },
-        });
+        if (dl) {
+          // set headers
+          res.setHeader("Content-Type", "application/json");
+          res.setHeader(
+            "Content-Disposition",
+            `attachment; filename="dataset-${limit}.json"`
+          );
+
+          res.status(200).json(annotations);
+        } else {
+          res.status(200).json({
+            status: true,
+            result: {
+              size: count,
+              start:
+                (req.query.limit ? toInteger(req.query.limit) : 10) *
+                toInteger(req.query.page),
+              limit: req.query.limit ? toInteger(req.query.limit) : 10,
+              annotations,
+            },
+          });
+        }
       })
       .catch(e => {
         res.status(500).json({
