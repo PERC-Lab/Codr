@@ -17,13 +17,19 @@ const DatasetSchema = new Schema({
     type: Schema.Types.Map,
     of: {
       score: Schema.Types.Number,
-      grants: [{
-        resource: [Schema.Types.String],
-        action: [Schema.Types.String],
-        attributes: [Schema.Types.String],
-        condition: Schema.Types.Mixed
-      }]
-    }
+      grants: [
+        {
+          resource: [Schema.Types.String],
+          action: [Schema.Types.String],
+          attributes: [Schema.Types.String],
+          condition: Schema.Types.Mixed,
+        },
+      ],
+    },
+  },
+  permissionsEnabled: {
+    type: Schema.Types.Boolean,
+    required: false,
   },
 });
 

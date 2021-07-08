@@ -23,6 +23,7 @@ import {
 import AccessControlManager from "lib/abac";
 import PermissionEditor from "src/components/PermissionEditor";
 import { Skeleton } from "@material-ui/lab";
+import Switch from "src/components/Switch";
 
 const useStyles = makeStyles(theme => ({
   title: {
@@ -83,7 +84,10 @@ export default function ProjectDataset() {
       p => p.label == router.query["dataset-label"]
     );
     setACL(() => {
-      const ac = new AccessControlManager(d?.permissions);
+      const ac = new AccessControlManager({
+        grants: d?.permissions,
+        enabled: d?.permissionsEnabled,
+      });
       return ac;
     });
     setDataset({ ...d, save: false });
@@ -108,6 +112,12 @@ export default function ProjectDataset() {
   const handleChange = e => {
     const d = { ...dataset, save: false };
     d[e.target.name] = e.target.value;
+    setDataset(d);
+  };
+
+  const handleValueChange = (name, value) => {
+    const d = { ...dataset, save: true };
+    d[name] = value;
     setDataset(d);
   };
 
@@ -175,6 +185,17 @@ export default function ProjectDataset() {
           <Typography variant="h5" gutterBottom>
             Permissions
           </Typography>
+          <Typography variant="body2" gutterBottom>
+            Enable
+            <Switch
+              onChange={val => {
+                handleValueChange("permissionsEnabled", val);
+              }}
+              height={16}
+              isActive={dataset?.permissionsEnabled}
+              style={{ float: "right" }}
+            />
+          </Typography>
         </Grid>
         <Grid item xs={12}>
           {ACL?.roles.map(role => (
@@ -182,6 +203,7 @@ export default function ProjectDataset() {
               key={`perm-accordion-${role}`}
               expanded={permExpanded === role}
               onChange={handlePermExpandedChange(role)}
+              disabled={!dataset?.permissionsEnabled}
             >
               <AccordionSummary>
                 {role.charAt(0).toUpperCase() + role.slice(1)}

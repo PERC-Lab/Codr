@@ -17,7 +17,7 @@ import {
   Select,
 } from "@material-ui/core";
 import { useOrganization } from "src/OrganizationContext";
-import AccessControlManager, { GlobalACL } from "lib/abac";
+import AccessControlManager from "lib/abac";
 import PermissionEditor from "src/components/PermissionEditor";
 
 const ACL = new AccessControlManager();

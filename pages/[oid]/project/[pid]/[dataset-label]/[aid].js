@@ -217,7 +217,10 @@ export default function ProjectDatasetAnnotation() {
   useEffect(() => {
     if (pageData?.dataset?.permissions) {
       setACL(() => {
-        const ac = new AccessControlManager(pageData?.dataset?.permissions);
+        const ac = new AccessControlManager({
+          grants: pageData?.dataset?.permissions,
+          enabled: pageData?.dataset?.permissionsEnabled,
+        });
         ac?.setRole(org.members.find(m => m.email === session.user.email).role);
         return ac;
       });
@@ -352,10 +355,12 @@ export default function ProjectDatasetAnnotation() {
                         }
                         disabled={(function () {
                           try {
-                            return !ACL?.canUser()
-                              .execute("update")
-                              .sync()
-                              .on("annotation").granted;
+                            return ACL.enabled
+                              ? !ACL?.canUser()
+                                  .execute("update")
+                                  .sync()
+                                  .on("annotation").granted
+                              : false;
                           } catch (e) {
                             return true;
                           }
@@ -410,10 +415,12 @@ export default function ProjectDatasetAnnotation() {
                     multiline
                     disabled={(function () {
                       try {
-                        return !ACL?.canUser()
-                          .execute("update")
-                          .sync()
-                          .on("annotation").granted;
+                        return ACL.enabled
+                          ? !ACL?.canUser()
+                              .execute("update")
+                              .sync()
+                              .on("annotation").granted
+                          : false;
                       } catch (e) {
                         return true;
                       }
