@@ -23,6 +23,15 @@ function OrganizationReducer(state, payload) {
 
 function OrganizationProvider({ children }) {
   const [state, dispatch] = React.useReducer(OrganizationReducer, null);
+
+  const router = useRouter();
+  const { oid } = router.query;
+
+  // simple check to ensure Organization data is available (if oid is given).
+  if (oid && state === null) {
+    getOrganization(oid).then(org => dispatch(org));
+  }
+
   return (
     <OrganizationContext.Provider value={[state, dispatch]}>
       {children}
@@ -31,29 +40,23 @@ function OrganizationProvider({ children }) {
 }
 
 function useOrganization() {
-  const router = useRouter()
-  const { oid } = router.query;
   const [state, setState] = React.useContext(OrganizationContext);
+
   if (state === undefined) {
     throw new Error(
       "useOrganization must be used within a OrganizationProvider"
     );
   }
 
-  // simple check to ensure Organization data is available (if oid is given).
-  if (oid && (state === null || state?._id !== oid)) {
-    getOrganization(oid).then((org) => setState(org));
-  }
-
   return [state, setState];
 }
 
-const getOrganization = (oid) => {
+const getOrganization = oid => {
   return fetch(`/api/v1/organization/${oid}`, {
     method: "GET",
   })
-    .then((res) => res.json())
-    .then((res) => res.result);
+    .then(res => res.json())
+    .then(res => res.result);
 };
 
 export { OrganizationProvider, useOrganization };

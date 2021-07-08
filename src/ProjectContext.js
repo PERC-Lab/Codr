@@ -65,6 +65,15 @@ function ProjectReducer(state, payload) {
 
 function ProjectProvider({ children }) {
   const [state, dispatch] = React.useReducer(ProjectReducer, null);
+  const router = useRouter();
+
+  // simple check to ensure Project data is available.
+  if (router.query?.oid && router.query?.pid && state === null) {
+    getProject(router.query.oid, router.query.pid).then(project =>
+      dispatch(project)
+    );
+  }
+
   return (
     <ProjectContext.Provider value={[state, dispatch]}>
       {children}
@@ -73,51 +82,19 @@ function ProjectProvider({ children }) {
 }
 
 function useProject() {
-  const router = useRouter();
-  const { oid, pid } = router.query;
   const [state, setState] = React.useContext(ProjectContext);
+
   if (state === undefined) {
     throw new Error("useProject must be used within a ProjectProvider");
-  }
-
-  // simple check to ensure Project data is available.
-  if (oid && pid && (state === null || state?._id !== pid)) {
-    getProject(oid, pid).then(project => setState(project));
   }
 
   return [state, setState];
 }
 
-/**
- *
- * @param {String} oid Oranization Id
- * @param {String} pid Project Id
- */
 const getProject = (oid, pid) => {
-  const [state] = React.useContext(ProjectContext);
-
-  // if browser, try to get state from localstorage
-  if (isBrowser) {
-    return new Promise(resolve => {
-      const p = JSON.parse(localStorage.getItem("project"));
-      if (state?._id === pid && !!p) {
-        return resolve(p);
-      } else {
-        return fetchProject(oid, pid).then(resolve);
-      }
-    });
-  } else {
-    return fetchProject(oid, pid);
-  }
-};
-
-const fetchProject = (oid, pid) => {
-  return fetch(
-    `/api/v1/organization/${oid}/project/${pid}`,
-    {
-      method: "GET",
-    }
-  )
+  return fetch(`/api/v1/organization/${oid}/project/${pid}`, {
+    method: "GET",
+  })
     .then(res => res.json())
     .then(res => res.result);
 };
