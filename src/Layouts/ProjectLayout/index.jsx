@@ -4,8 +4,8 @@ import { AppBar, Button, Toolbar, Typography } from "@material-ui/core";
 import AvatarMenu from "./AvatarMenu";
 import Drawer from "./Drawer";
 import { useRouter } from "next/router";
-import { useOrganization } from "../../OrganizationContext";
-import { useProject } from "../../ProjectContext";
+import { useOrganization } from "src/OrganizationContext";
+import { useProject } from "src/ProjectContext";
 import { Skeleton } from "@material-ui/lab";
 import { useSession } from "next-auth/client";
 
@@ -53,7 +53,9 @@ export default function ProjectLayout({ children }) {
             &nbsp;/&nbsp;
             <Button
               variant="text"
-              onClick={() => router.push(`/${org?._id}/project/${project?._id}`)}
+              onClick={() =>
+                router.push(`/${org?._id}/project/${project?._id}`)
+              }
               disabled={!project}
             >
               {project?.name ? project.name : <Skeleton width={100} />}

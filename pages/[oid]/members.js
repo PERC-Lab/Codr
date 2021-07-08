@@ -1,4 +1,4 @@
-import { OrgLayout } from "../../src/Layouts";
+import { OrgLayout } from "src/Layouts";
 import {
   Button,
   makeStyles,
@@ -12,11 +12,8 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
-import {
-  OrganizationProvider,
-  useOrganization,
-} from "../../src/OrganizationContext";
-import AddMemberModal from "../../src/components/modals/AddMemberModal";
+import { OrganizationProvider, useOrganization } from "src/OrganizationContext";
+import AddMemberModal from "src/components/modals/AddMemberModal";
 import { useState } from "react";
 
 const useToolbarStyles = makeStyles(theme => ({

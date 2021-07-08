@@ -7,10 +7,10 @@ import {
   DialogTitle,
 } from "@material-ui/core";
 import React from "react";
-import { HighlightedMarkdown } from '../HighlightedMarkdown';
+import { HighlightedMarkdown } from "src/components/HighlightedMarkdown";
 
 /**
- * 
+ *
  * @param {{
  *  open: Boolean,
  *  onClose: Function,
@@ -31,11 +31,11 @@ export default function GuidelinesModal({ open, onClose, children }) {
     >
       <DialogTitle id="scroll-dialog-title">Guidelines</DialogTitle>
       <DialogContent dividers={true}>
-        <DialogContentText
-          id="scroll-dialog-description"
-        >
+        <DialogContentText id="scroll-dialog-description">
           <HighlightedMarkdown>
-            {children ? children : "No guidelines are available for this project!"}
+            {children
+              ? children
+              : "No guidelines are available for this project!"}
           </HighlightedMarkdown>
         </DialogContentText>
       </DialogContent>

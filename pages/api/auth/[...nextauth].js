@@ -3,9 +3,9 @@ import Providers from "next-auth/providers";
 import Adapters from "next-auth/adapters";
 // import mongoose from "mongoose";
 
-import connect from "../../../lib/database";
-import Models from "../../../models/typeorm";
-// import { User } from "../../../models/mongoose";
+import connect from "lib/database";
+import Models from "models/typeorm";
+// import { User } from "models/mongoose";
 
 connect();
 
@@ -82,8 +82,8 @@ export default function handler(req, res) {
     },
     callbacks: {
       async session(session, user) {
-        session.user = user
-        return session
+        session.user = user;
+        return session;
       },
     },
     pages: {

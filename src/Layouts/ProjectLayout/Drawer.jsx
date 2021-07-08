@@ -10,8 +10,8 @@ import {
   ListSubheader,
 } from "@material-ui/core";
 import { Dashboard, Storage } from "@material-ui/icons";
-import { useOrganization } from "../../OrganizationContext";
-import { useProject } from "../../ProjectContext";
+import { useOrganization } from "src/OrganizationContext";
+import { useProject } from "src/ProjectContext";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/client";
 

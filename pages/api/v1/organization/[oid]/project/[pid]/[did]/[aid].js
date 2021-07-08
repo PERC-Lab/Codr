@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 import { Session } from "next-auth";
-import { Annotation, Project } from "../../../../../../../../models/mongoose";
+import { Annotation, Project } from "models/mongoose";
 
 /**
  * Api endpoint to get user's organizations.
@@ -98,7 +98,10 @@ const updateAnnotation = async (req, res, session) => {
   if (session?.user) {
     const annotation = await Annotation.updateOne(
       { _id: req.query.aid },
-      { ...convertJsonToDot(req.body), annotated_by: (session.user.sub || session.user.id) }
+      {
+        ...convertJsonToDot(req.body),
+        annotated_by: session.user.sub || session.user.id,
+      }
     ).exec();
 
     if (annotation?.nModified === 1) {

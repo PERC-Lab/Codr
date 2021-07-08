@@ -10,12 +10,12 @@ import {
   ListItemText,
 } from "@material-ui/core";
 import { FolderOutlined, GroupOutlined } from "@material-ui/icons";
-import { useOrganization } from "../../OrganizationContext";
+import { useOrganization } from "src/OrganizationContext";
 import { useRouter } from "next/router";
 
 const drawerWidth = 240;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
   },

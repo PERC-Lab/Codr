@@ -1,9 +1,6 @@
-import { ProjectLayout } from "../../../../../src/Layouts";
-import {
-  OrganizationProvider,
-  useOrganization,
-} from "../../../../../src/OrganizationContext";
-import { ProjectProvider, useProject } from "../../../../../src/ProjectContext";
+import { ProjectLayout } from "src/Layouts";
+import { OrganizationProvider, useOrganization } from "src/OrganizationContext";
+import { ProjectProvider, useProject } from "src/ProjectContext";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import {
@@ -23,8 +20,8 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
-import AccessControlManager from "../../../../../lib/abac";
-import PermissionEditor from "../../../../../src/components/PermissionEditor";
+import AccessControlManager from "lib/abac";
+import PermissionEditor from "src/components/PermissionEditor";
 import { Skeleton } from "@material-ui/lab";
 
 const useStyles = makeStyles(theme => ({

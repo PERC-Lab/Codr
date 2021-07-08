@@ -1,7 +1,7 @@
 import { Provider } from "next-auth/client";
 import React from "react";
 // import { ThemeProvider } from "styled-components";
-import theme from "../src/theme";
+import theme from "src/theme";
 import { responsiveFontSizes, ThemeProvider } from "@material-ui/core/styles";
 import { CssBaseline } from "@material-ui/core";
 import "highlight.js/styles/atom-one-dark.css";

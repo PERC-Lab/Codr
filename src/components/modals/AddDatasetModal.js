@@ -16,9 +16,9 @@ import {
   MenuItem,
   Select,
 } from "@material-ui/core";
-import { useOrganization } from "../../OrganizationContext";
-import AccessControlManager, { GlobalACL } from "../../../lib/abac";
-import PermissionEditor from "../PermissionEditor";
+import { useOrganization } from "src/OrganizationContext";
+import AccessControlManager, { GlobalACL } from "lib/abac";
+import PermissionEditor from "src/components/PermissionEditor";
 
 const ACL = new AccessControlManager();
 
@@ -52,14 +52,14 @@ export default function AddDatasetModal({ open, onCancel, onCreate }) {
 
   const handlePermissionChange = (role, perms) => {
     const f = { ...form };
-    const p = { 
+    const p = {
       ...f.permissions,
       [role]: {
-        grants: perms
-      }
-    }
+        grants: perms,
+      },
+    };
     f.permissions = p;
-    console.log(p)
+    console.log(p);
     setForm(f);
   };
 
@@ -130,7 +130,9 @@ export default function AddDatasetModal({ open, onCancel, onCreate }) {
                 <PermissionEditor
                   key={`permeditor-${role}`}
                   role={role}
-                  values={form.permissions ? form.permissions[role]?.grants : []}
+                  values={
+                    form.permissions ? form.permissions[role]?.grants : []
+                  }
                   resources={[
                     {
                       value: "dataset",
@@ -139,7 +141,8 @@ export default function AddDatasetModal({ open, onCancel, onCreate }) {
                     {
                       value: "annotation",
                       display: "Annotation",
-                    },]}
+                    },
+                  ]}
                   actions={[
                     {
                       value: "read",

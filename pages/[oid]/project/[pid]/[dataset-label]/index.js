@@ -1,12 +1,9 @@
-import { ProjectLayout } from "../../../../../src/Layouts";
-import {
-  OrganizationProvider,
-  useOrganization,
-} from "../../../../../src/OrganizationContext";
-import { ProjectProvider, useProject } from "../../../../../src/ProjectContext";
+import { ProjectLayout } from "src/Layouts";
+import { OrganizationProvider, useOrganization } from "src/OrganizationContext";
+import { ProjectProvider, useProject } from "src/ProjectContext";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import PaginationTable from "../../../../../src/components/DatasetPaginationTable";
+import PaginationTable from "src/components/DatasetPaginationTable";
 
 const headCells = [
   { id: "dataId", numeric: false, disablePadding: true, label: "Data Id" },

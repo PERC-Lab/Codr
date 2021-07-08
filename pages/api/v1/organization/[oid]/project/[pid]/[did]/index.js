@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 import { Session } from "next-auth";
-import { Annotation, Project } from "../../../../../../../../models/mongoose";
+import { Annotation, Project } from "models/mongoose";
 import { toInteger } from "lodash";
 
 /**
@@ -73,14 +73,14 @@ const getDataset = async (req, res, session) => {
       .exec()
       .then(async a => {
         const c = await count.countDocuments().exec();
-        return {annotations: a, count: c};
+        return { annotations: a, count: c };
       })
-      .then(({annotations, count}) => {
+      .then(({ annotations, count }) => {
         res.status(200).json({
           status: true,
           result: {
             size: count,
-            annotations
+            annotations,
           },
         });
       })
@@ -353,7 +353,7 @@ export const config = {
   api: {
     externalResolver: true,
     bodyParser: {
-      sizeLimit: '12mb',
+      sizeLimit: "12mb",
     },
   },
 };

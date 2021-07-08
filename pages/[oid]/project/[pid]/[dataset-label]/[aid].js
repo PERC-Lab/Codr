@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { ProjectLayout } from "../../../../../src/Layouts";
-import {
-  OrganizationProvider,
-  useOrganization,
-} from "../../../../../src/OrganizationContext";
-import { ProjectProvider, useProject } from "../../../../../src/ProjectContext";
+import { ProjectLayout } from "src/Layouts";
+import { OrganizationProvider, useOrganization } from "src/OrganizationContext";
+import { ProjectProvider, useProject } from "src/ProjectContext";
 import { useRouter } from "next/router";
 import hljs from "highlight.js";
 import { Autocomplete, Skeleton } from "@material-ui/lab";
@@ -22,9 +19,9 @@ import {
   TextField,
 } from "@material-ui/core";
 import { keys, isEqual, set } from "lodash";
-import GuidelinesModal from "../../../../../src/components/modals/GuidelinesModal";
-import Navigator from "../../../../../lib/navigator";
-import AccessControlManager from "../../../../../lib/abac";
+import GuidelinesModal from "src/components/modals/GuidelinesModal";
+import Navigator from "lib/navigator";
+import AccessControlManager from "lib/abac";
 import { useSession } from "next-auth/client";
 
 const useStyles = makeStyles(theme => ({
@@ -343,7 +340,7 @@ export default function ProjectDatasetAnnotation() {
             <Card>
               <CardHeader title="Labels" />
               <CardContent>
-                {(keys(project?.labelsets).length && pageData.recieved) ? (
+                {keys(project?.labelsets).length && pageData.recieved ? (
                   keys(project.labelsets).map(key =>
                     key == "information_accessed" ? null : (
                       <ChipInput
