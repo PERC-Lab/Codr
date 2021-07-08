@@ -62,7 +62,10 @@ const getDataset = async (req, res, session) => {
     if (req.query.page) {
       query
         .limit(req.query.limit ? toInteger(req.query.limit) : 10)
-        .skip(10 * toInteger(req.query.page));
+        .skip(
+          (req.query.limit ? toInteger(req.query.limit) : 10) *
+            toInteger(req.query.page)
+        );
     } else if (req.query.limit) {
       query.limit(toInteger(req.query.limit));
     }
@@ -80,6 +83,10 @@ const getDataset = async (req, res, session) => {
           status: true,
           result: {
             size: count,
+            start:
+              (req.query.limit ? toInteger(req.query.limit) : 10) *
+              toInteger(req.query.page),
+            limit: req.query.limit ? toInteger(req.query.limit) : 10,
             annotations,
           },
         });
