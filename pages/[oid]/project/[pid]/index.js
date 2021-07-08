@@ -119,10 +119,10 @@ export default function OrgProject() {
                       .role === "admin" ? (
                       <ListItem
                         button
-                        key={dataset.label}
+                        key={dataset._id}
                         onClick={() =>
                           router.push(
-                            `/${org._id}/project/${project._id}/${dataset.label}`
+                            `/${org._id}/project/${project._id}/${dataset._id}`
                           )
                         }
                       >

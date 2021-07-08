@@ -231,9 +231,7 @@ export default function ProjectDatasetAnnotation() {
     myNav = new Navigator(project.datasetAnnotations, router.query.aid);
 
   if (!pageData.sent && org && project) {
-    const d = project.datasets.find(
-      p => p.label == router.query["dataset-label"]
-    );
+    const d = project.datasets.find(p => p._id == router.query.did);
 
     getAnnotation(org._id, project._id, d._id, router.query.aid)
       .then(a => {
@@ -487,7 +485,7 @@ export default function ProjectDatasetAnnotation() {
                           onClick={() => {
                             const oid = router.query.oid,
                               pid = router.query.pid,
-                              ds = router.query["dataset-label"],
+                              ds = router.query.did,
                               aid = myNav.getPrev();
                             router.push(`/${oid}/project/${pid}/${ds}/${aid}`);
                           }}
@@ -501,7 +499,7 @@ export default function ProjectDatasetAnnotation() {
                           onClick={() => {
                             const oid = router.query.oid,
                               pid = router.query.pid,
-                              ds = router.query["dataset-label"],
+                              ds = router.query.did,
                               aid = myNav.getNext();
                             router.push(`/${oid}/project/${pid}/${ds}/${aid}`);
                           }}

@@ -86,7 +86,7 @@ const getDataset = async (req, res, session) => {
           res.setHeader("Content-Type", "application/json");
           res.setHeader(
             "Content-Disposition",
-            `attachment; filename="dataset-${limit}.json"`
+            `attachment; filename="dataset-${limit ? limit : count}.json"`
           );
 
           res.status(200).json(annotations);

@@ -24,14 +24,11 @@ export default function ProjectDataset() {
   });
 
   if (
-    (!pageData.sent ||
-      pageData.dataset?.label !== router.query["dataset-label"]) &&
+    (!pageData.sent || pageData.dataset?._id !== router.query.did) &&
     org &&
     project
   ) {
-    const d = project.datasets.find(
-      p => p.label == router.query["dataset-label"]
-    );
+    const d = project.datasets.find(p => p._id == router.query.did);
 
     getAnnotations(
       org._id,
@@ -71,9 +68,7 @@ export default function ProjectDataset() {
 
   useEffect(() => {
     if (project && org) {
-      const d = project.datasets.find(
-        p => p.label == router.query["dataset-label"]
-      );
+      const d = project.datasets.find(p => p._id == router.query.did);
 
       getAnnotations(
         org._id,

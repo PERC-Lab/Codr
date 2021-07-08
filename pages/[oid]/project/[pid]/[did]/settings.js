@@ -79,10 +79,8 @@ export default function ProjectDataset() {
     }
   }, [dataset]);
 
-  if (dataset?.label !== router.query["dataset-label"] && org && project) {
-    const d = project.datasets.find(
-      p => p.label == router.query["dataset-label"]
-    );
+  if (dataset?._id !== router.query.did && org && project) {
+    const d = project.datasets.find(p => p._id == router.query.did);
     setACL(() => {
       const ac = new AccessControlManager({
         grants: d?.permissions,
