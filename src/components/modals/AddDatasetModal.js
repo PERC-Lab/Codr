@@ -59,7 +59,6 @@ export default function AddDatasetModal({ open, onCancel, onCreate }) {
       },
     };
     f.permissions = p;
-    console.log(p);
     setForm(f);
   };
 

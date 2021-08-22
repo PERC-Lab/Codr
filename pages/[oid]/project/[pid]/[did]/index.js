@@ -38,7 +38,6 @@ export default function ProjectDataset() {
       pageData.pageSize
     )
       .then(a => {
-        console.log(a);
         setPageData(data => ({
           ...data,
           recieved: true,
@@ -78,7 +77,6 @@ export default function ProjectDataset() {
         pageData.pageSize
       )
         .then(a => {
-          console.log(a);
           setPageData(data => ({
             ...data,
             recieved: true,

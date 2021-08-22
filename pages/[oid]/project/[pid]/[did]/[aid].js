@@ -210,8 +210,6 @@ export default function ProjectDatasetAnnotation() {
   const [open, setOpen] = useState(false);
   const myNav = useNavigator();
 
-  console.log(data);
-
   const getDataset = () => {
     if (project) {
       return project?.datasets?.find(p => p?._id === router.query?.did);
@@ -243,8 +241,6 @@ export default function ProjectDatasetAnnotation() {
     }
   }, [getDataset()?.permissions]);
 
-  console.log(ACL);
-
   return (
     <>
       <GuidelinesModal
@@ -261,7 +257,10 @@ export default function ProjectDatasetAnnotation() {
             data.annotation.data.methods.map((method, index) => {
               method.language = data.annotation.data.language;
               return (
-                <Accordion key={`method-${index}`}>
+                <Accordion
+                  key={`method-${index}`}
+                  defaultExpanded={index === 0}
+                >
                   <AccordionSummary>{`Method ${index + 1}`}</AccordionSummary>
                   <AccordionDetails className={classes.method}>
                     {Highlighter(method, classes)}

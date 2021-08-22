@@ -55,7 +55,6 @@ export default function ProjectDataset() {
   const [ACL, setACL] = useState();
 
   useEffect(() => {
-    console.log(dataset);
     if (typeof dataset !== "undefined" && dataset.save) {
       delete dataset.save;
       updateDataset(
@@ -64,7 +63,6 @@ export default function ProjectDataset() {
         dataset._id,
         dataset
       ).then(p => {
-        console.log(p);
         if (typeof p === "object") {
           setProject({
             ...p,
@@ -100,7 +98,6 @@ export default function ProjectDataset() {
       },
     };
     d.permissions = p;
-    console.log(p);
     setDataset({
       ...d,
       save: true,

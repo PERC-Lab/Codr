@@ -61,10 +61,7 @@ const getAnnotation = (oid, pid, did, aid) => {
     credentials: "same-origin",
   })
     .then(res => res.json())
-    .then(res => {
-      console.log(res.result);
-      return res.result;
-    });
+    .then(res => res.result);
 };
 
 /**

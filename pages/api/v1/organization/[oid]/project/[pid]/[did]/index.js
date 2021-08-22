@@ -192,8 +192,6 @@ const bulkInsertAnnotations = async function bulkInsertAnnotations(
       status: true,
       result,
     });
-
-    // console.log(annotations);
   } else {
     res.status(401).json({
       status: false,
@@ -240,7 +238,7 @@ const bulkUpdateAnnotations = async function bulkUpdateAnnotations(
           result.nModified += annotation.nModified;
         })
         .catch(e => {
-          console.log(e);
+          console.error(e);
           result.nFailed += 1;
           result.error = e;
         });
@@ -250,8 +248,6 @@ const bulkUpdateAnnotations = async function bulkUpdateAnnotations(
       status: true,
       result,
     });
-
-    // console.log(annotations);
   } else {
     res.status(401).json({
       status: false,
