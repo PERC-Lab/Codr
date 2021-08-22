@@ -32,20 +32,43 @@ async function AnnotationHandler(req, res) {
  */
 const getAnnotation = async (req, res, session) => {
   if (session?.user) {
-    Annotation.findOne({ _id: req.query.aid })
-      .exec()
-      .then(annoation => {
-        res.status(200).json({
-          status: true,
-          result: annoation,
-        });
+    const count = await Annotation.count({ datasetId: req.query.did })
+      .countDocuments()
+      .exec();
+
+    try {
+      const cur = await Annotation.findOne({
+        _id: req.query.aid,
+        datasetId: req.query.did,
+      }).exec();
+      const prev = await Annotation.findOne({
+        _id: { $lt: req.query.aid },
+        datasetId: req.query.did,
       })
-      .catch(e => {
-        res.status(500).json({
-          status: false,
-          result: e,
-        });
+        .sort({ _id: -1 })
+        .exec();
+      const next = await Annotation.findOne({
+        _id: { $gt: req.query.aid },
+        datasetId: req.query.did,
+      })
+        .sort({ _id: 1 })
+        .exec();
+
+      res.status(200).json({
+        status: true,
+        result: {
+          next: next?._id,
+          prev: prev?._id,
+          size: count,
+          annotation: cur,
+        },
       });
+    } catch (e) {
+      res.status(500).json({
+        status: false,
+        result: e.message,
+      });
+    }
   } else {
     res.status(401).json({
       status: false,

@@ -71,6 +71,6 @@ export default function ProjectLayout({ children }) {
       </main>
     </div>
   ) : loading ? null : (
-    router.push("/router")
+    router.push("/login")
   );
 }

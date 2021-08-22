@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { ProjectLayout } from "src/Layouts";
 import { OrganizationProvider, useOrganization } from "src/OrganizationContext";
+import {
+  AnnotationProvider,
+  updateAnnotation,
+  useAnnotation,
+} from "src/AnnotationContext";
 import { ProjectProvider, useProject } from "src/ProjectContext";
 import { useRouter } from "next/router";
 import hljs from "highlight.js";
@@ -18,9 +23,9 @@ import {
   makeStyles,
   TextField,
 } from "@material-ui/core";
-import { keys, isEqual, set } from "lodash";
+import { keys, isEqual } from "lodash";
 import GuidelinesModal from "src/components/modals/GuidelinesModal";
-import Navigator from "lib/navigator";
+import { useNavigator } from "lib/navigator";
 import AccessControlManager from "lib/abac";
 import { useSession } from "next-auth/client";
 
@@ -152,7 +157,8 @@ const ChipInput = function ChipInput({
       id={`${labelsetName}-input`}
       options={options}
       value={value}
-      onChange={(_event, newValue) => {
+      onChange={(event, newValue) => {
+        event.preventDefault();
         const val = newValue.map(v => ({
           label: v.label,
           "sub-label": v["sub-label"],
@@ -196,18 +202,22 @@ const ChipInput = function ChipInput({
 export default function ProjectDatasetAnnotation() {
   const router = useRouter();
   const [org] = useOrganization();
+  const [data, setData] = useAnnotation();
   const [project] = useProject();
   const [session] = useSession();
   const [saving, setSaving] = useState(false);
-  const [pageData, setPageData] = useState({
-    sent: false,
-    recieved: false,
-    dataset: undefined,
-    annotation: undefined,
-  });
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  var myNav;
+  const myNav = useNavigator();
+
+  console.log(data);
+
+  const getDataset = () => {
+    if (project) {
+      return project?.datasets?.find(p => p?._id === router.query?.did);
+    }
+    return undefined;
+  };
 
   /**
    * @type {[AccessControlManager, function]}
@@ -215,78 +225,25 @@ export default function ProjectDatasetAnnotation() {
   const [ACL, setACL] = useState();
 
   useEffect(() => {
-    if (pageData?.dataset?.permissions) {
+    if (project) {
+      project?.datasets?.find(p => p?._id === router.query?.did);
+    }
+  }, [project]);
+
+  useEffect(() => {
+    if (getDataset()?.permissions) {
       setACL(() => {
         const ac = new AccessControlManager({
-          grants: pageData?.dataset?.permissions,
-          enabled: pageData?.dataset?.permissionsEnabled,
+          grants: getDataset()?.permissions,
+          enabled: getDataset()?.permissionsEnabled,
         });
         ac?.setRole(org.members.find(m => m.email === session.user.email).role);
         return ac;
       });
     }
-  }, [pageData?.dataset?.permissions]);
+  }, [getDataset()?.permissions]);
 
-  if (project?.datasetAnnotations && !myNav)
-    myNav = new Navigator(project.datasetAnnotations, router.query.aid);
-
-  if (!pageData.sent && org && project) {
-    const d = project.datasets.find(p => p._id == router.query.did);
-
-    getAnnotation(org._id, project._id, d._id, router.query.aid)
-      .then(a => {
-        setPageData(data => ({
-          ...data,
-          recieved: true,
-          annotation: a,
-        }));
-      })
-      .catch(e => {
-        console.error(e);
-        setPageData(data => ({
-          ...data,
-          recieved: false,
-        }));
-      });
-    setPageData(data => ({
-      ...data,
-      sent: true,
-      dataset: d,
-    }));
-  }
-
-  // if annotation id in url changes, fetch new annotation data.
-  useEffect(() => {
-    if (org && project) {
-      setPageData(data => ({
-        ...data,
-        recieved: false,
-        annotation: null,
-      }));
-
-      getAnnotation(
-        org._id,
-        project._id,
-        pageData.dataset._id,
-        router.query.aid
-      )
-        .then(a => {
-          setPageData(data => ({
-            ...data,
-            recieved: true,
-            annotation: a,
-          }));
-        })
-        .catch(e => {
-          console.error(e);
-          setPageData(data => ({
-            ...data,
-            recieved: false,
-            annotation: [],
-          }));
-        });
-    }
-  }, [router.query.aid]);
+  console.log(ACL);
 
   return (
     <>
@@ -300,9 +257,9 @@ export default function ProjectDatasetAnnotation() {
       </GuidelinesModal>
       <Grid container spacing={3}>
         <Grid item xs={8}>
-          {pageData?.annotation?.data?.methods ? (
-            pageData.annotation.data.methods.map((method, index) => {
-              method.language = pageData.annotation.data.language;
+          {data?.annotation?.data?.methods ? (
+            data.annotation.data.methods.map((method, index) => {
+              method.language = data.annotation.data.language;
               return (
                 <Accordion key={`method-${index}`}>
                   <AccordionSummary>{`Method ${index + 1}`}</AccordionSummary>
@@ -341,14 +298,14 @@ export default function ProjectDatasetAnnotation() {
             <Card>
               <CardHeader title="Labels" />
               <CardContent>
-                {keys(project?.labelsets).length && pageData.recieved ? (
+                {keys(project?.labelsets).length && data?.annotation ? (
                   keys(project.labelsets).map(key =>
                     key == "information_accessed" ? null : (
                       <ChipInput
                         labelList={
-                          pageData.annotation?.data?.labels &&
-                          pageData.annotation.data.labels[key]
-                            ? pageData.annotation?.data.labels[key]
+                          data.annotation.data.labels &&
+                          data.annotation.data.labels[key]
+                            ? data.annotation.data.labels[key]
                             : []
                         }
                         disabled={(function () {
@@ -369,17 +326,15 @@ export default function ProjectDatasetAnnotation() {
                           // capture update to send to db
                           const d = {
                             data: {
-                              labels: { ...pageData.annotation.data.labels },
+                              labels: { ...data.annotation.data.labels },
                             },
                           };
                           d.data.labels[key] = labels;
 
-                          // also save to the local "pageData" to fix de-sync error
-                          const p = {
-                            ...pageData,
-                          };
-                          p.annotation.data.labels[key] = labels;
-                          setPageData(p);
+                          // also save to the local "data" to fix de-sync error
+                          const a = { ...data.annotation };
+                          a.data.labels[key] = labels;
+                          setData({ annotation: a });
 
                           // set to true, to wait for save function to finish
                           setSaving(true);
@@ -388,7 +343,7 @@ export default function ProjectDatasetAnnotation() {
                           updateAnnotation(
                             org._id,
                             project._id,
-                            pageData.dataset._id,
+                            getDataset()._id,
                             router.query.aid,
                             d
                           ).then(() => {
@@ -405,12 +360,15 @@ export default function ProjectDatasetAnnotation() {
                     <Skeleton height={64} />
                   </>
                 )}
-                {pageData.recieved ? (
+                {data?.annotation ? (
                   <TextField
                     variant="outlined"
                     label="Comments"
                     fullWidth
                     multiline
+                    InputLabelProps={{
+                      shrink: !!data.annotation.data?.comments,
+                    }}
                     disabled={(function () {
                       try {
                         return ACL.enabled
@@ -423,15 +381,18 @@ export default function ProjectDatasetAnnotation() {
                         return true;
                       }
                     })()}
-                    defaultValue={pageData.annotation.data?.comments}
+                    value={
+                      data.annotation.data?.comments
+                        ? data.annotation.data.comments
+                        : ""
+                    }
+                    onChange={e => {
+                      // update local "data" to fix potential de-sync error
+                      const a = { ...data.annotation };
+                      a.data.comments = e.target.value;
+                      setData({ annotation: a });
+                    }}
                     onBlur={e => {
-                      // update local "pageData" to fix potential de-sync error
-                      const p = {
-                        ...pageData,
-                      };
-                      p.annotation.data.comments = e.target.value;
-                      setPageData(p);
-
                       // wait for save
                       setSaving(true);
 
@@ -439,7 +400,7 @@ export default function ProjectDatasetAnnotation() {
                       updateAnnotation(
                         org._id,
                         project._id,
-                        pageData.dataset._id,
+                        getDataset()._id,
                         router.query.aid,
                         {
                           data: {
@@ -464,7 +425,7 @@ export default function ProjectDatasetAnnotation() {
                     xs={6}
                     style={{ alignItems: "center", display: "flex" }}
                   >
-                    {myNav ? myNav.index + 1 : 0} of {myNav ? myNav.size : 0}
+                    ?? of {myNav ? myNav.size : 0}
                   </Grid>
                   <Grid
                     item
@@ -483,9 +444,7 @@ export default function ProjectDatasetAnnotation() {
                           color="primary"
                           disabled={!myNav?.hasPrev()}
                           onClick={() => {
-                            const oid = router.query.oid,
-                              pid = router.query.pid,
-                              ds = router.query.did,
+                            const { oid, pid, did: ds } = router.query,
                               aid = myNav.getPrev();
                             router.push(`/${oid}/project/${pid}/${ds}/${aid}`);
                           }}
@@ -497,9 +456,7 @@ export default function ProjectDatasetAnnotation() {
                           color="primary"
                           disabled={!myNav?.hasNext()}
                           onClick={() => {
-                            const oid = router.query.oid,
-                              pid = router.query.pid,
-                              ds = router.query.did,
+                            const { oid, pid, did: ds } = router.query,
                               aid = myNav.getNext();
                             router.push(`/${oid}/project/${pid}/${ds}/${aid}`);
                           }}
@@ -519,50 +476,7 @@ export default function ProjectDatasetAnnotation() {
   );
 }
 
-/**
- * @description Get annotation data
- * @param {String} oid Organization Id
- * @param {String} pid Project Id
- * @param {String} did Dataset Id
- * @param {Strnig} aid Annotation Data Id
- * @returns {Promise}
- */
-const getAnnotation = (oid, pid, did, aid) => {
-  return fetch(`/api/v1/organization/${oid}/project/${pid}/${did}/${aid}`, {
-    method: "GET",
-    credentials: "same-origin",
-  })
-    .then(res => res.json())
-    .then(res => res.result);
-};
-
-/**
- * @description Get annotation data
- * @param {string} oid Organization Id
- * @param {string} pid Project Id
- * @param {string} did Dataset Id
- * @param {string} aid Annotation Data Id
- * @param {{
- *  data: {
- *    labels: Object.<string, {label: string, "sub-label": string}[]>
- *    comment: string
- *  }
- * }} update Data to update
- * @returns {Promise}
- */
-const updateAnnotation = (oid, pid, did, aid, update) => {
-  return fetch(`/api/v1/organization/${oid}/project/${pid}/${did}/${aid}`, {
-    method: "PATCH",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(update),
-  })
-    .then(res => res.json())
-    .then(res => res.result);
-};
-
 ProjectDatasetAnnotation.Layout = ProjectLayout;
 ProjectDatasetAnnotation.OrganizationProvider = OrganizationProvider;
 ProjectDatasetAnnotation.ProjectProvider = ProjectProvider;
+ProjectDatasetAnnotation.Provider = AnnotationProvider;
