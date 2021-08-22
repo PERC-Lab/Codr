@@ -53,12 +53,17 @@ const getAnnotation = async (req, res, session) => {
       })
         .sort({ _id: 1 })
         .exec();
+      const index = await Annotation.find({
+        _id: { $lt: req.query.aid },
+        datasetId: req.query.did,
+      }).count();
 
       res.status(200).json({
         status: true,
         result: {
           next: next?._id,
           prev: prev?._id,
+          index,
           size: count,
           annotation: cur,
         },
