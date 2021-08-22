@@ -424,7 +424,7 @@ export default function ProjectDatasetAnnotation() {
                     xs={6}
                     style={{ alignItems: "center", display: "flex" }}
                   >
-                    {myNav?.index ? myNav.index : "?"} of{" "}
+                    {myNav?.index ? myNav.index + 1 : myNav?.size ? 1 : "?"} of{" "}
                     {myNav?.size ? myNav.size : 0}
                   </Grid>
                   <Grid
