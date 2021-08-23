@@ -4,8 +4,8 @@ import { AppBar, Button, Toolbar, Typography } from "@material-ui/core";
 import AvatarMenu from "./AvatarMenu";
 import Drawer from "./Drawer";
 import { useRouter } from "next/router";
-import { useOrganization } from "../../OrganizationContext";
-import { useProject } from "../../ProjectContext";
+import { useOrganization } from "src/OrganizationContext";
+import { useProject } from "src/ProjectContext";
 import { Skeleton } from "@material-ui/lab";
 import { useSession } from "next-auth/client";
 
@@ -20,6 +20,7 @@ const useStyles = makeStyles(theme => ({
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
+    maxWidth: "calc(100% - 240px)",
   },
   title: {
     flexGrow: 1,
@@ -52,7 +53,9 @@ export default function ProjectLayout({ children }) {
             &nbsp;/&nbsp;
             <Button
               variant="text"
-              onClick={() => router.push(`/${org?._id}/project/${project?._id}`)}
+              onClick={() =>
+                router.push(`/${org?._id}/project/${project?._id}`)
+              }
               disabled={!project}
             >
               {project?.name ? project.name : <Skeleton width={100} />}
@@ -68,6 +71,6 @@ export default function ProjectLayout({ children }) {
       </main>
     </div>
   ) : loading ? null : (
-    router.push("/router")
+    router.push("/login")
   );
 }

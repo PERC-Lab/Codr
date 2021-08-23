@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { AppBar, Button, Toolbar, Typography } from "@material-ui/core";
 import AvatarMenu from "./AvatarMenu";
 import Drawer from "./Drawer";
-import { useOrganization } from "../../OrganizationContext";
+import { useOrganization } from "src/OrganizationContext";
 import { useRouter } from "next/router";
 import { Skeleton } from "@material-ui/lab";
 import { useSession } from "next-auth/client";

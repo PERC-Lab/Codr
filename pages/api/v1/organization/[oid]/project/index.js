@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 import { Session } from "next-auth";
-import { Project } from "../../../../../../models/mongoose";
+import { Project } from "models/mongoose";
 
 /**
  * Api endpoint to get user's organizations.
@@ -35,15 +35,15 @@ const getProjects = async (res, session, oid) => {
         if (err) {
           res.status(500).json({
             status: false,
-            result: err
-          })
+            result: err,
+          });
         } else {
           res.status(200).json({
             status: true,
             result: projects,
           });
         }
-      })
+      });
   } else {
     res.status(401).json({
       status: false,
@@ -68,13 +68,13 @@ const createProject = async (res, req, session) => {
   };
 
   await Project.create(d)
-    .then((doc) => {
+    .then(doc => {
       res.status(201).json({
         status: true,
         result: doc,
       });
     })
-    .catch((err) => {
+    .catch(err => {
       res.status(500).json({
         status: false,
         result: err,

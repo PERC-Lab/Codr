@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 import { Session } from "next-auth";
-import { Annotation } from "../../../../../../../../models/mongoose";
+import { Annotation, Project } from "models/mongoose";
 import { toInteger } from "lodash";
 
 /**
@@ -18,12 +18,17 @@ async function DatasetHandler(req, res) {
       getDataset(req, res, session);
       break;
     case "POST":
-      // bulk add annotations
-      bulkInsertAnnotations(req, res, session);
+      if (req.query.bulk) {
+        // bulk add annotations
+        bulkInsertAnnotations(req, res, session);
+      } else {
+        // single add annotation
+        insertAnnotation(req, res, session);
+      }
       break;
     case "PUT":
-      // single add annotation
-      insertAnnotation(req, res, session);
+      // update dataset
+      updateDataset(req, res, session);
       break;
     case "PATCH":
       // bulk update
@@ -31,7 +36,7 @@ async function DatasetHandler(req, res) {
       break;
     case "DELETE":
       // delete dataset: NOT DEVELOPED
-      // deleteDataset(req, res, session);
+      deleteDataset(req, res, session);
       break;
     default:
       res.status(500).json({
@@ -49,26 +54,55 @@ async function DatasetHandler(req, res) {
  */
 const getDataset = async (req, res, session) => {
   if (session?.user) {
-    // start query
-    const query = Annotation.find({ datasetId: req.query.did })
+    const { page, limit, skip, dl, did } = req.query;
+    // start queries
+    const query = Annotation.find({ datasetId: did });
+    const count = Annotation.count({ datasetId: did });
 
     // modify query
-    if (req.query.page) {
+    if (page) {
       query
-        .limit(10)
-        .skip(10 * req.query.page)
-    } else if (req.query.limit) {
-      query.limit(toInteger(req.query.limit))
+        .limit(limit ? toInteger(limit) : 10)
+        .skip((limit ? toInteger(limit) : 10) * toInteger(page));
+    } else if (limit) {
+      query.limit(toInteger(limit));
+
+      if (skip) {
+        query.skip(toInteger(skip));
+      }
     }
 
     // execute query and send resolve API call.
     query
+      .populate({ path: "annotated_by", select: ["email", "name"] })
       .exec()
-      .then(annoations => {
-        res.status(200).json({
-          status: true,
-          result: annoations,
-        });
+      .then(async a => {
+        const c = await count.countDocuments().exec();
+        return { annotations: a, count: c };
+      })
+      .then(({ annotations, count }) => {
+        if (dl) {
+          // set headers
+          res.setHeader("Content-Type", "application/json");
+          res.setHeader(
+            "Content-Disposition",
+            `attachment; filename="dataset-${limit ? limit : count}.json"`
+          );
+
+          res.status(200).json(annotations);
+        } else {
+          res.status(200).json({
+            status: true,
+            result: {
+              size: count,
+              start:
+                (req.query.limit ? toInteger(req.query.limit) : 10) *
+                toInteger(req.query.page),
+              limit: req.query.limit ? toInteger(req.query.limit) : 10,
+              annotations,
+            },
+          });
+        }
       })
       .catch(e => {
         res.status(500).json({
@@ -158,8 +192,6 @@ const bulkInsertAnnotations = async function bulkInsertAnnotations(
       status: true,
       result,
     });
-
-    // console.log(annotations);
   } else {
     res.status(401).json({
       status: false,
@@ -206,7 +238,7 @@ const bulkUpdateAnnotations = async function bulkUpdateAnnotations(
           result.nModified += annotation.nModified;
         })
         .catch(e => {
-          console.log(e)
+          console.error(e);
           result.nFailed += 1;
           result.error = e;
         });
@@ -216,8 +248,6 @@ const bulkUpdateAnnotations = async function bulkUpdateAnnotations(
       status: true,
       result,
     });
-
-    // console.log(annotations);
   } else {
     res.status(401).json({
       status: false,
@@ -232,33 +262,99 @@ const bulkUpdateAnnotations = async function bulkUpdateAnnotations(
  * @param {NextApiResponse} res Response
  * @param {Session} session Session
  */
-// const deleteDataset = async (req, res, session) => {
-//   if (session?.user) {
-//     const project = await Project.updateOne(
-//       // find document where id and oranization match
-//       { _id: req.query.pid, organization: req.query.oid },
-//       // push the new dataset into project
-//       { $push: { datasets: req.body } }
-//     ).exec();
+const deleteDataset = async (req, res, session) => {
+  if (session?.user) {
+    // const project = await Project.updateOne(
+    //   // find document where id and oranization match
+    //   { _id: req.query.pid, organization: req.query.oid },
+    //   // push the new dataset into project
+    //   { $push: { datasets: req.body } }
+    // ).exec();
 
-//     if (project?.nModified === 1) {
-//       res.status(200).json({
-//         status: true,
-//         result: `Project '${req.query.pid}' was successfully modified!`,
-//       });
-//     } else {
-//       res.status(400).json({
-//         status: false,
-//         result: `Project '${req.query.pid}' was not able to be modified!`,
-//       });
-//     }
-//   } else {
-//     res.status(401).json({
-//       status: false,
-//       result: "Unauthorized Access.",
-//     });
-//   }
-// };
+    // if (project?.nModified === 1) {
+    //   res.status(200).json({
+    //     status: true,
+    //     result: `Project '${req.query.pid}' was successfully modified!`,
+    //   });
+    // } else {
+    //   res.status(400).json({
+    //     status: false,
+    //     result: `Project '${req.query.pid}' was not able to be modified!`,
+    //   });
+    // }
+    Annotation.deleteMany({
+      datasetId: req.query.did,
+    })
+      .exec()
+      .then(d =>
+        res.json({
+          status: true,
+          result: d,
+        })
+      )
+      .catch(e =>
+        res.json({
+          status: false,
+          result: e,
+        })
+      );
+  } else {
+    res.status(401).json({
+      status: false,
+      result: "Unauthorized Access.",
+    });
+  }
+};
+
+/**
+ *
+ * @param {NextApiRequest} req Response
+ * @param {NextApiResponse} res Response
+ * @param {Session} session Session
+ */
+const updateDataset = async (req, res, session) => {
+  if (session?.user) {
+    if (typeof req.body === "object") {
+      Project.findOneAndUpdate(
+        {
+          _id: req.query.pid,
+          "datasets._id": req.query.did,
+        },
+        {
+          "datasets.$": { ...req.body },
+        },
+        {
+          returnOriginal: false,
+        }
+      )
+        .exec()
+        .then(r => {
+          res.status(200).json({
+            status: true,
+            result: r,
+            message: `Dataset '${req.query.did}' was successfully modified!`,
+          });
+        })
+        .catch(e => {
+          res.status(400).json({
+            status: false,
+            result: `Dataset '${req.query.did}' was not able to be modified!`,
+          });
+        });
+    } else {
+      res.status(400).json({
+        status: false,
+        result: {},
+        message: `Dataset '${req.query.did}' was not able to be modified!`,
+      });
+    }
+  } else {
+    res.status(401).json({
+      status: false,
+      result: "Unauthorized Access.",
+    });
+  }
+};
 
 export default DatasetHandler;
 
@@ -272,5 +368,8 @@ function convertJsonToDot(obj, parent = [], keyValue = {}) {
 export const config = {
   api: {
     externalResolver: true,
+    bodyParser: {
+      sizeLimit: "12mb",
+    },
   },
 };

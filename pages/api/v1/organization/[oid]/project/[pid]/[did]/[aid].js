@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 import { Session } from "next-auth";
-import { Annotation, Project } from "../../../../../../../../models/mongoose";
+import { Annotation, Project } from "models/mongoose";
 
 /**
  * Api endpoint to get user's organizations.
@@ -32,20 +32,48 @@ async function AnnotationHandler(req, res) {
  */
 const getAnnotation = async (req, res, session) => {
   if (session?.user) {
-    Annotation.findOne({ _id: req.query.aid })
-      .exec()
-      .then(annoation => {
-        res.status(200).json({
-          status: true,
-          result: annoation,
-        });
+    const count = await Annotation.count({ datasetId: req.query.did })
+      .countDocuments()
+      .exec();
+
+    try {
+      const cur = await Annotation.findOne({
+        _id: req.query.aid,
+        datasetId: req.query.did,
+      }).exec();
+      const prev = await Annotation.findOne({
+        _id: { $lt: req.query.aid },
+        datasetId: req.query.did,
       })
-      .catch(e => {
-        res.status(500).json({
-          status: false,
-          result: e,
-        });
+        .sort({ _id: -1 })
+        .exec();
+      const next = await Annotation.findOne({
+        _id: { $gt: req.query.aid },
+        datasetId: req.query.did,
+      })
+        .sort({ _id: 1 })
+        .exec();
+      const index = await Annotation.find({
+        _id: { $lt: req.query.aid },
+        datasetId: req.query.did,
+      }).count();
+
+      res.status(200).json({
+        status: true,
+        result: {
+          next: next?._id,
+          prev: prev?._id,
+          index,
+          size: count,
+          annotation: cur,
+        },
       });
+    } catch (e) {
+      res.status(500).json({
+        status: false,
+        result: e.message,
+      });
+    }
   } else {
     res.status(401).json({
       status: false,
@@ -98,7 +126,10 @@ const updateAnnotation = async (req, res, session) => {
   if (session?.user) {
     const annotation = await Annotation.updateOne(
       { _id: req.query.aid },
-      { ...convertJsonToDot(req.body), annotated_by: session.user.email }
+      {
+        ...convertJsonToDot(req.body),
+        annotated_by: session.user.sub || session.user.id,
+      }
     ).exec();
 
     if (annotation?.nModified === 1) {

@@ -59,8 +59,6 @@ const Image = styled(Img)`
 `;
 
 export default function Login({ photo, ...props }) {
-  // console.log(props);
-
   return (
     <Page photo={photo}>
       <Image
@@ -87,8 +85,6 @@ export default function Login({ photo, ...props }) {
 export async function getServerSideProps({ req }) {
   const session = await getSession({ req });
 
-  // console.log(req);
-
   if (session) {
     // If user, redirect to dashboard
     return {
@@ -104,7 +100,7 @@ export async function getServerSideProps({ req }) {
     .getRandom({
       collectionIds: ["23354607"],
     })
-    .then((res) => {
+    .then(res => {
       return res.response;
     });
 

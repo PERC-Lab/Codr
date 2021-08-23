@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import { lighten, makeStyles } from "@material-ui/core/styles";
@@ -18,6 +18,9 @@ import Tooltip from "@material-ui/core/Tooltip";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Button } from "@material-ui/core";
 import { useRouter } from "next/router";
+import { Settings, OpenInNew } from "@material-ui/icons";
+import ExportDatasetModal from "src/components/modals/ExportDatasetModal";
+import { keys } from "lodash";
 
 function EnhancedTableHead(props) {
   const { headCells, onSelectAllClick, numSelected, rowCount } = props;
@@ -77,6 +80,9 @@ const useToolbarStyles = makeStyles(theme => ({
 const EnhancedTableToolbar = props => {
   const classes = useToolbarStyles();
   const { numSelected, title } = props;
+  const router = useRouter();
+  const { oid, pid, did } = router.query;
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <Toolbar
@@ -84,6 +90,19 @@ const EnhancedTableToolbar = props => {
         [classes.highlight]: numSelected > 0,
       })}
     >
+      <ExportDatasetModal
+        open={showModal}
+        onCancel={() => setShowModal(false)}
+        onExport={result => {
+          open(
+            `/api/v1/organization/${oid}/project/${pid}/${did}?${keys(result)
+              .map(k => `${k}=${result[k]}`)
+              .join("&")}&dl=1`,
+            "_self"
+          );
+          setShowModal(false);
+        }}
+      />
       {numSelected > 0 ? (
         <Typography
           className={classes.title}
@@ -110,7 +129,31 @@ const EnhancedTableToolbar = props => {
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-      ) : null}
+      ) : (
+        <>
+          <Button
+            endIcon={<OpenInNew />}
+            variant="outlined"
+            color="primary"
+            style={{ marginRight: "1em" }}
+            onClick={() => setShowModal(true)}
+          >
+            Export
+          </Button>
+          <Button
+            startIcon={<Settings />}
+            variant="outlined"
+            style={{ marginRight: "8px" }}
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                router.push(`${window.location.href}/settings`);
+              }
+            }}
+          >
+            Settings
+          </Button>
+        </>
+      )}
     </Toolbar>
   );
 };
@@ -147,6 +190,7 @@ const useStyles = makeStyles(theme => ({
 export default function PaginationTable({
   headerCells,
   rows,
+  size,
   pageSize,
   onPageUpdate,
   onPageSizeUpdate,
@@ -192,7 +236,7 @@ export default function PaginationTable({
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event) => {
+  const handleChangeRowsPerPage = event => {
     onPageSizeUpdate(parseInt(event.target.value, 10));
     onPageUpdate(0);
     setRowsPerPage(parseInt(event.target.value, 10));
@@ -201,8 +245,7 @@ export default function PaginationTable({
 
   const isSelected = name => selected.indexOf(name) !== -1;
 
-  const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length);
 
   return (
     <div className={classes.root}>
@@ -224,7 +267,7 @@ export default function PaginationTable({
             />
             <TableBody>
               {rows
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row._id);
                   const labelId = `enhanced-table-checkbox-${index}`;
@@ -280,7 +323,7 @@ export default function PaginationTable({
         </TableContainer>
         <TablePagination
           component="div"
-          count={rows.length}
+          count={size}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}

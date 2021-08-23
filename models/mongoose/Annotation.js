@@ -52,11 +52,11 @@ const AnnotationSchema = new Schema(
       required: [true, "Project Id is required."],
     },
     verified_by: {
-      type: Schema.Types.String,
+      type: Schema.Types.ObjectId,
       ref: "User",
     },
     annotated_by: {
-      type: Schema.Types.String,
+      type: Schema.Types.ObjectId,
       ref: "User",
     },
   },

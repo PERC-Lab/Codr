@@ -1,4 +1,4 @@
-import { OrgLayout } from "../../src/Layouts";
+import { OrgLayout } from "src/Layouts";
 import {
   Button,
   List,
@@ -10,14 +10,11 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
-import {
-  OrganizationProvider,
-  useOrganization,
-} from "../../src/OrganizationContext";
+import { OrganizationProvider, useOrganization } from "src/OrganizationContext";
 import { useState } from "react";
 import { Folder } from "@material-ui/icons";
 import { useRouter } from "next/router";
-import AddProjectModal from "../../src/components/modals/AddProjectModal";
+import AddProjectModal from "src/components/modals/AddProjectModal";
 
 const useStyles = makeStyles(theme => ({
   toolbar: {
@@ -99,12 +96,9 @@ export default function Organization() {
 }
 
 const getProjects = oid => {
-  return fetch(
-    `/api/v1/organization/${oid}/project`,
-    {
-      method: "GET",
-    }
-  )
+  return fetch(`/api/v1/organization/${oid}/project`, {
+    method: "GET",
+  })
     .then(res => res.json())
     .then(res => res.result);
 };
@@ -115,15 +109,12 @@ const getProjects = oid => {
  * @param {{name: String, guidelines: String}} project Project details
  */
 const createProject = (oid, project) => {
-  return fetch(
-    `/api/v1/organization/${oid}/project`,
-    {
-      method: "POST",
-      credentials: "same-origin",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(project),
-    }
-  )
+  return fetch(`/api/v1/organization/${oid}/project`, {
+    method: "POST",
+    credentials: "same-origin",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(project),
+  })
     .then(res => res.json())
     .then(res => res.result);
 };

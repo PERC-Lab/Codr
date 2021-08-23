@@ -1,4 +1,4 @@
-import { ProjectLayout } from "../../../../src/Layouts";
+import { ProjectLayout } from "src/Layouts";
 import { useSession } from "next-auth/client";
 import {
   Button,
@@ -15,28 +15,18 @@ import {
   Toolbar,
 } from "@material-ui/core";
 import { Skeleton } from "@material-ui/lab";
-import {
-  OrganizationProvider,
-  useOrganization,
-} from "../../../../src/OrganizationContext";
-import { ProjectProvider, useProject } from "../../../../src/ProjectContext";
-import MarkdownEditor from "../../../../src/components/MarkdownEditor";
-import AddDatasetModal from "../../../../src/components/modals/AddDatasetModal";
+import { OrganizationProvider, useOrganization } from "src/OrganizationContext";
+import { ProjectProvider, useProject } from "src/ProjectContext";
+import MarkdownEditor from "src/components/MarkdownEditor";
+import AddDatasetModal from "src/components/modals/AddDatasetModal";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { Settings } from "@material-ui/icons";
-import ProjectSettingsModal from "../../../../src/components/modals/ProjectSettingsModal";
+import ProjectSettingsModal from "src/components/modals/ProjectSettingsModal";
 
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
-  },
-  paper: {
-    padding: theme.spacing(2),
-    color: theme.palette.text.secondary,
-  },
-  card: {
-    maxWidth: 345,
   },
   title: {
     fontSize: "1.5em",
@@ -99,7 +89,9 @@ export default function OrgProject() {
               )}
               <Button
                 startIcon={<Settings />}
+                variant="outlined"
                 onClick={() => setOpenSettings(true)}
+                style={{ marginRight: "-8px" }}
               >
                 Settings
               </Button>
@@ -127,10 +119,10 @@ export default function OrgProject() {
                       .role === "admin" ? (
                       <ListItem
                         button
-                        key={dataset.label}
+                        key={dataset._id}
                         onClick={() =>
                           router.push(
-                            `/${org._id}/project/${project._id}/${dataset.label}`
+                            `/${org._id}/project/${project._id}/${dataset._id}`
                           )
                         }
                       >

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 import { Session } from "next-auth";
-import { Organization } from "../../../../../models/mongoose";
+import { Organization } from "models/mongoose";
 
 /**
  * Api endpoint to get user's organizations.
@@ -30,8 +30,8 @@ async function Organizations(req, res) {
 const getOrganization = async (res, session, oid) => {
   if (session?.user) {
     const orgs = await Organization.findOne({
-      "_id": oid,
-      "members.email": session.user.email
+      _id: oid,
+      "members.email": session.user.email,
     }).exec();
 
     res.status(200).json({
@@ -41,8 +41,8 @@ const getOrganization = async (res, session, oid) => {
   } else {
     res.status(401).json({
       status: false,
-      result: "You do not have access to this organization."
-    })
+      result: "You do not have access to this organization.",
+    });
   }
 };
 

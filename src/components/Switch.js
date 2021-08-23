@@ -9,8 +9,8 @@ import styled from "styled-components";
 const SwitchComponent = styled.label`
   position: relative;
   display: inline-block;
-  width: 60px;
-  height: 34px;
+  width: ${({ height }) => height * 2}px;
+  height: ${({ height }) => height}px;
 `;
 
 const Checkbox = styled.input`
@@ -20,9 +20,9 @@ const Checkbox = styled.input`
 
   &:checked {
     background-color: #2196f3;
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
-    transform: translateX(26px);
+    -webkit-transform: translateX(${({ height }) => height}px);
+    -ms-transform: translateX(${({ height }) => height}px);
+    transform: translateX(${({ height }) => height}px);
   }
 
   &:focus {
@@ -40,49 +40,46 @@ const Slider = styled.span`
   background-color: #ccc;
   -webkit-transition: 200ms;
   transition: 200ms;
-  border-radius: 34px;
+  border-radius: ${({ height }) => height}px;
 
-  ${({ isActive }) =>
-    isActive &&
-    `
-    background-color: #2196F3;
-  `}
+  ${({ isActive }) => isActive && `background-color: #2196F3;`}
 
   &:before {
     position: absolute;
     content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
+    height: ${({ height }) => Math.round(height * 0.6)}px;
+    width: ${({ height }) => Math.round(height * 0.6)}px;
+    left: ${({ height }) => Math.round(height * 0.2)}px;
+    bottom: ${({ height }) => Math.round(height * 0.2)}px;
     background-color: white;
     -webkit-transition: 200ms;
     transition: 200ms;
     border-radius: 50%;
 
-    ${({ isActive }) =>
+    ${({ isActive, height }) =>
       isActive &&
       `
-      -webkit-transform: translateX(26px);
-      -ms-transform: translateX(26px);
-      transform: translateX(26px);
+      -webkit-transform: translateX(${height}px);
+      -ms-transform: translateX(${height}px);
+      transform: translateX(${height}px);
     `}
   }
 `;
 
-export default function Switch(props) {
-  const [isActive, setActive] = useState(props.isActive);
+export default function Switch({ height, onChange, isActive, ...props }) {
+  const [isAct, setAct] = useState(!!isActive);
   return (
-    <SwitchComponent>
+    <SwitchComponent height={height} {...props}>
       <Checkbox
         type="checkbox"
-        checked={isActive}
+        checked={isAct}
         onChange={() => {
-          setActive(!isActive);
-          props.onClick();
+          setAct(!isAct);
+          onChange(!isAct);
         }}
+        height={height}
       />
-      <Slider isActive={isActive}></Slider>
+      <Slider isActive={isAct} height={height}></Slider>
     </SwitchComponent>
   );
 }
