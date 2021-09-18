@@ -185,6 +185,7 @@ const ChipInput = function ChipInput({
             }
             style={{
               backgroundColor: options.find(o => findLabel(o, option))?.color,
+              color: "white",
             }}
             size="small"
             {...getTagProps({ index })}

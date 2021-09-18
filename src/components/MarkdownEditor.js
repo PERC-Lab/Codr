@@ -2,22 +2,26 @@ import { Input, makeStyles, Typography } from "@material-ui/core";
 import { useState } from "react";
 import { HighlightedMarkdown } from "./HighlightedMarkdown";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   input: {
     width: "calc(100% + 16px)",
-    background: "rgba(0,0,0,0.2)",
+    background:
+      theme.palette.type === "light"
+        ? "rgba(0, 0, 0, 0.04)"
+        : "rgba(255, 255, 255, 0.08)",
     borderRadius: 4,
-    color: "rgba(255, 255, 255, 0.8)",
     padding: "8px",
     margin: "-8px",
   },
   text: {
-    color: "rgba(255, 255, 255, 0.8)",
     borderRadius: 4,
     padding: "4px 8px",
     margin: "-8px",
     "&:hover": {
-      background: "rgba(0,0,0,0.2)",
+      background:
+        theme.palette.type === "light"
+          ? "rgba(0, 0, 0, 0.04)"
+          : "rgba(255, 255, 255, 0.08)",
     },
   },
 }));

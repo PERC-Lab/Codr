@@ -1,10 +1,10 @@
-import { blue, orange } from '@material-ui/core/colors';
-import { createMuiTheme } from '@material-ui/core/styles';
+import { blue, orange } from "@material-ui/core/colors";
+import { createMuiTheme } from "@material-ui/core/styles";
 
-// Create a theme instance.
-const theme = createMuiTheme({
+// Create a light theme instance.
+const light = createMuiTheme({
   palette: {
-    type: 'dark',
+    type: "light",
     primary: {
       main: blue[500],
     },
@@ -12,9 +12,39 @@ const theme = createMuiTheme({
       main: orange[500],
     },
     background: {
-      default: '#121212',
+      default: "#e8e8e8",
+    },
+    text: {
+      primary: "rgba(0,0,0,0.8)",
     },
   },
 });
 
-export default theme;
+// Create a dark theme instance.
+const dark = createMuiTheme({
+  palette: {
+    type: "dark",
+    primary: {
+      main: blue[500],
+    },
+    secondary: {
+      main: orange[500],
+    },
+    background: {
+      default: "#121212",
+    },
+    text: {
+      primary: "rgba(255,255,255,0.8)",
+    },
+  },
+});
+
+/**
+ * Expose themes
+ */
+export { dark, light };
+
+/**
+ * Light Theme
+ */
+export default light;

@@ -14,7 +14,6 @@ const useStyles = makeStyles(theme => ({
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
-    background: "#333",
   },
   content: {
     flexGrow: 1,
@@ -33,7 +32,7 @@ export default function OrgLayout({ children }) {
 
   return session ? (
     <div className={classes.root}>
-      <AppBar position="fixed" className={classes.appBar}>
+      <AppBar position="fixed" className={classes.appBar} color="inherit">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
             <Button variant="text" onClick={() => router.push("/")}>
