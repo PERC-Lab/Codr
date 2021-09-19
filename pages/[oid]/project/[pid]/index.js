@@ -97,7 +97,7 @@ export default function OrgProject() {
               </Button>
             </Toolbar>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6} md={5} lg={4} xl={3} xxl={2}>
             <Card>
               <CardHeader
                 action={
@@ -134,7 +134,7 @@ export default function OrgProject() {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6} md={7} lg={8} xl={9} xxl={10}>
             <Card>
               <CardHeader title="Guidelines" />
               <CardContent>

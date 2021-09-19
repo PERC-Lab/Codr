@@ -15,25 +15,27 @@ import { useRouter } from "next/router";
 
 const drawerWidth = 240;
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: "flex",
-  },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-  },
-  drawerPaper: {
-    width: drawerWidth,
-  },
-  drawerContainer: {
-    overflow: "auto",
-  },
-}));
+const useStyles = ({ open }) =>
+  makeStyles(theme => ({
+    root: {
+      display: "flex",
+    },
+    drawer: {
+      width: open ? drawerWidth : 0,
+      flexShrink: 0,
+      transition: "225ms cubic-bezier(0, 0, 0.2, 1) 0ms",
+    },
+    drawerPaper: {
+      width: open ? drawerWidth : 0,
+    },
+    drawerContainer: {
+      overflow: "auto",
+    },
+  }));
 
-export default function AppDrawer() {
+export default function AppDrawer({ open }) {
   const [org] = useOrganization();
-  const classes = useStyles();
+  const classes = useStyles({ open })();
   const router = useRouter();
 
   return (

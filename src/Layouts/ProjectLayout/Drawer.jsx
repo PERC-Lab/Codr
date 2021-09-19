@@ -17,49 +17,51 @@ import { useSession } from "next-auth/client";
 
 const drawerWidth = 240;
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: "flex",
-  },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-  },
-  drawerPaper: {
-    width: drawerWidth,
-  },
-  drawerContainer: {
-    overflow: "auto",
-  },
-  list: {
-    width: "100%",
-    maxWidth: 360,
-    backgroundColor: theme.palette.background.paper,
-    position: "relative",
-    overflow: "auto",
-    maxHeight: "calc(100vh - 64px)",
-  },
-  listSection: {
-    backgroundColor: "inherit",
-  },
-  ul: {
-    backgroundColor: "inherit",
-    padding: 0,
-  },
-}));
+const useStyles = ({ open }) =>
+  makeStyles(theme => ({
+    root: {
+      display: "flex",
+    },
+    drawer: {
+      width: open ? drawerWidth : 0,
+      flexShrink: 0,
+      transition: "225ms cubic-bezier(0, 0, 0.2, 1) 0ms",
+    },
+    drawerPaper: {
+      width: open ? drawerWidth : 0,
+    },
+    drawerContainer: {
+      overflow: "auto",
+    },
+    list: {
+      width: "100%",
+      maxWidth: 360,
+      backgroundColor: theme.palette.background.paper,
+      position: "relative",
+      overflow: "auto",
+      maxHeight: "calc(100vh - 64px)",
+    },
+    listSection: {
+      backgroundColor: "inherit",
+    },
+    ul: {
+      backgroundColor: "inherit",
+      padding: 0,
+    },
+  }));
 
-export default function AppDrawer() {
+export default function AppDrawer({ open }) {
   const [org] = useOrganization();
   const [project] = useProject();
-  const classes = useStyles();
+  const classes = useStyles({ open })();
   const router = useRouter();
   const [session] = useSession();
 
   return (
     <Drawer
       className={classes.drawer}
-      variant="permanent"
-      open={true}
+      variant="persistent"
+      open={open}
       classes={{
         paper: classes.drawerPaper,
       }}
