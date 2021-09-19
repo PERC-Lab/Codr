@@ -253,7 +253,7 @@ export default function ProjectDatasetAnnotation() {
         {project?.guidelines}
       </GuidelinesModal>
       <Grid container spacing={3}>
-        <Grid item xs={8}>
+        <Grid item xs={12} sm={6} md={7} lg={8} xl={9} xxl={10}>
           {data?.annotation?.data?.methods ? (
             data.annotation.data.methods.map((method, index) => {
               method.language = data.annotation.data.language;
@@ -277,7 +277,7 @@ export default function ProjectDatasetAnnotation() {
             </>
           )}
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={12} sm={6} md={5} lg={4} xl={3} xxl={2}>
           <div className={classes.labelCard}>
             <Card>
               <CardHeader
